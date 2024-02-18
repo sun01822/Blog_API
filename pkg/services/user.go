@@ -3,6 +3,7 @@ package services
 import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
+	"errors"
 )
 
 // Parent struct to implement interface binding
@@ -16,6 +17,15 @@ func NewUserService(repo domain.UserRepository) domain.UserService {
 		repo: repo,
 	}
 }
+
+// Login implements domain.UserService.
+func (svc *userService) Login(email string, password string) error {
+	if err := svc.repo.Login(email, password); err != nil {
+		return errors.New("Log in Failed")
+	}
+	return nil
+}
+
 
 
 // CreateUser implements domain.UserService.

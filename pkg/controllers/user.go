@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"Blog_API/pkg/config"
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
+	"Blog_API/pkg/utils"
 	"net/http"
 	"strconv"
+	"time"
 
+	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
 )
@@ -21,6 +25,35 @@ func NewUserController(svc domain.UserService) domain.UserController {
 	return &userController{
 		svc: svc,
 	}
+}
+
+
+// Login implements domain.UserController.
+func (ctr *userController) Login(c echo.Context) error {
+	config := config.LocalConfig
+	reqUser := &types.LoginRequest{}
+	if err := c.Bind(reqUser); err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid data request")
+	}
+	if err := reqUser.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	if err := ctr.svc.Login(reqUser.Email, reqUser.Password); err != nil {
+		return c.JSON(http.StatusUnauthorized, "Invalid email or password")
+	}
+	now := time.Now().UTC()
+	ttl := time.Minute * 15
+	claims := jwt.StandardClaims{
+		ExpiresAt: now.Add(ttl).Unix(),
+		IssuedAt:  now.Unix(),
+		NotBefore: now.Unix(),
+	}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, err := token.SignedString([]byte(config.JWTSecret))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	return c.JSON(http.StatusOK, tokenString)
 }
 
 
@@ -141,7 +174,10 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 		Latitude      	: reqUser.Latitude,
 		Longitude     	: reqUser.Longitude,
 	}
-
+	user.Email = existingUser.Email
+	if existingUser.Password != "" {
+		user.Password = utils.HashPassword(reqUser.Password)
+	}
 	if existingUser.Password == "" {
 		user.Password = existingUser.Password
 	}
