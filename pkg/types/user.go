@@ -60,3 +60,17 @@ func (user UserUpdateRequest) Validate() error {
 		validate.Field(&user.Password, validate.Required, validate.Length(6, 100)),
 	)
 }
+
+// Login UserRequest
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
+// Validate is a function that validates the request body for the user
+func (user LoginRequest) Validate() error {
+	return validate.ValidateStruct(&user,
+		validate.Field(&user.Email, validate.Required, validate.Length(10,100)),
+		validate.Field(&user.Password, validate.Required, validate.Length(6, 100)),
+	)
+}

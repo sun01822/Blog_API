@@ -4,6 +4,8 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"gorm.io/gorm"
+	"Blog_API/pkg/utils"
+	"errors"
 )
 
 // Parent struct to implement interface binding
@@ -18,12 +20,38 @@ func NewUserRepo(db *gorm.DB) domain.UserRepository {
 	}
 }
 
+// Login implements domain.UserRepository.
+func (repo *userRepo) Login(email string, password string) error {
+	// Find the user by user_name
+	var existingUser models.User
+	if err := repo.d.Where("email = ?", email).First(&existingUser).Error; err != nil {
+		return err
+	}
+	// Compare the stored hashed password, with the hashed version of the password that was received
+	if err := utils.ComparePassword(existingUser.Password, password); err != nil {
+		return err
+	}
+	// Otherwise, we are good to go, so return a nil error.
+	return nil
+}
+
+
 
 // CreateUser implements domain.UserRepository.
 func (repo *userRepo) CreateUser(user *models.User) error {
-	err := repo.d.Create(user).Error
-	if err != nil {
-		return err
+	userEmail := user.Email
+	var existingUser models.User
+	err := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
+	if err == nil {
+		return errors.New("User already exists with same email")
+	}
+
+	// Hash the user password
+	user.Password = utils.HashPassword(user.Password)
+
+	err2 := repo.d.Create(user).Error
+	if err2 != nil {
+		return err2
 	}
 	return nil
 }

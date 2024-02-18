@@ -7,6 +7,7 @@ import (
 
 // For database Repository opearation (call from service)
 type UserRepository interface {
+	Login(email string, password string) error
 	CreateUser(user *models.User) error
 	GetUser(id int) (models.User, error)
 	GetUsers() ([]models.User, error)
@@ -16,6 +17,7 @@ type UserRepository interface {
 
 // For service operation (call from controller)	
 type UserService interface {
+	Login(email string, password string) error
 	CreateUser(user *models.User) error
 	GetUser(id int) (models.User, error)
 	GetUsers() ([]models.User, error)
@@ -25,6 +27,7 @@ type UserService interface {
 
 // For controller operation (call from main)
 type UserController interface {
+	Login(c echo.Context) error
 	CreateUser(c echo.Context) error
 	GetUser(c echo.Context) error
 	GetUsers(c echo.Context) error
