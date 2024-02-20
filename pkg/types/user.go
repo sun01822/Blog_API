@@ -2,6 +2,7 @@ package types
 
 import (
 	validate  "github.com/go-ozzo/ozzo-validation"
+	"time"
 )
 
 // SignUp UserRequest
@@ -9,7 +10,7 @@ type SignUpRequest struct {
 	Email          string    `json:"email"`
 	Password 	   string    `json:"password"`
 	Gender         string    `json:"gender,omitempty"`
-	DateOfBirth    string `json:"date_of_birth,omitempty"`
+	DateOfBirth    *time.Time `json:"date_of_birth,omitempty"`
 	Job            string    `json:"job,omitempty"`
 	City           string    `json:"city,omitempty"`
 	ZipCode        string    `json:"zipcode,omitempty"`
@@ -39,7 +40,7 @@ type UserUpdateRequest struct {
 	Email          string    `json:"email"`
 	Password 	   string    `json:"password"`
 	Gender         string    `json:"gender,omitempty"`
-	DateOfBirth    string `json:"date_of_birth,omitempty"`
+	DateOfBirth    *time.Time `json:"date_of_birth,omitempty"`
 	Job            string    `json:"job,omitempty"`
 	City           string    `json:"city,omitempty"`
 	ZipCode        string    `json:"zipcode,omitempty"`
