@@ -184,7 +184,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	if existingUser.Gender == "" {
 		user.Gender = existingUser.Gender
 	}
-	if existingUser.DateOfBirth == ""{
+	if existingUser.DateOfBirth.IsZero(){
 		user.DateOfBirth = existingUser.DateOfBirth
 	}
 	if existingUser.Job == "" {
