@@ -2,13 +2,14 @@ package models
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 // User struct
 type User struct {
 	gorm.Model // Embedding the gorm.Model for ID, CreatedAt, UpdatedAt, and DeletedAt fields
 	Gender      string    `json:"gender"`
-	DateOfBirth string `json:"date_of_birth"`
+	DateOfBirth *time.Time `json:"date_of_birth"`
 	Job         string    `json:"job"`
 	City        string    `json:"city"`
 	ZipCode     string    `json:"zipcode"`
