@@ -30,7 +30,7 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo){
 
 	blog.POST("/blog/create", b.foodController.CreateBlogPost, middlewares.Auth)
 	blog.GET("/blog/get/:id", b.foodController.GetBlogPost)
-	blog.GET("/blog/get/:userID", b.foodController.GetBlogPosts)
+	blog.GET("/blog/get/user/:userID", b.foodController.GetBlogPosts)
 	blog.PUT("/blog/update/:id", b.foodController.UpdateBlogPost, middlewares.Auth)
 	blog.DELETE("/blog/delete/:id", b.foodController.DeleteBlogPost, middlewares.Auth)
 

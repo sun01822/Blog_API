@@ -100,6 +100,28 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		PhotoURL:     blogPost.PhotoURL,
 		Description:  blogPost.Description,
 		Category:     blogPost.Category,
+		IsPublished: existingBlogPost.IsPublished,
+		PublishedAt: existingBlogPost.PublishedAt,
+		Likes: existingBlogPost.Likes,
+		UserID: existingBlogPost.UserID,
+		LikesCount: existingBlogPost.LikesCount,
+		Comments: existingBlogPost.Comments,
+		CommentsCount: existingBlogPost.CommentsCount,
+	}
+	if blog.Title == "" {
+		blog.Title = existingBlogPost.Title
+	}
+	if blog.ContentText == "" {
+		blog.ContentText = existingBlogPost.ContentText
+	}
+	if blog.PhotoURL == "" {
+		blog.PhotoURL = existingBlogPost.PhotoURL
+	}
+	if blog.Description == "" {
+		blog.Description = existingBlogPost.Description
+	}
+	if blog.Category == "" {
+		blog.Category = existingBlogPost.Category
 	}
 	if err := ctr.svc.UpdateBlogPost(blog); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
