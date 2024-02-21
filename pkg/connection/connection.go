@@ -31,6 +31,7 @@ func Connect() {
 // Creating New table in foodstore database
 func Migrate() {
 	db.Migrator().AutoMigrate(models.User{})
+	db.Migrator().AutoMigrate(models.BlogPost{})	
 }
 
 // Calling to connect function to initalize connection

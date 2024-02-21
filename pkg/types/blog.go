@@ -22,3 +22,12 @@ func (blogPost BlogPostRequest) Validate() error {
 		validation.Field(&blogPost.IsPublished, validation.Required),
 	)
 }
+
+
+type UpdateBlogPostRequest struct {
+	Title         string `json:"title"`
+	ContentText   string `json:"content_text"`
+	PhotoURL      string `json:"photo_url"`
+	Description   string `json:"description"`
+	Category      string `json:"category"`
+}

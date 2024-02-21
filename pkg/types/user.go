@@ -37,8 +37,7 @@ func (user SignUpRequest) Validate() error {
 
 
 type UserUpdateRequest struct {
-	Email          string    `json:"email"`
-	Password 	   string    `json:"password"`
+	Password 	   string    `json:"password,omitempty"`
 	Gender         string    `json:"gender,omitempty"`
 	DateOfBirth    *time.Time `json:"date_of_birth,omitempty"`
 	Job            string    `json:"job,omitempty"`
@@ -58,7 +57,7 @@ type UserUpdateRequest struct {
 
 func (user UserUpdateRequest) Validate() error {
 	return validate.ValidateStruct(&user,
-		validate.Field(&user.Password, validate.Required, validate.Length(6, 100)),
+		validate.Field(&user.Password, validate.Length(6, 100)),
 	)
 }
 
