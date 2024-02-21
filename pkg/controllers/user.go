@@ -144,9 +144,6 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	if err := reqUser.Validate(); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	if reqUser.Email != "" {
-		return c.JSON(http.StatusBadRequest, "Email cannot be updated")
-	}
 	tempUserId := c.Param("id")
 	userId, err := strconv.Atoi(tempUserId)
 	if err != nil {
@@ -157,7 +154,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	user := &models.User{
-		Model: gorm.Model{ID: uint(userId), CreatedAt: existingUser.CreatedAt, UpdatedAt: existingUser.UpdatedAt, DeletedAt: existingUser.DeletedAt},
+		Model: gorm.Model{ID: uint(userId), CreatedAt: existingUser.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingUser.DeletedAt},
 		Password 		: reqUser.Password,
 		Gender  		: reqUser.Gender,  
 		DateOfBirth 	: reqUser.DateOfBirth,    
@@ -175,56 +172,54 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 		Longitude     	: reqUser.Longitude,
 	}
 	user.Email = existingUser.Email
-	if existingUser.Password != "" {
+	if reqUser.Password != "" {
 		user.Password = utils.HashPassword(reqUser.Password)
-	}
-	if existingUser.Password == "" {
+	}else if reqUser.Password == "" {
 		user.Password = existingUser.Password
 	}
-	if existingUser.Gender == "" {
-		user.Gender = existingUser.Gender
-	}
-	if existingUser.DateOfBirth.IsZero(){
-		user.DateOfBirth = existingUser.DateOfBirth
-	}
-	if existingUser.Job == "" {
-		user.Job = existingUser.Job
-	}
-	if existingUser.City == "" {
-		user.City = existingUser.City
-	}
-	if existingUser.ZipCode == "" {
-		user.ZipCode = existingUser.ZipCode
-	}
-	if existingUser.ProfilePicture == "" {
-		user.ProfilePicture = existingUser.ProfilePicture
-	}
-	if existingUser.FirstName == "" {
+	if user.FirstName == "" {
 		user.FirstName = existingUser.FirstName
 	}
-	if existingUser.LastName == "" {
+	if user.LastName == "" {
 		user.LastName = existingUser.LastName
 	}
-	if existingUser.Phone == "" {
-		user.Phone = existingUser.Phone
+	if user.City == "" {
+		user.City = existingUser.City
 	}
-	if existingUser.Street == "" {
-		user.Street = existingUser.Street
-	}
-	if existingUser.State == "" {
-		user.State = existingUser.State
-	}
-	if existingUser.Country == "" {
+	if user.Country == "" {
 		user.Country = existingUser.Country
 	}
-	if existingUser.Latitude == 0 {
+	if user.DateOfBirth == nil {
+		user.DateOfBirth = existingUser.DateOfBirth
+	}
+	if user.Gender == "" {
+		user.Gender = existingUser.Gender
+	}
+	if user.Job == "" {
+		user.Job = existingUser.Job
+	}
+	if user.Latitude == 0 {
 		user.Latitude = existingUser.Latitude
 	}
-	if existingUser.Longitude == 0 {
+	if user.Longitude == 0 {
 		user.Longitude = existingUser.Longitude
 	}
+	if user.Phone == "" {
+		user.Phone = existingUser.Phone
+	}
+	if user.ProfilePicture == "" {
+		user.ProfilePicture = existingUser.ProfilePicture
+	}
+	if user.State == "" {
+		user.State = existingUser.State
+	}
+	if user.Street == "" {
+		user.Street = existingUser.Street
+	}
+	if user.ZipCode == "" {
+		user.ZipCode = existingUser.ZipCode
+	}
 	
-
 	if err := ctr.svc.UpdateUser(user); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
