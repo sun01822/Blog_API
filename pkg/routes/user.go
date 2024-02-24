@@ -8,13 +8,13 @@ import (
 
 type userRoutes struct {
 	echo *echo.Echo
-	foodController domain.UserController
+	userController domain.UserController
 }
 
 func NewUserRoutes(e *echo.Echo, controller domain.UserController) *userRoutes{
 	return &userRoutes{
 		echo: e,
-		foodController: controller,
+		userController: controller,
 	}
 }
 
@@ -29,12 +29,12 @@ func (u *userRoutes) initUserRoutes(e *echo.Echo){
 	user := e.Group("/blog_api/v1")
 
 	// Login route
-	user.POST("/user/login", u.foodController.Login)
+	user.POST("/user/login", u.userController.Login)
 
-	user.POST("/user/create", u.foodController.CreateUser)
-	user.GET("/user/get/:id", u.foodController.GetUser)
-	user.GET("/user/get", u.foodController.GetUsers)
-	user.PUT("/user/update/:id", u.foodController.UpdateUser, middlewares.Auth)
-	user.DELETE("/user/delete/:id", u.foodController.DeleteUser, middlewares.Auth)
+	user.POST("/user/create", u.userController.CreateUser)
+	user.GET("/user/get/:id", u.userController.GetUser)
+	user.GET("/user/get", u.userController.GetUsers)
+	user.PUT("/user/update/:id", u.userController.UpdateUser, middlewares.Auth)
+	user.DELETE("/user/delete/:id", u.userController.DeleteUser, middlewares.Auth)
 
 }
