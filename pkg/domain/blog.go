@@ -9,18 +9,32 @@ import (
 type BlogRepository interface {
 	CreateBlogPost(blogPost *models.BlogPost) error
 	GetBlogPost(id uint) (models.BlogPost, error)
-	GetBlogPosts(userID uint) ([]models.BlogPost, error)
+	GetBlogPosts() ([]models.BlogPost, error)
+	GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 	UpdateBlogPost(blogPost *models.BlogPost) error
 	DeleteBlogPost(id uint) error
+	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error
+	AddComment(blogPost *models.BlogPost, comment *models.Comment) error
+	GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
+	GetComments(blogPost *models.BlogPost) ([]models.Comment, error)
+	DeleteComment(blogPost *models.BlogPost, commentID uint) error
+	UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error
 }
 
 // For service operation (call from controller)
 type BlogService interface {
 	CreateBlogPost(blogPost *models.BlogPost) error
 	GetBlogPost(id uint) (models.BlogPost, error)
-	GetBlogPosts(userID uint) ([]models.BlogPost, error)
+	GetBlogPosts() ([]models.BlogPost, error)
+	GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 	UpdateBlogPost(blogPost *models.BlogPost) error
 	DeleteBlogPost(id uint) error
+	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error
+	AddComment(blogPost *models.BlogPost, comment *models.Comment) error
+	GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
+	GetComments(blogPost *models.BlogPost) ([]models.Comment, error)
+	DeleteComment(blogPost *models.BlogPost, commentID uint) error
+	UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error
 }
 
 // For controller operation (call from main)
@@ -28,8 +42,15 @@ type BlogController interface {
 	CreateBlogPost(c echo.Context) error
 	GetBlogPost(c echo.Context) error
 	GetBlogPosts(c echo.Context) error
+	GetBlogPostsOfUser(c echo.Context) error
 	UpdateBlogPost(c echo.Context) error
 	DeleteBlogPost(c echo.Context) error
+	AddAndRemoveLike(c echo.Context) error
+	AddComment(c echo.Context) error
+	GetCommentByUserID(c echo.Context) error
+	GetComments(c echo.Context) error
+	DeleteComment(c echo.Context) error
+	UpdateComment(c echo.Context) error
 }
 
 
