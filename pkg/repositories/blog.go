@@ -75,32 +75,35 @@ func (repo *blogRepo) DeleteBlogPost(id uint) error {
 	return nil
 }
 
-func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error {
-    var user models.User
-    err := repo.d.Model(blogPost).Association("Likes").Find(&user, "id = ?", userID)
-
-    if err == nil {
-        return repo.removeLike(blogPost, userID)
-    } else {
-        return repo.addLike(blogPost, userID)
-    }
+func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (error, string) {
+	// check if the user has already liked the post
+	// if yes, remove the like
+	// if no, add the like
+	// return the updated blogPost
+	var like models.Like
+	err := repo.d.Where("user_id = ? AND blog_post_id = ?", userID, blogPost.ID).First(&like).Error
+	if err != nil {
+		// user has not liked the post
+		like = models.Like{
+			UserID: userID,
+			BlogPostID: blogPost.ID,
+			BlogPost: *blogPost,
+		}
+		err = repo.d.Create(&like).Error
+		if err != nil {
+			return err, ""
+		}
+		return nil, "like"
+	} else {
+		// user has liked the post
+		err = repo.d.Delete(&like).Error
+		if err != nil {
+			return err, ""
+		}
+		return nil, "remove"
+	}
 }
 
-func (repo *blogRepo) removeLike(blogPost *models.BlogPost, userID uint) error {
-    err := repo.d.Model(blogPost).Association("Likes").Delete(&models.User{Model: gorm.Model{ID: userID}})
-    if err != nil {
-        return err
-    }
-    return repo.d.Model(blogPost).Update("likes", gorm.Expr("likes - ?", 1)).Error
-}
-
-func (repo *blogRepo) addLike(blogPost *models.BlogPost, userID uint) error {
-    err := repo.d.Model(blogPost).Association("Likes").Append(&models.User{Model: gorm.Model{ID: userID}})
-    if err != nil {
-        return err
-    }
-    return repo.d.Model(blogPost).Update("likes", gorm.Expr("likes + ?", 1)).Error
-}
 
 // AddComment implements domain.BlogRepository.
 func (repo *blogRepo) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {

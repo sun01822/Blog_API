@@ -13,7 +13,7 @@ type BlogRepository interface {
 	GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 	UpdateBlogPost(blogPost *models.BlogPost) error
 	DeleteBlogPost(id uint) error
-	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error
+	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (error, string)
 	AddComment(blogPost *models.BlogPost, comment *models.Comment) error
 	GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
 	GetComments(blogPost *models.BlogPost) ([]models.Comment, error)
@@ -29,7 +29,7 @@ type BlogService interface {
 	GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 	UpdateBlogPost(blogPost *models.BlogPost) error
 	DeleteBlogPost(id uint) error
-	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error
+	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (error, string)
 	AddComment(blogPost *models.BlogPost, comment *models.Comment) error
 	GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
 	GetComments(blogPost *models.BlogPost) ([]models.Comment, error)
