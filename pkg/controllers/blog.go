@@ -56,7 +56,7 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 
 // GetBlogPost implements domain.BlogController.
 func (ctr *blogController) GetBlogPost(c echo.Context) error {
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id, err := strconv.ParseUint(c.Param("postID"), 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
@@ -101,7 +101,7 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -155,7 +155,7 @@ func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	id, err := strconv.ParseUint(c.Param("id"), 10, 64)
+	id, err := strconv.ParseUint(c.Param("postID"), 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
@@ -178,7 +178,7 @@ func (ctr *blogController) AddAndRemoveLike(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -209,7 +209,7 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -235,7 +235,7 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 
 // GetCommentByUserID implements domain.BlogController.
 func (ctr *blogController) GetCommentByUserID(c echo.Context) error {
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -261,7 +261,7 @@ func (ctr *blogController) GetCommentByUserID(c echo.Context) error {
 
 // GetComments implements domain.BlogController.
 func (ctr *blogController) GetComments(c echo.Context) error {
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -286,7 +286,7 @@ func (ctr *blogController) DeleteComment(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -324,7 +324,7 @@ func (ctr *blogController) UpdateComment(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	tempID := c.Param("id")
+	tempID := c.Param("postID")
 	id, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
