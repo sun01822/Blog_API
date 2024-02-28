@@ -30,18 +30,18 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo){
 
 	// blog routes
 	blog.POST("/blog/create/:userID", b.blogController.CreateBlogPost, middlewares.Auth)
-	blog.GET("/blog/get/:id", b.blogController.GetBlogPost)
+	blog.GET("/blog/get/:postID", b.blogController.GetBlogPost)
 	blog.GET("/blog/get", b.blogController.GetBlogPosts)
 	blog.GET("/blog/get/user/:userID", b.blogController.GetBlogPostsOfUser)
-	blog.PUT("/blog/update/:userID/:id", b.blogController.UpdateBlogPost, middlewares.Auth)
-	blog.DELETE("/blog/delete/:userID/:id", b.blogController.DeleteBlogPost, middlewares.Auth)
+	blog.PUT("/blog/update/:userID/:postID", b.blogController.UpdateBlogPost, middlewares.Auth)
+	blog.DELETE("/blog/delete/:userID/:postID", b.blogController.DeleteBlogPost, middlewares.Auth)
 
 	// like and comment routes
-	blog.POST("/blog/like/:userID/:id", b.blogController.AddAndRemoveLike, middlewares.Auth)
-	blog.POST("/blog/comment/:userID/:id", b.blogController.AddComment, middlewares.Auth)
-	blog.GET("/blog/comment/:id", b.blogController.GetComments)
-	blog.GET("/blog/comment/:id/:commentID", b.blogController.GetCommentByUserID)
-	blog.DELETE("/blog/comment/:userID/:id/:commentID", b.blogController.DeleteComment, middlewares.Auth)
-	blog.PUT("/blog/comment/:userID/:id/:commentID", b.blogController.UpdateComment, middlewares.Auth)
+	blog.POST("/blog/like/:userID/:postID", b.blogController.AddAndRemoveLike, middlewares.Auth)
+	blog.POST("/blog/comment/:userID/:postID", b.blogController.AddComment, middlewares.Auth)
+	blog.GET("/blog/comment/:postID", b.blogController.GetComments)
+	blog.GET("/blog/comment/:postID/:commentID", b.blogController.GetCommentByUserID)
+	blog.DELETE("/blog/comment/:userID/:postID/:commentID", b.blogController.DeleteComment, middlewares.Auth)
+	blog.PUT("/blog/comment/:userID/:postID/:commentID", b.blogController.UpdateComment, middlewares.Auth)
 	
 }
