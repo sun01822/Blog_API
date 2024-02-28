@@ -190,10 +190,14 @@ func (ctr *blogController) AddAndRemoveLike(c echo.Context) error {
 	if existingBlogPost.ID == 0 {
 		return c.JSON(http.StatusNotFound, "Blog post not found")
 	}
-	if err := ctr.svc.AddAndRemoveLike(&existingBlogPost, uint(userID)); err != nil {
+	err, s := ctr.svc.AddAndRemoveLike(&existingBlogPost, uint(userID))
+	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	return c.JSON(http.StatusOK, "Like added/removed successfully")
+	if s == "like" {
+		return c.JSON(http.StatusOK, "Like Adeed to the Post")
+	}
+	return c.JSON(http.StatusOK, "Like Removed from the Post")
 }
 
 // AddComment implements domain.BlogController.
