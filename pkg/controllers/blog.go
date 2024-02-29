@@ -14,12 +14,14 @@ import (
 // Parent struct to implement interface binding
 type blogController struct {
 	svc domain.BlogService
+	svc2 domain.UserService
 }
 
 // Interface binding
-func NewBlogController(svc domain.BlogService) domain.BlogController {
+func NewBlogController(svc domain.BlogService, svc2 domain.UserService) domain.BlogController {
 	return &blogController{
 		svc: svc,
+		svc2: svc2,
 	}
 }
 
@@ -29,6 +31,10 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 	userID, err := strconv.ParseUint(tempID, 10, 64)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
+	}
+	_, err = ctr.svc2.GetUser(uint(userID))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, "User not found")
 	}
 	reqBlogPost := &types.BlogPostRequest{}
 	if err := c.Bind(reqBlogPost); err != nil {
@@ -190,7 +196,7 @@ func (ctr *blogController) AddAndRemoveLike(c echo.Context) error {
 	if existingBlogPost.ID == 0 {
 		return c.JSON(http.StatusNotFound, "Blog post not found")
 	}
-	err, s := ctr.svc.AddAndRemoveLike(&existingBlogPost, uint(userID))
+	s, err := ctr.svc.AddAndRemoveLike(&existingBlogPost, uint(userID))
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}

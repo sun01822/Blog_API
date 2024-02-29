@@ -69,11 +69,12 @@ func (svc *blogService) DeleteBlogPost(id uint) error {
 }
 
 // AddAndRemoveLike implements domain.BlogService.
-func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) error {
-	if err := svc.repo.AddAndRemoveLike(blogPost, userID); err != nil {
-		return err
+func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
+	s, err := svc.repo.AddAndRemoveLike(blogPost, userID)
+	if err != nil {
+		return s, err
 	}
-	return nil
+	return s, nil
 }
 
 // AddComment implements domain.BlogService.

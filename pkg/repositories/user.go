@@ -57,7 +57,7 @@ func (repo *userRepo) CreateUser(user *models.User) error {
 }
 
 // DeleteUser implements domain.UserRepository.
-func (repo *userRepo) DeleteUser(id int) error {
+func (repo *userRepo) DeleteUser(id uint) error {
 	var user models.User
 	err := repo.d.Where("id = ?", id).Delete(&user).Error
 	if err != nil {
@@ -67,7 +67,7 @@ func (repo *userRepo) DeleteUser(id int) error {
 }
 
 // GetUser implements domain.UserRepository.
-func (repo *userRepo) GetUser(id int) (models.User, error) {
+func (repo *userRepo) GetUser(id uint) (models.User, error) {
 	var user models.User
 	err := repo.d.Where("id = ?", id).First(&user).Error
 	if err != nil {

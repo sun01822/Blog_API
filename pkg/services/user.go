@@ -37,7 +37,7 @@ func (svc *userService) CreateUser(user *models.User) error {
 }
 
 // DeleteUser implements domain.UserService.
-func (svc *userService) DeleteUser(id int) error {
+func (svc *userService) DeleteUser(id uint) error {
 	if err := svc.repo.DeleteUser(id); err != nil {
 		return err
 	}
@@ -45,7 +45,7 @@ func (svc *userService) DeleteUser(id int) error {
 }
 
 // GetUser implements domain.UserService.
-func (svc *userService) GetUser(id int) (models.User, error) {
+func (svc *userService) GetUser(id uint) (models.User, error) {
 	user, err := svc.repo.GetUser(id)
 	if err != nil {
 		return user, err

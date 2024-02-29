@@ -9,7 +9,6 @@ import (
 	"net/http"
 	"strconv"
 	"time"
-
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -93,20 +92,20 @@ func (ctr *userController) CreateUser(c echo.Context) error {
 
 // DeleteUser implements domain.UserController.
 func (ctr *userController) DeleteUser(c echo.Context) error {
-	tempUserId := c.Param("id")
+	tempUserId := c.Param("userID")
 	userId, err := strconv.Atoi(tempUserId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid user id")
 	}
 
-	existingUser, err := ctr.svc.GetUser(userId)
+	existingUser, err := ctr.svc.GetUser(uint(userId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	if existingUser.ID == 0 {
 		return c.JSON(http.StatusNotFound, "User not found")
 	}
-	if err := ctr.svc.DeleteUser(userId); err != nil {
+	if err := ctr.svc.DeleteUser(uint(userId)); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	return c.JSON(http.StatusOK, "User deleted successfully")
@@ -114,12 +113,12 @@ func (ctr *userController) DeleteUser(c echo.Context) error {
 
 // GetUser implements domain.UserController.
 func (ctr *userController) GetUser(c echo.Context) error {
-	tempUserId := c.Param("id")
+	tempUserId := c.Param("userID")
 	userId, err := strconv.Atoi(tempUserId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid user id")
 	}
-	user, err := ctr.svc.GetUser(userId)
+	user, err := ctr.svc.GetUser(uint(userId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -144,12 +143,12 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	if err := reqUser.Validate(); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
-	tempUserId := c.Param("id")
+	tempUserId := c.Param("userID")
 	userId, err := strconv.Atoi(tempUserId)
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid user id")
 	}
-	existingUser, err := ctr.svc.GetUser(userId)
+	existingUser, err := ctr.svc.GetUser(uint(userId))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
