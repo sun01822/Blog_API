@@ -20,7 +20,7 @@ func NewBlogRepo(db *gorm.DB) domain.BlogRepository {
 
 // CreateBlogPost implements domain.BlogRepository.
 func (repo *blogRepo) CreateBlogPost(blogPost *models.BlogPost) error {
-	err := repo.d.Create(blogPost).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Create(blogPost).Error
 	if err != nil {
 		return err
 	}
@@ -30,7 +30,7 @@ func (repo *blogRepo) CreateBlogPost(blogPost *models.BlogPost) error {
 // GetBlogPost implements domain.BlogRepository.
 func (repo *blogRepo) GetBlogPost(id uint) (models.BlogPost, error) {
 	var blogPost models.BlogPost
-	err := repo.d.Where("id = ?", id).First(&blogPost).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).First(&blogPost).Error
 	if err != nil {
 		return blogPost, err
 	}
@@ -40,7 +40,7 @@ func (repo *blogRepo) GetBlogPost(id uint) (models.BlogPost, error) {
 // GetBlogPosts implements domain.BlogRepository.
 func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
 	var blogPosts []models.BlogPost
-	err := repo.d.Find(&blogPosts).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Find(&blogPosts).Error
 	if err != nil {
 		return blogPosts, err
 	}
@@ -50,7 +50,7 @@ func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
 // GetBlogPosts implements domain.BlogRepository.
 func (repo *blogRepo) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error) {
 	var blogPosts []models.BlogPost
-	err := repo.d.Where("user_id = ?", userID).Find(&blogPosts).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Where("user_id = ?", userID).Find(&blogPosts).Error
 	if err != nil {
 		return blogPosts, err
 	}
@@ -59,7 +59,7 @@ func (repo *blogRepo) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 
 // UpdateBlogPost implements domain.BlogRepository.
 func (repo *blogRepo) UpdateBlogPost(blogPost *models.BlogPost) error {
-	err := repo.d.Save(blogPost).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Save(blogPost).Error
 	if err != nil {
 		return err
 	}
@@ -68,7 +68,7 @@ func (repo *blogRepo) UpdateBlogPost(blogPost *models.BlogPost) error {
 
 // DeleteBlogPost implements domain.BlogRepository.
 func (repo *blogRepo) DeleteBlogPost(id uint) error {
-	err := repo.d.Where("id = ?", id).Delete(&models.BlogPost{}).Error
+	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).Delete(&models.BlogPost{}).Error
 	if err != nil {
 		return err
 	}
@@ -87,7 +87,6 @@ func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (
 		like = models.Like{
 			UserID: userID,
 			BlogPostID: blogPost.ID,
-			BlogPost: *blogPost,
 		}
 		err = repo.d.Create(&like).Error
 		if err != nil {
@@ -111,20 +110,22 @@ func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (
 
 // AddComment implements domain.BlogRepository.
 func (repo *blogRepo) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {
-	err := repo.d.Model(blogPost).Association("Comments").Append(comment)
+	err := repo.d.Create(comment).Error
 	if err != nil {
 		return err
 	}
+	repo.d.Model(blogPost).Association("Comments").Append(&comment)
+	repo.d.Model(blogPost).Update("comments_count", blogPost.CommentsCount+1)
 	return nil
 }
 
 // GetCommentByUserID implements domain.BlogRepository.
 func (repo *blogRepo) GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
 	var comment models.Comment
-	err := repo.d.Model(blogPost).Association("Comments").Find(&comment, "id = ?", commentID)
+	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
 	if err != nil {
 		return comment, err
-	}
+	}	
 	return comment, nil
 }
 
@@ -132,7 +133,7 @@ func (repo *blogRepo) GetCommentByUserID(blogPost *models.BlogPost, commentID ui
 // GetComments implements domain.BlogRepository.
 func (repo *blogRepo) GetComments(blogPost *models.BlogPost) ([]models.Comment, error) {
 	var comments []models.Comment
-	err := repo.d.Model(blogPost).Association("Comments").Find(&comments)
+	err := repo.d.Where("blog_post_id = ?", blogPost.ID).Find(&comments).Error
 	if err != nil {
 		return comments, err
 	}
@@ -141,16 +142,28 @@ func (repo *blogRepo) GetComments(blogPost *models.BlogPost) ([]models.Comment, 
 
 // DeleteComment implements domain.BlogRepository.
 func (repo *blogRepo) DeleteComment(blogPost *models.BlogPost, commentID uint) error {
-	err := repo.d.Model(blogPost).Association("Comments").Delete(&models.Comment{Model: gorm.Model{ID: commentID}})
+	var comment models.Comment
+	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
 	if err != nil {
 		return err
 	}
+	err = repo.d.Delete(&comment).Error
+	if err != nil {
+		return err
+	}
+	repo.d.Model(blogPost).Association("Comments").Delete(&comment)
+	repo.d.Model(blogPost).Update("comments_count", blogPost.CommentsCount-1)
 	return nil
 }
 
 // UpdateComment implements domain.BlogRepository.
 func (repo *blogRepo) UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error {
-	err := repo.d.Model(blogPost).Association("Comments").Replace(comment)
+	var existingComment models.Comment
+	err := repo.d.Where("id = ? AND blog_post_id = ?", comment.ID, blogPost.ID).First(&existingComment).Error
+	if err != nil {
+		return err
+	}
+	err = repo.d.Model(&existingComment).Updates(comment).Error
 	if err != nil {
 		return err
 	}
