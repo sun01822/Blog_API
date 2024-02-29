@@ -9,20 +9,20 @@ import (
 type UserRepository interface {
 	Login(email string, password string) error
 	CreateUser(user *models.User) error
-	GetUser(id int) (models.User, error)
+	GetUser(id uint) (models.User, error)
 	GetUsers() ([]models.User, error)
 	UpdateUser(user *models.User) error
-	DeleteUser(id int) error
+	DeleteUser(id uint) error
 }
 
 // For service operation (call from controller)	
 type UserService interface {
 	Login(email string, password string) error
 	CreateUser(user *models.User) error
-	GetUser(id int) (models.User, error)
+	GetUser(id uint) (models.User, error)
 	GetUsers() ([]models.User, error)
 	UpdateUser(user *models.User) error
-	DeleteUser(id int) error
+	DeleteUser(id uint) error
 }
 
 // For controller operation (call from main)

@@ -75,7 +75,7 @@ func (repo *blogRepo) DeleteBlogPost(id uint) error {
 	return nil
 }
 
-func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (error, string) {
+func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
 	// check if the user has already liked the post
 	// if yes, remove the like
 	// if no, add the like
@@ -91,16 +91,20 @@ func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (
 		}
 		err = repo.d.Create(&like).Error
 		if err != nil {
-			return err, ""
+			return "", err
 		}
-		return nil, "like"
+		repo.d.Model(blogPost).Association("Likes").Append(&like)
+		repo.d.Model(blogPost).Update("likes_count", blogPost.LikesCount+1)
+		return "like", nil
 	} else {
 		// user has liked the post
 		err = repo.d.Delete(&like).Error
 		if err != nil {
-			return err, ""
+			return "", err
 		}
-		return nil, "remove"
+		repo.d.Model(blogPost).Association("Likes").Delete(&like)
+		repo.d.Model(blogPost).Update("likes_count", blogPost.LikesCount-1)
+		return "remove", nil
 	}
 }
 

@@ -33,7 +33,7 @@ func Serve(e *echo.Echo)  {
 
 	// Controller initalization
 	userController := controllers.NewUserController(userService)
-	blogController := controllers.NewBlogController(blogService)
+	blogController := controllers.NewBlogController(blogService,userService)
 
 	// Routes
 	user := routes.NewUserRoutes(e, userController)
