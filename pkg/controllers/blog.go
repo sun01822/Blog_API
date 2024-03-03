@@ -235,7 +235,6 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 		Content:  reqComment.Content,
 		UserID:   uint(userID),
 		BlogPostID: existingBlogPost.ID,
-		BlogPost: existingBlogPost,
 	}
 	if err := ctr.svc.AddComment(&existingBlogPost, comment); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())

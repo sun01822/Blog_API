@@ -25,7 +25,6 @@ type BlogPost struct {
 type Comment struct {
 	gorm.Model
 	UserID    uint   `json:"user_id"`
-	BlogPost  BlogPost
 	BlogPostID uint   `json:"blog_post_id"`
 	Content   string `json:"content"`
 }
@@ -33,7 +32,6 @@ type Comment struct {
 type Like struct { 
 	gorm.Model
 	UserID    uint   `json:"user_id"`
-	BlogPost  BlogPost
 	BlogPostID uint   `json:"blog_post_id"`
 }
 
