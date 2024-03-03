@@ -3,15 +3,16 @@ package repositories
 import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
-	"gorm.io/gorm"
 	"Blog_API/pkg/utils"
 	"errors"
+	"gorm.io/gorm"
 )
 
 // Parent struct to implement interface binding
 type userRepo struct {
 	d *gorm.DB
 }
+
 
 // Interface binding
 func NewUserRepo(db *gorm.DB) domain.UserRepository {
@@ -34,8 +35,6 @@ func (repo *userRepo) Login(email string, password string) error {
 	// Otherwise, we are good to go, so return a nil error.
 	return nil
 }
-
-
 
 // CreateUser implements domain.UserRepository.
 func (repo *userRepo) CreateUser(user *models.User) error {
@@ -77,9 +76,9 @@ func (repo *userRepo) GetUser(id uint) (models.User, error) {
 }
 
 // GetUsers implements domain.UserRepository.
-func (repo *userRepo) GetUsers() ([]models.User, error) {
+func (repo *userRepo) GetUsers(pagination *utils.Page) ([]models.User, error) {
 	var users []models.User
-	err := repo.d.Find(&users).Error
+	err:= repo.d.Offset(*pagination.Offset).Limit(*pagination.Limit).Find(&users).Error
 	if err != nil {
 		return users, err
 	}

@@ -3,6 +3,7 @@ package services
 import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
+	"Blog_API/pkg/utils"
 	"errors"
 )
 
@@ -25,8 +26,6 @@ func (svc *userService) Login(email string, password string) error {
 	}
 	return nil
 }
-
-
 
 // CreateUser implements domain.UserService.
 func (svc *userService) CreateUser(user *models.User) error {
@@ -54,8 +53,8 @@ func (svc *userService) GetUser(id uint) (models.User, error) {
 }
 
 // GetUsers implements domain.UserService.
-func (svc *userService) GetUsers() ([]models.User, error) {
-	users, err := svc.repo.GetUsers()
+func (svc *userService) GetUsers(pagination *utils.Page) ([]models.User, error) {
+	users, err := svc.repo.GetUsers(pagination)
 	if err != nil {
 		return users, err
 	}

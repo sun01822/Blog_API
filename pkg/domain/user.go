@@ -2,6 +2,7 @@ package domain
 
 import (
 	"Blog_API/pkg/models"
+	"Blog_API/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
 
@@ -10,7 +11,7 @@ type UserRepository interface {
 	Login(email string, password string) error
 	CreateUser(user *models.User) error
 	GetUser(id uint) (models.User, error)
-	GetUsers() ([]models.User, error)
+	GetUsers(pagination *utils.Page) ([]models.User, error)
 	UpdateUser(user *models.User) error
 	DeleteUser(id uint) error
 }
@@ -20,7 +21,7 @@ type UserService interface {
 	Login(email string, password string) error
 	CreateUser(user *models.User) error
 	GetUser(id uint) (models.User, error)
-	GetUsers() ([]models.User, error)
+	GetUsers(pagination *utils.Page) ([]models.User, error)
 	UpdateUser(user *models.User) error
 	DeleteUser(id uint) error
 }

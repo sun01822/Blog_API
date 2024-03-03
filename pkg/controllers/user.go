@@ -6,9 +6,11 @@ import (
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
+
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
 	"gorm.io/gorm"
@@ -127,7 +129,16 @@ func (ctr *userController) GetUser(c echo.Context) error {
 
 // GetUsers implements domain.UserController.
 func (ctr *userController) GetUsers(c echo.Context) error {
-	users, err := ctr.svc.GetUsers()
+	page := &utils.Page{}
+	pageInfo, err := page.GetPageInformation(c)
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+	fmt.Println(
+		"Offset: ", *pageInfo.Offset,
+		"Limit: ", *pageInfo.Limit,
+	)
+	users, err := ctr.svc.GetUsers(pageInfo)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
