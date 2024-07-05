@@ -5,7 +5,8 @@ import (
 	"time"
 )
 
-// User struct
+// User represents the user model in the database
+// @Description User model
 type User struct {
 	gorm.Model // Embedding the gorm.Model for ID, CreatedAt, UpdatedAt, and DeletedAt fields
 	Gender      string    `json:"gender"`
