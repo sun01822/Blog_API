@@ -23,6 +23,8 @@ func (u *userRoutes) InitUserRoutes(){
 	u.initUserRoutes(e)
 }
 
+
+
 func (u *userRoutes) initUserRoutes(e *echo.Echo){
 
 	// group the routes 

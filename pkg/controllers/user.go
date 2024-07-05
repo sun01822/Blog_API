@@ -29,6 +29,17 @@ func NewUserController(svc domain.UserService) domain.UserController {
 }
 
 
+// Login godoc
+// @Summary User login
+// @Description Logs in a user and returns a JWT token
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param login body types.LoginRequest true "Login Request"
+// @Success 200 {string} string "JWT Token"
+// @Failure 400 {string} string "Invalid data request"
+// @Failure 401 {string} string "Invalid email or password"
+// @Router /login [post]
 // Login implements domain.UserController.
 func (ctr *userController) Login(c echo.Context) error {
 	config := config.LocalConfig
