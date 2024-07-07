@@ -28,7 +28,6 @@ func NewUserController(svc domain.UserService) domain.UserController {
 	}
 }
 
-
 // Login godoc
 // @Summary User login
 // @Description Logs in a user and returns a JWT token
@@ -39,7 +38,7 @@ func NewUserController(svc domain.UserService) domain.UserController {
 // @Success 200 {string} string "JWT Token"
 // @Failure 400 {string} string "Invalid data request"
 // @Failure 401 {string} string "Invalid email or password"
-// @Router /login [post]
+// @Router /user/login [post]
 // Login implements domain.UserController.
 func (ctr *userController) Login(c echo.Context) error {
 	config := config.LocalConfig
@@ -124,18 +123,6 @@ func (ctr *userController) DeleteUser(c echo.Context) error {
 	return c.JSON(http.StatusOK, "User deleted successfully")
 }
 
-// GetUser godoc
-// @Summary Get user by ID
-// @Description Retrieves a user by their ID
-// @Tags user
-// @Accept json
-// @Produce json
-// @Param userID path int true "User ID"
-// @Success 200 {object} models.User "User object"
-// @Failure 400 {string} string "Invalid user id"
-// @Failure 500 {string} string "Internal server error"
-// @Router /users/{userID} [get]
-// GetUser implements domain.UserController.
 func (ctr *userController) GetUser(c echo.Context) error {
 	tempUserId := c.Param("userID")
 	userId, err := strconv.Atoi(tempUserId)
