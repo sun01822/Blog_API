@@ -7,34 +7,36 @@ import (
 )
 
 type userRoutes struct {
-	echo *echo.Echo
+	echo           *echo.Echo
 	userController domain.UserController
 }
 
-func NewUserRoutes(e *echo.Echo, controller domain.UserController) *userRoutes{
+func NewUserRoutes(e *echo.Echo, controller domain.UserController) *userRoutes {
 	return &userRoutes{
-		echo: e,
+		echo:           e,
 		userController: controller,
 	}
 }
 
-func (u *userRoutes) InitUserRoutes(){
-	e:= u.echo
+func (u *userRoutes) InitUserRoutes() {
+	e := u.echo
 	u.initUserRoutes(e)
 }
 
-func (u *userRoutes) initUserRoutes(e *echo.Echo){
+func (u *userRoutes) initUserRoutes(e *echo.Echo) {
 
-	// group the routes 
-	user := e.Group("/blog_api/v1")
+	// group the routes
+	version := e.Group("/blog_api/v1")
+
+	user := version.Group("/user")
 
 	// Login route
-	user.POST("/user/login", u.userController.Login)
+	user.POST("/login", u.userController.Login)
 
-	user.POST("/user/create", u.userController.CreateUser)
-	user.GET("/user/get/:userID", u.userController.GetUser)
-	user.GET("/user/get", u.userController.GetUsers)
-	user.PUT("/user/update/:userID", u.userController.UpdateUser, middlewares.Auth)
-	user.DELETE("/user/delete/:userID", u.userController.DeleteUser, middlewares.Auth)
+	user.POST("/create", u.userController.CreateUser)
+	user.GET("/get/:userID", u.userController.GetUser)
+	user.GET("/get", u.userController.GetUsers)
+	user.PUT("/update/:userID", u.userController.UpdateUser, middlewares.Auth)
+	user.DELETE("/delete/:userID", u.userController.DeleteUser, middlewares.Auth)
 
 }
