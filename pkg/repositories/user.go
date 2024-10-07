@@ -13,7 +13,6 @@ type userRepo struct {
 	d *gorm.DB
 }
 
-
 // Interface binding
 func NewUserRepo(db *gorm.DB) domain.UserRepository {
 	return &userRepo{
@@ -22,7 +21,7 @@ func NewUserRepo(db *gorm.DB) domain.UserRepository {
 }
 
 // Login implements domain.UserRepository.
-func (repo *userRepo) Login(email string, password string) error {
+func (repo *userRepo) LoginRepo(email string, password string) error {
 	// Find the user by user_name
 	var existingUser models.User
 	if err := repo.d.Where("email = ?", email).First(&existingUser).Error; err != nil {
@@ -37,7 +36,7 @@ func (repo *userRepo) Login(email string, password string) error {
 }
 
 // CreateUser implements domain.UserRepository.
-func (repo *userRepo) CreateUser(user *models.User) error {
+func (repo *userRepo) CreateUserRepo(user *models.User) error {
 	userEmail := user.Email
 	var existingUser models.User
 	err := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
@@ -56,7 +55,7 @@ func (repo *userRepo) CreateUser(user *models.User) error {
 }
 
 // DeleteUser implements domain.UserRepository.
-func (repo *userRepo) DeleteUser(id uint) error {
+func (repo *userRepo) DeleteUserRepo(id uint) error {
 	var user models.User
 	err := repo.d.Where("id = ?", id).Delete(&user).Error
 	if err != nil {
@@ -66,7 +65,7 @@ func (repo *userRepo) DeleteUser(id uint) error {
 }
 
 // GetUser implements domain.UserRepository.
-func (repo *userRepo) GetUser(id uint) (models.User, error) {
+func (repo *userRepo) GetUserRepo(id uint) (models.User, error) {
 	var user models.User
 	err := repo.d.Where("id = ?", id).First(&user).Error
 	if err != nil {
@@ -76,9 +75,9 @@ func (repo *userRepo) GetUser(id uint) (models.User, error) {
 }
 
 // GetUsers implements domain.UserRepository.
-func (repo *userRepo) GetUsers(pagination *utils.Page) ([]models.User, error) {
+func (repo *userRepo) GetUsersRepo(pagination *utils.Page) ([]models.User, error) {
 	var users []models.User
-	err:= repo.d.Offset(*pagination.Offset).Limit(*pagination.Limit).Find(&users).Error
+	err := repo.d.Offset(*pagination.Offset).Limit(*pagination.Limit).Find(&users).Error
 	if err != nil {
 		return users, err
 	}
@@ -86,7 +85,7 @@ func (repo *userRepo) GetUsers(pagination *utils.Page) ([]models.User, error) {
 }
 
 // UpdateUser implements domain.UserRepository.
-func (repo *userRepo) UpdateUser(user *models.User) error {
+func (repo *userRepo) UpdateUserRepo(user *models.User) error {
 	err := repo.d.Save(&user).Error
 	if err != nil {
 		return err
