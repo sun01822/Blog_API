@@ -19,7 +19,7 @@ func NewBlogRepo(db *gorm.DB) domain.BlogRepository {
 }
 
 // CreateBlogPost implements domain.BlogRepository.
-func (repo *blogRepo) CreateBlogPost(blogPost *models.BlogPost) error {
+func (repo *blogRepo) CreateBlogPostRepo(blogPost *models.BlogPost) error {
 	err := repo.d.Preload("Likes").Preload("Comments").Create(blogPost).Error
 	if err != nil {
 		return err
@@ -28,7 +28,7 @@ func (repo *blogRepo) CreateBlogPost(blogPost *models.BlogPost) error {
 }
 
 // GetBlogPost implements domain.BlogRepository.
-func (repo *blogRepo) GetBlogPost(id uint) (models.BlogPost, error) {
+func (repo *blogRepo) GetBlogPostRepo(id uint) (models.BlogPost, error) {
 	var blogPost models.BlogPost
 	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).First(&blogPost).Error
 	if err != nil {
@@ -38,7 +38,7 @@ func (repo *blogRepo) GetBlogPost(id uint) (models.BlogPost, error) {
 }
 
 // GetBlogPosts implements domain.BlogRepository.
-func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
+func (repo *blogRepo) GetBlogPostsRepo() ([]models.BlogPost, error) {
 	var blogPosts []models.BlogPost
 	err := repo.d.Preload("Likes").Preload("Comments").Find(&blogPosts).Error
 	if err != nil {
@@ -48,7 +48,7 @@ func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
 }
 
 // GetBlogPosts implements domain.BlogRepository.
-func (repo *blogRepo) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error) {
+func (repo *blogRepo) GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error) {
 	var blogPosts []models.BlogPost
 	err := repo.d.Preload("Likes").Preload("Comments").Where("user_id = ?", userID).Find(&blogPosts).Error
 	if err != nil {
@@ -58,7 +58,7 @@ func (repo *blogRepo) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 }
 
 // UpdateBlogPost implements domain.BlogRepository.
-func (repo *blogRepo) UpdateBlogPost(blogPost *models.BlogPost) error {
+func (repo *blogRepo) UpdateBlogPostRepo(blogPost *models.BlogPost) error {
 	err := repo.d.Preload("Likes").Preload("Comments").Save(blogPost).Error
 	if err != nil {
 		return err
@@ -67,7 +67,7 @@ func (repo *blogRepo) UpdateBlogPost(blogPost *models.BlogPost) error {
 }
 
 // DeleteBlogPost implements domain.BlogRepository.
-func (repo *blogRepo) DeleteBlogPost(id uint) error {
+func (repo *blogRepo) DeleteBlogPostRepo(id uint) error {
 	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).Delete(&models.BlogPost{}).Error
 	if err != nil {
 		return err
@@ -75,7 +75,7 @@ func (repo *blogRepo) DeleteBlogPost(id uint) error {
 	return nil
 }
 
-func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
+func (repo *blogRepo) AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error) {
 	// check if the user has already liked the post
 	// if yes, remove the like
 	// if no, add the like
@@ -85,7 +85,7 @@ func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (
 	if err != nil {
 		// user has not liked the post
 		like = models.Like{
-			UserID: userID,
+			UserID:     userID,
 			BlogPostID: blogPost.ID,
 		}
 		err = repo.d.Create(&like).Error
@@ -107,9 +107,8 @@ func (repo *blogRepo) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (
 	}
 }
 
-
 // AddComment implements domain.BlogRepository.
-func (repo *blogRepo) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {
+func (repo *blogRepo) AddCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
 	err := repo.d.Create(comment).Error
 	if err != nil {
 		return err
@@ -120,18 +119,17 @@ func (repo *blogRepo) AddComment(blogPost *models.BlogPost, comment *models.Comm
 }
 
 // GetCommentByUserID implements domain.BlogRepository.
-func (repo *blogRepo) GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
+func (repo *blogRepo) GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
 	var comment models.Comment
 	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
 	if err != nil {
 		return comment, err
-	}	
+	}
 	return comment, nil
 }
 
-
 // GetComments implements domain.BlogRepository.
-func (repo *blogRepo) GetComments(blogPost *models.BlogPost) ([]models.Comment, error) {
+func (repo *blogRepo) GetCommentsRepo(blogPost *models.BlogPost) ([]models.Comment, error) {
 	var comments []models.Comment
 	err := repo.d.Where("blog_post_id = ?", blogPost.ID).Find(&comments).Error
 	if err != nil {
@@ -141,7 +139,7 @@ func (repo *blogRepo) GetComments(blogPost *models.BlogPost) ([]models.Comment, 
 }
 
 // DeleteComment implements domain.BlogRepository.
-func (repo *blogRepo) DeleteComment(blogPost *models.BlogPost, commentID uint) error {
+func (repo *blogRepo) DeleteCommentRepo(blogPost *models.BlogPost, commentID uint) error {
 	var comment models.Comment
 	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
 	if err != nil {
@@ -157,7 +155,7 @@ func (repo *blogRepo) DeleteComment(blogPost *models.BlogPost, commentID uint) e
 }
 
 // UpdateComment implements domain.BlogRepository.
-func (repo *blogRepo) UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error {
+func (repo *blogRepo) UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
 	var existingComment models.Comment
 	err := repo.d.Where("id = ? AND blog_post_id = ?", comment.ID, blogPost.ID).First(&existingComment).Error
 	if err != nil {
