@@ -1,16 +1,16 @@
 package middlewares
 
 import (
-	"strings"
-	"net/http"
+	"Blog_API/pkg/config"
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
-	"Blog_API/pkg/config"
+	"net/http"
+	"strings"
 )
 
 func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(c echo.Context) error {
-		config:= config.LocalConfig
+		config := config.LocalConfig
 		// Get the Authorization header
 		authHeader := c.Request().Header.Get("Authorization")
 		// Check if the Authorization header is provided
