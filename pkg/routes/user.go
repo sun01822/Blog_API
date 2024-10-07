@@ -26,7 +26,8 @@ func (u *userRoutes) InitUserRoutes() {
 func (u *userRoutes) initUserRoutes(e *echo.Echo) {
 
 	// group the routes
-	version := e.Group("/blog_api/v1")
+	common := e.Group("blog_api")
+	version := common.Group("/v1")
 
 	user := version.Group("/user")
 
