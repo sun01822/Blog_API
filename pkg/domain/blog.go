@@ -7,18 +7,18 @@ import (
 
 // For database Repository opearation (call from service)
 type BlogRepository interface {
-	CreateBlogPost(blogPost *models.BlogPost) error
-	GetBlogPost(id uint) (models.BlogPost, error)
-	GetBlogPosts() ([]models.BlogPost, error)
-	GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
-	UpdateBlogPost(blogPost *models.BlogPost) error
-	DeleteBlogPost(id uint) error
-	AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error)
-	AddComment(blogPost *models.BlogPost, comment *models.Comment) error
-	GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
-	GetComments(blogPost *models.BlogPost) ([]models.Comment, error)
-	DeleteComment(blogPost *models.BlogPost, commentID uint) error
-	UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error
+	CreateBlogPostRepo(blogPost *models.BlogPost) error
+	GetBlogPostRepo(id uint) (models.BlogPost, error)
+	GetBlogPostsRepo() ([]models.BlogPost, error)
+	GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error)
+	UpdateBlogPostRepo(blogPost *models.BlogPost) error
+	DeleteBlogPostRepo(id uint) error
+	AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error)
+	AddCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error
+	GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
+	GetCommentsRepo(blogPost *models.BlogPost) ([]models.Comment, error)
+	DeleteCommentRepo(blogPost *models.BlogPost, commentID uint) error
+	UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error
 }
 
 // For service operation (call from controller)
@@ -52,5 +52,3 @@ type BlogController interface {
 	DeleteComment(c echo.Context) error
 	UpdateComment(c echo.Context) error
 }
-
-

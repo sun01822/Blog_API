@@ -19,7 +19,7 @@ func NewBlogService(repo domain.BlogRepository) domain.BlogService {
 
 // CreateBlogPost implements domain.BlogService.
 func (svc *blogService) CreateBlogPost(blogPost *models.BlogPost) error {
-	if err := svc.repo.CreateBlogPost(blogPost); err != nil {
+	if err := svc.repo.CreateBlogPostRepo(blogPost); err != nil {
 		return err
 	}
 	return nil
@@ -27,7 +27,7 @@ func (svc *blogService) CreateBlogPost(blogPost *models.BlogPost) error {
 
 // GetBlogPost implements domain.BlogService.
 func (svc *blogService) GetBlogPost(id uint) (models.BlogPost, error) {
-	blogPost, err := svc.repo.GetBlogPost(id)
+	blogPost, err := svc.repo.GetBlogPostRepo(id)
 	if err != nil {
 		return blogPost, err
 	}
@@ -36,7 +36,7 @@ func (svc *blogService) GetBlogPost(id uint) (models.BlogPost, error) {
 
 // GetBlogPosts implements domain.BlogService.
 func (svc *blogService) GetBlogPosts() ([]models.BlogPost, error) {
-	blogPosts, err := svc.repo.GetBlogPosts()
+	blogPosts, err := svc.repo.GetBlogPostsRepo()
 	if err != nil {
 		return blogPosts, err
 	}
@@ -45,7 +45,7 @@ func (svc *blogService) GetBlogPosts() ([]models.BlogPost, error) {
 
 // GetBlogPosts implements domain.BlogService.
 func (svc *blogService) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error) {
-	blogPosts, err := svc.repo.GetBlogPostsOfUser(userID)
+	blogPosts, err := svc.repo.GetBlogPostsOfUserRepo(userID)
 	if err != nil {
 		return blogPosts, err
 	}
@@ -54,7 +54,7 @@ func (svc *blogService) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, erro
 
 // UpdateBlogPost implements domain.BlogService.
 func (svc *blogService) UpdateBlogPost(blogPost *models.BlogPost) error {
-	if err := svc.repo.UpdateBlogPost(blogPost); err != nil {
+	if err := svc.repo.UpdateBlogPostRepo(blogPost); err != nil {
 		return err
 	}
 	return nil
@@ -62,7 +62,7 @@ func (svc *blogService) UpdateBlogPost(blogPost *models.BlogPost) error {
 
 // DeleteBlogPost implements domain.BlogService.
 func (svc *blogService) DeleteBlogPost(id uint) error {
-	if err := svc.repo.DeleteBlogPost(id); err != nil {
+	if err := svc.repo.DeleteBlogPostRepo(id); err != nil {
 		return err
 	}
 	return nil
@@ -70,7 +70,7 @@ func (svc *blogService) DeleteBlogPost(id uint) error {
 
 // AddAndRemoveLike implements domain.BlogService.
 func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
-	s, err := svc.repo.AddAndRemoveLike(blogPost, userID)
+	s, err := svc.repo.AddAndRemoveLikeRepo(blogPost, userID)
 	if err != nil {
 		return s, err
 	}
@@ -79,7 +79,7 @@ func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint)
 
 // AddComment implements domain.BlogService.
 func (svc *blogService) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {
-	if err := svc.repo.AddComment(blogPost, comment); err != nil {
+	if err := svc.repo.AddCommentRepo(blogPost, comment); err != nil {
 		return err
 	}
 	return nil
@@ -87,7 +87,7 @@ func (svc *blogService) AddComment(blogPost *models.BlogPost, comment *models.Co
 
 // GetCommentByUserID implements domain.BlogService.
 func (svc *blogService) GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
-	comment, err := svc.repo.GetCommentByUserID(blogPost, commentID)
+	comment, err := svc.repo.GetCommentByUserIDRepo(blogPost, commentID)
 	if err != nil {
 		return comment, err
 	}
@@ -96,7 +96,7 @@ func (svc *blogService) GetCommentByUserID(blogPost *models.BlogPost, commentID 
 
 // GetComments implements domain.BlogService.
 func (svc *blogService) GetComments(blogPost *models.BlogPost) ([]models.Comment, error) {
-	comments, err := svc.repo.GetComments(blogPost)
+	comments, err := svc.repo.GetCommentsRepo(blogPost)
 	if err != nil {
 		return comments, err
 	}
@@ -105,7 +105,7 @@ func (svc *blogService) GetComments(blogPost *models.BlogPost) ([]models.Comment
 
 // DeleteComment implements domain.BlogService.
 func (svc *blogService) DeleteComment(blogPost *models.BlogPost, commentID uint) error {
-	if err := svc.repo.DeleteComment(blogPost, commentID); err != nil {
+	if err := svc.repo.DeleteCommentRepo(blogPost, commentID); err != nil {
 		return err
 	}
 	return nil
@@ -113,7 +113,7 @@ func (svc *blogService) DeleteComment(blogPost *models.BlogPost, commentID uint)
 
 // UpdateComment implements domain.BlogService.
 func (svc *blogService) UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error {
-	if err := svc.repo.UpdateComment(blogPost, comment); err != nil {
+	if err := svc.repo.UpdateCommentRepo(blogPost, comment); err != nil {
 		return err
 	}
 	return nil
