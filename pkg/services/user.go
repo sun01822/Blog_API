@@ -21,7 +21,7 @@ func NewUserService(repo domain.UserRepository) domain.UserService {
 
 // Login implements domain.UserService.
 func (svc *userService) Login(email string, password string) error {
-	if err := svc.repo.Login(email, password); err != nil {
+	if err := svc.repo.LoginRepo(email, password); err != nil {
 		return errors.New("Log in Failed")
 	}
 	return nil
@@ -29,7 +29,7 @@ func (svc *userService) Login(email string, password string) error {
 
 // CreateUser implements domain.UserService.
 func (svc *userService) CreateUser(user *models.User) error {
-	if err := svc.repo.CreateUser(user); err != nil {
+	if err := svc.repo.CreateUserRepo(user); err != nil {
 		return err
 	}
 	return nil
@@ -37,7 +37,7 @@ func (svc *userService) CreateUser(user *models.User) error {
 
 // DeleteUser implements domain.UserService.
 func (svc *userService) DeleteUser(id uint) error {
-	if err := svc.repo.DeleteUser(id); err != nil {
+	if err := svc.repo.DeleteUserRepo(id); err != nil {
 		return err
 	}
 	return nil
@@ -45,7 +45,7 @@ func (svc *userService) DeleteUser(id uint) error {
 
 // GetUser implements domain.UserService.
 func (svc *userService) GetUser(id uint) (models.User, error) {
-	user, err := svc.repo.GetUser(id)
+	user, err := svc.repo.GetUserRepo(id)
 	if err != nil {
 		return user, err
 	}
@@ -54,7 +54,7 @@ func (svc *userService) GetUser(id uint) (models.User, error) {
 
 // GetUsers implements domain.UserService.
 func (svc *userService) GetUsers(pagination *utils.Page) ([]models.User, error) {
-	users, err := svc.repo.GetUsers(pagination)
+	users, err := svc.repo.GetUsersRepo(pagination)
 	if err != nil {
 		return users, err
 	}
@@ -63,7 +63,7 @@ func (svc *userService) GetUsers(pagination *utils.Page) ([]models.User, error) 
 
 // UpdateUser implements domain.UserService.
 func (svc *userService) UpdateUser(user *models.User) error {
-	if err := svc.repo.UpdateUser(user); err != nil {
+	if err := svc.repo.UpdateUserRepo(user); err != nil {
 		return err
 	}
 	return nil

@@ -8,15 +8,15 @@ import (
 
 // For database Repository opearation (call from service)
 type UserRepository interface {
-	Login(email string, password string) error
-	CreateUser(user *models.User) error
-	GetUser(id uint) (models.User, error)
-	GetUsers(pagination *utils.Page) ([]models.User, error)
-	UpdateUser(user *models.User) error
-	DeleteUser(id uint) error
+	LoginRepo(email string, password string) error
+	CreateUserRepo(user *models.User) error
+	GetUserRepo(id uint) (models.User, error)
+	GetUsersRepo(pagination *utils.Page) ([]models.User, error)
+	UpdateUserRepo(user *models.User) error
+	DeleteUserRepo(id uint) error
 }
 
-// For service operation (call from controller)	
+// For service operation (call from controller)
 type UserService interface {
 	Login(email string, password string) error
 	CreateUser(user *models.User) error
@@ -35,4 +35,3 @@ type UserController interface {
 	UpdateUser(c echo.Context) error
 	DeleteUser(c echo.Context) error
 }
-
