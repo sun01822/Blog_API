@@ -42,7 +42,7 @@ func (repo *userRepo) CreateUser(user *models.User) error {
 
 	existingErr := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
 	if existingErr == nil {
-		return errors.New("User already exists with same email")
+		return errors.New("user already exists with same email")
 	}
 
 	// Hash the user password
@@ -66,11 +66,11 @@ func (repo *userRepo) DeleteUserRepo(id uint) error {
 }
 
 // GetUser implements domain.UserRepository.
-func (repo *userRepo) GetUserRepo(id uint) (models.User, error) {
+func (repo *userRepo) GetUser(id uint) (models.User, error) {
 	var user models.User
-	err := repo.d.Where("id = ?", id).First(&user).Error
-	if err != nil {
-		return user, err
+	respErr := repo.d.Where("id = ?", id).First(&user).Error
+	if respErr != nil {
+		return user, respErr
 	}
 	return user, nil
 }

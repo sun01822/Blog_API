@@ -65,9 +65,9 @@ func (svc *userService) DeleteUser(id uint) error {
 
 // GetUser implements domain.UserService.
 func (svc *userService) GetUser(id uint) (models.User, error) {
-	user, err := svc.repo.GetUserRepo(id)
-	if err != nil {
-		return user, err
+	user, userErr := svc.repo.GetUser(id)
+	if userErr != nil {
+		return user, userErr
 	}
 	return user, nil
 }

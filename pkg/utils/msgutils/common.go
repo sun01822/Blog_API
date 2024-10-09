@@ -45,8 +45,8 @@ func SuccessResponse(data interface{}) Data {
 	return NewMessage().Set("message", data).Done()
 }
 
-func InvalidDataRequestMsg() Data {
-	return NewMessage().Set("message", "invalid data request").Done()
+func InvalidDataRequestMsg(err error) Data {
+	return NewMessage().Set("message", err.Error()).Done()
 }
 
 func ValidationErrorMsg(err error) Data {
@@ -55,4 +55,8 @@ func ValidationErrorMsg(err error) Data {
 
 func ErrorMsg(err error) Data {
 	return NewMessage().Set("message", err.Error()).Done()
+}
+
+func Message(msg string) Data {
+	return NewMessage().Set("message", msg).Done()
 }

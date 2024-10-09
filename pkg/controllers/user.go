@@ -71,8 +71,8 @@ func (ctr *userController) Login(c echo.Context) error {
 // CreateUser implements domain.UserController.
 func (ctr *userController) CreateUser(c echo.Context) error {
 	reqUser := &types.SignUpRequest{}
-	if err := c.Bind(reqUser); err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid data request")
+	if bindErr := c.Bind(reqUser); bindErr != nil {
+		return c.JSON(http.StatusBadRequest, msgutils.InvalidDataRequestMsg(bindErr))
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
@@ -109,34 +109,40 @@ func (ctr *userController) DeleteUser(c echo.Context) error {
 }
 
 func (ctr *userController) GetUser(c echo.Context) error {
-	tempUserId := c.Param("userID")
-	userId, err := strconv.Atoi(tempUserId)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid user id")
+	tempUserId := c.QueryParam("userID")
+
+	userId, parseErr := strconv.Atoi(tempUserId)
+	if parseErr != nil {
+		return c.JSON(http.StatusBadRequest, msgutils.Message("invalid user id"))
 	}
-	user, err := ctr.svc.GetUser(uint(userId))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+
+	getUser, getUserErr := ctr.svc.GetUser(uint(userId))
+	if getUserErr != nil {
+		return c.JSON(http.StatusInternalServerError, msgutils.ErrorMsg(getUserErr))
 	}
-	return c.JSON(http.StatusOK, user)
+
+	return c.JSON(http.StatusOK, getUser)
 }
 
 // GetUsers implements domain.UserController.
 func (ctr *userController) GetUsers(c echo.Context) error {
 	page := &utils.Page{}
-	pageInfo, err := page.GetPageInformation(c)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+	pageInfo, pageInfoErr := page.GetPageInformation(c)
+	if pageInfoErr != nil {
+		return c.JSON(http.StatusBadRequest, msgutils.InvalidDataRequestMsg(pageInfoErr))
 	}
+
 	fmt.Println(
 		"Offset: ", *pageInfo.Offset,
 		"Limit: ", *pageInfo.Limit,
 	)
+
 	users, err := ctr.svc.GetUsers(pageInfo)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
-	return c.JSON(http.StatusOK, users)
+
+	return c.JSON(http.StatusOK, msgutils.SuccessResponse(users))
 }
 
 // UpdateUser implements domain.UserController.
