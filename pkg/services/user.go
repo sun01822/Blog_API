@@ -3,6 +3,7 @@ package services
 import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
+	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils"
 	"errors"
 )
@@ -28,8 +29,27 @@ func (svc *userService) Login(email string, password string) error {
 }
 
 // CreateUser implements domain.UserService.
-func (svc *userService) CreateUser(user *models.User) error {
-	if err := svc.repo.CreateUserRepo(user); err != nil {
+func (svc *userService) CreateUser(reqUser *types.SignUpRequest) error {
+	user := &models.User{
+		Email:          reqUser.Email,
+		Password:       reqUser.Password,
+		Gender:         reqUser.Gender,
+		DateOfBirth:    reqUser.DateOfBirth,
+		Job:            reqUser.Job,
+		City:           reqUser.City,
+		ZipCode:        reqUser.ZipCode,
+		ProfilePicture: reqUser.ProfilePicture,
+		FirstName:      reqUser.FirstName,
+		LastName:       reqUser.LastName,
+		Phone:          reqUser.Phone,
+		Street:         reqUser.Street,
+		State:          reqUser.State,
+		Country:        reqUser.Country,
+		Latitude:       reqUser.Latitude,
+		Longitude:      reqUser.Longitude,
+	}
+
+	if err := svc.repo.CreateUser(user); err != nil {
 		return err
 	}
 	return nil

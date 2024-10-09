@@ -6,6 +6,7 @@ import (
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils"
+	"Blog_API/pkg/utils/msgutils"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -67,40 +68,24 @@ func (ctr *userController) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, tokenString)
 }
 
-
 // CreateUser implements domain.UserController.
 func (ctr *userController) CreateUser(c echo.Context) error {
 	reqUser := &types.SignUpRequest{}
 	if err := c.Bind(reqUser); err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	if err := reqUser.Validate(); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-	user := &models.User{
-		Email 			: reqUser.Email,
-		Password 		: reqUser.Password,
-		Gender  		: reqUser.Gender,  
-		DateOfBirth 	: reqUser.DateOfBirth,    
-		Job				: reqUser.Job,            
-		City        	: reqUser.City,  
-		ZipCode     	: reqUser.ZipCode,   
-		ProfilePicture 	: reqUser.ProfilePicture,
-		FirstName       : reqUser.FirstName,      
-		LastName        : reqUser.LastName,    
-		Phone           : reqUser.Phone, 
-		Street       	: reqUser.Street, 
-		State           : reqUser.State,
-		Country         : reqUser.Country,
-		Latitude      	: reqUser.Latitude,
-		Longitude     	: reqUser.Longitude,
-	}
-	if err := ctr.svc.CreateUser(user); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusCreated, "User created successfully")
-}
 
+	if validationErr := reqUser.Validate(); validationErr != nil {
+		return c.JSON(http.StatusBadRequest, msgutils.ValidationErrorMsg(validationErr))
+	}
+
+	if respErr := ctr.svc.CreateUser(reqUser); respErr != nil {
+		return c.JSON(http.StatusInternalServerError, msgutils.ErrorMsg(respErr))
+	}
+
+	return c.JSON(http.StatusCreated, msgutils.SuccessResponse(
+		"user created successfully"))
+}
 
 // DeleteUser implements domain.UserController.
 func (ctr *userController) DeleteUser(c echo.Context) error {
@@ -173,27 +158,27 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	user := &models.User{
-		Model: gorm.Model{ID: uint(userId), CreatedAt: existingUser.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingUser.DeletedAt},
-		Password 		: reqUser.Password,
-		Gender  		: reqUser.Gender,  
-		DateOfBirth 	: reqUser.DateOfBirth,    
-		Job				: reqUser.Job,            
-		City        	: reqUser.City,  
-		ZipCode     	: reqUser.ZipCode,   
-		ProfilePicture 	: reqUser.ProfilePicture,
-		FirstName       : reqUser.FirstName,      
-		LastName        : reqUser.LastName,    
-		Phone           : reqUser.Phone, 
-		Street       	: reqUser.Street, 
-		State           : reqUser.State,
-		Country         : reqUser.Country,
-		Latitude      	: reqUser.Latitude,
-		Longitude     	: reqUser.Longitude,
+		Model:          gorm.Model{ID: uint(userId), CreatedAt: existingUser.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingUser.DeletedAt},
+		Password:       reqUser.Password,
+		Gender:         reqUser.Gender,
+		DateOfBirth:    reqUser.DateOfBirth,
+		Job:            reqUser.Job,
+		City:           reqUser.City,
+		ZipCode:        reqUser.ZipCode,
+		ProfilePicture: reqUser.ProfilePicture,
+		FirstName:      reqUser.FirstName,
+		LastName:       reqUser.LastName,
+		Phone:          reqUser.Phone,
+		Street:         reqUser.Street,
+		State:          reqUser.State,
+		Country:        reqUser.Country,
+		Latitude:       reqUser.Latitude,
+		Longitude:      reqUser.Longitude,
 	}
 	user.Email = existingUser.Email
 	if reqUser.Password != "" {
 		user.Password = utils.HashPassword(reqUser.Password)
-	}else if reqUser.Password == "" {
+	} else if reqUser.Password == "" {
 		user.Password = existingUser.Password
 	}
 	if user.FirstName == "" {
@@ -238,7 +223,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	if user.ZipCode == "" {
 		user.ZipCode = existingUser.ZipCode
 	}
-	
+
 	if err := ctr.svc.UpdateUser(user); err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}

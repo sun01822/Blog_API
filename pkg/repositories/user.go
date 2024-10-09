@@ -36,20 +36,21 @@ func (repo *userRepo) LoginRepo(email string, password string) error {
 }
 
 // CreateUser implements domain.UserRepository.
-func (repo *userRepo) CreateUserRepo(user *models.User) error {
+func (repo *userRepo) CreateUser(user *models.User) error {
 	userEmail := user.Email
 	var existingUser models.User
-	err := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
-	if err == nil {
+
+	existingErr := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
+	if existingErr == nil {
 		return errors.New("User already exists with same email")
 	}
 
 	// Hash the user password
 	user.Password = utils.HashPassword(user.Password)
 
-	err2 := repo.d.Create(user).Error
-	if err2 != nil {
-		return err2
+	createErr := repo.d.Create(user).Error
+	if createErr != nil {
+		return createErr
 	}
 	return nil
 }

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"Blog_API/pkg/models"
+	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils"
 	"github.com/labstack/echo/v4"
 )
@@ -9,7 +10,7 @@ import (
 // For database Repository opearation (call from service)
 type UserRepository interface {
 	LoginRepo(email string, password string) error
-	CreateUserRepo(user *models.User) error
+	CreateUser(user *models.User) error
 	GetUserRepo(id uint) (models.User, error)
 	GetUsersRepo(pagination *utils.Page) ([]models.User, error)
 	UpdateUserRepo(user *models.User) error
@@ -19,7 +20,7 @@ type UserRepository interface {
 // For service operation (call from controller)
 type UserService interface {
 	Login(email string, password string) error
-	CreateUser(user *models.User) error
+	CreateUser(user *types.SignUpRequest) error
 	GetUser(id uint) (models.User, error)
 	GetUsers(pagination *utils.Page) ([]models.User, error)
 	UpdateUser(user *models.User) error
