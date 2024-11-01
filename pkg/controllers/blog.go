@@ -4,23 +4,23 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
+	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 	"net/http"
 	"strconv"
 	"time"
-	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 // Parent struct to implement interface binding
 type blogController struct {
-	svc domain.BlogService
+	svc  domain.BlogService
 	svc2 domain.UserService
 }
 
 // Interface binding
 func NewBlogController(svc domain.BlogService, svc2 domain.UserService) domain.BlogController {
 	return &blogController{
-		svc: svc,
+		svc:  svc,
 		svc2: svc2,
 	}
 }
@@ -32,10 +32,10 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 	if err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
 	}
-	_, err = ctr.svc2.GetUser(uint(userID))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "User not found")
-	}
+	//_, err = ctr.svc2.GetUser(uint(userID))
+	//if err != nil {
+	//	return c.JSON(http.StatusBadRequest, "User not found")
+	//}
 	reqBlogPost := &types.BlogPostRequest{}
 	if err := c.Bind(reqBlogPost); err != nil {
 		return c.JSON(http.StatusBadRequest, "Invalid data request")
@@ -45,14 +45,14 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 	}
 	currentTime := time.Now()
 	blog := &models.BlogPost{
-		UserID:       uint(userID),
-		Title:        reqBlogPost.Title,
-		ContentText:  reqBlogPost.ContentText,
-		PhotoURL:     reqBlogPost.PhotoURL,
-		Description:  reqBlogPost.Description,
-		Category:     reqBlogPost.Category,
-		IsPublished:  reqBlogPost.IsPublished,
-		PublishedAt:  &currentTime,
+		UserID:      uint(userID),
+		Title:       reqBlogPost.Title,
+		ContentText: reqBlogPost.ContentText,
+		PhotoURL:    reqBlogPost.PhotoURL,
+		Description: reqBlogPost.Description,
+		Category:    reqBlogPost.Category,
+		IsPublished: reqBlogPost.IsPublished,
+		PublishedAt: &currentTime,
 	}
 	if err := ctr.svc.CreateBlogPost(blog); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
@@ -81,7 +81,6 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, blogPosts)
 }
-
 
 // GetBlogPosts implements domain.BlogController.
 func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
@@ -120,18 +119,18 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		return c.JSON(http.StatusUnauthorized, "You are not authorized to update this blog post")
 	}
 	blog := &models.BlogPost{
-		Model: gorm.Model{ID: uint(existingBlogPost.ID), CreatedAt: existingBlogPost.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingBlogPost.DeletedAt},
-		Title:        blogPost.Title,
-		ContentText:  blogPost.ContentText,
-		PhotoURL:     blogPost.PhotoURL,
-		Description:  blogPost.Description,
-		Category:     blogPost.Category,
-		IsPublished: existingBlogPost.IsPublished,
-		PublishedAt: existingBlogPost.PublishedAt,
-		Likes: existingBlogPost.Likes,
-		UserID: uint(userID),
-		LikesCount: existingBlogPost.LikesCount,
-		Comments: existingBlogPost.Comments,
+		Model:         gorm.Model{ID: uint(existingBlogPost.ID), CreatedAt: existingBlogPost.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingBlogPost.DeletedAt},
+		Title:         blogPost.Title,
+		ContentText:   blogPost.ContentText,
+		PhotoURL:      blogPost.PhotoURL,
+		Description:   blogPost.Description,
+		Category:      blogPost.Category,
+		IsPublished:   existingBlogPost.IsPublished,
+		PublishedAt:   existingBlogPost.PublishedAt,
+		Likes:         existingBlogPost.Likes,
+		UserID:        uint(userID),
+		LikesCount:    existingBlogPost.LikesCount,
+		Comments:      existingBlogPost.Comments,
 		CommentsCount: existingBlogPost.CommentsCount,
 	}
 	if blog.Title == "" {
@@ -232,8 +231,8 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, "Blog post not found")
 	}
 	comment := &models.Comment{
-		Content:  reqComment.Content,
-		UserID:   uint(userID),
+		Content:    reqComment.Content,
+		UserID:     uint(userID),
 		BlogPostID: existingBlogPost.ID,
 	}
 	if err := ctr.svc.AddComment(&existingBlogPost, comment); err != nil {
@@ -266,7 +265,6 @@ func (ctr *blogController) GetCommentByUserID(c echo.Context) error {
 	}
 	return c.JSON(http.StatusOK, comment)
 }
-
 
 // GetComments implements domain.BlogController.
 func (ctr *blogController) GetComments(c echo.Context) error {
@@ -353,8 +351,8 @@ func (ctr *blogController) UpdateComment(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 	comment := &models.Comment{
-		Model: gorm.Model{ID: uint(commentID)},
-		Content:  reqComment.Content,
+		Model:   gorm.Model{ID: uint(commentID)},
+		Content: reqComment.Content,
 	}
 	if err := ctr.svc.UpdateComment(&existingBlogPost, comment); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())

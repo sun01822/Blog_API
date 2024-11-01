@@ -3,17 +3,14 @@ package controllers
 import (
 	"Blog_API/pkg/config"
 	"Blog_API/pkg/domain"
-	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
-	"Blog_API/pkg/utils"
-	"fmt"
+	"Blog_API/pkg/utils/consts/user"
+	"Blog_API/pkg/utils/response"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/golang-jwt/jwt"
 	"github.com/labstack/echo/v4"
-	"gorm.io/gorm"
 )
 
 // Parent struct to implement interface binding
@@ -22,7 +19,7 @@ type userController struct {
 }
 
 // Interface binding
-func NewUserController(svc domain.UserService) domain.UserController {
+func SetUserController(svc domain.UserService) domain.UserController {
 	return &userController{
 		svc: svc,
 	}
@@ -40,207 +37,206 @@ func NewUserController(svc domain.UserService) domain.UserController {
 // @Failure 401 {string} string "Invalid email or password"
 // @Router /user/login [post]
 // Login implements domain.UserController.
-func (ctr *userController) Login(c echo.Context) error {
-	config := config.LocalConfig
-	reqUser := &types.LoginRequest{}
-	if err := c.Bind(reqUser); err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid data request")
+func (ctr *userController) Login(ctx echo.Context) error {
+	conf := config.LocalConfig
+
+	reqUser := types.LoginRequest{}
+
+	if err := ctx.Bind(&reqUser); err != nil {
+		return response.ErrorResponse(ctx, err, userconsts.InvalidDataRequest)
 	}
-	if err := reqUser.Validate(); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+
+	if validationErr := reqUser.Validate(); validationErr != nil {
+		return response.ErrorResponse(ctx, validationErr, userconsts.ValidationError)
 	}
-	if err := ctr.svc.Login(reqUser.Email, reqUser.Password); err != nil {
-		return c.JSON(http.StatusUnauthorized, "Invalid email or password")
+
+	userID, loginErr := ctr.svc.Login(reqUser.Email, reqUser.Password)
+	if loginErr != nil {
+		return response.ErrorResponse(ctx, loginErr, userconsts.InvalidEmailOrPassword)
 	}
+
 	now := time.Now().UTC()
 	ttl := time.Minute * 15
-	claims := jwt.StandardClaims{
-		ExpiresAt: now.Add(ttl).Unix(),
-		IssuedAt:  now.Unix(),
-		NotBefore: now.Unix(),
+	claims := struct {
+		jwt.StandardClaims
+		UserID    string `json:"user_id"`
+		UserEmail string `json:"user_email"`
+	}{
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: now.Add(ttl).Unix(),
+			IssuedAt:  now.Unix(),
+			NotBefore: now.Unix(),
+		},
+		UserID:    userID,
+		UserEmail: reqUser.Email,
 	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte(config.JWTSecret))
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-	return c.JSON(http.StatusOK, tokenString)
-}
 
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	tokenString, tokenErr := token.SignedString([]byte(conf.JWTSecret))
+	if tokenErr != nil {
+		return response.ErrorResponse(ctx, tokenErr, userconsts.ErrorGeneratingToken)
+	}
+
+	return response.SuccessResponse(ctx, userconsts.LoginSuccessful, tokenString)
+}
 
 // CreateUser implements domain.UserController.
-func (ctr *userController) CreateUser(c echo.Context) error {
-	reqUser := &types.SignUpRequest{}
-	if err := c.Bind(reqUser); err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid data request")
+func (ctr *userController) CreateUser(ctx echo.Context) error {
+	reqUser := types.SignUpRequest{}
+
+	if err := ctx.Bind(&reqUser); err != nil {
+		return response.ErrorResponse(ctx, err, userconsts.InvalidDataRequest)
 	}
-	if err := reqUser.Validate(); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
+
+	if validationErr := reqUser.Validate(); validationErr != nil {
+		return ctx.JSON(http.StatusBadRequest, validationErr.Error())
 	}
-	user := &models.User{
-		Email 			: reqUser.Email,
-		Password 		: reqUser.Password,
-		Gender  		: reqUser.Gender,  
-		DateOfBirth 	: reqUser.DateOfBirth,    
-		Job				: reqUser.Job,            
-		City        	: reqUser.City,  
-		ZipCode     	: reqUser.ZipCode,   
-		ProfilePicture 	: reqUser.ProfilePicture,
-		FirstName       : reqUser.FirstName,      
-		LastName        : reqUser.LastName,    
-		Phone           : reqUser.Phone, 
-		Street       	: reqUser.Street, 
-		State           : reqUser.State,
-		Country         : reqUser.Country,
-		Latitude      	: reqUser.Latitude,
-		Longitude     	: reqUser.Longitude,
+
+	createdUser, createErr := ctr.svc.CreateUser(reqUser)
+	if createErr != nil {
+		return response.ErrorResponse(ctx, createErr, userconsts.ErrorCreatingUser)
 	}
-	if err := ctr.svc.CreateUser(user); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusCreated, "User created successfully")
+
+	return response.SuccessResponse(ctx, userconsts.UserCreatedSuccessfully, createdUser)
 }
 
+//// DeleteUser implements domain.UserController.
+//func (ctr *userController) DeleteUser(c echo.Context) error {
+//	tempUserId := c.Param("userID")
+//	userId, err := strconv.Atoi(tempUserId)
+//	if err != nil {
+//		return c.JSON(http.StatusBadRequest, "Invalid user id")
+//	}
+//
+//	existingUser, err := ctr.svc.GetUser(uint(userId))
+//	if err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	if existingUser.ID == "" {
+//		return c.JSON(http.StatusNotFound, "User not found")
+//	}
+//	if err := ctr.svc.DeleteUser(uint(userId)); err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	return c.JSON(http.StatusOK, "User deleted successfully")
+//}
 
-// DeleteUser implements domain.UserController.
-func (ctr *userController) DeleteUser(c echo.Context) error {
-	tempUserId := c.Param("userID")
-	userId, err := strconv.Atoi(tempUserId)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid user id")
-	}
-
-	existingUser, err := ctr.svc.GetUser(uint(userId))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	if existingUser.ID == 0 {
-		return c.JSON(http.StatusNotFound, "User not found")
-	}
-	if err := ctr.svc.DeleteUser(uint(userId)); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, "User deleted successfully")
-}
-
-func (ctr *userController) GetUser(c echo.Context) error {
-	tempUserId := c.Param("userID")
-	userId, err := strconv.Atoi(tempUserId)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid user id")
-	}
-	user, err := ctr.svc.GetUser(uint(userId))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, user)
-}
-
-// GetUsers implements domain.UserController.
-func (ctr *userController) GetUsers(c echo.Context) error {
-	page := &utils.Page{}
-	pageInfo, err := page.GetPageInformation(c)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-	fmt.Println(
-		"Offset: ", *pageInfo.Offset,
-		"Limit: ", *pageInfo.Limit,
-	)
-	users, err := ctr.svc.GetUsers(pageInfo)
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, users)
-}
-
-// UpdateUser implements domain.UserController.
-func (ctr *userController) UpdateUser(c echo.Context) error {
-	reqUser := &types.UserUpdateRequest{}
-	if err := c.Bind(reqUser); err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid data request")
-	}
-	if err := reqUser.Validate(); err != nil {
-		return c.JSON(http.StatusBadRequest, err.Error())
-	}
-	tempUserId := c.Param("userID")
-	userId, err := strconv.Atoi(tempUserId)
-	if err != nil {
-		return c.JSON(http.StatusBadRequest, "Invalid user id")
-	}
-	existingUser, err := ctr.svc.GetUser(uint(userId))
-	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	user := &models.User{
-		Model: gorm.Model{ID: uint(userId), CreatedAt: existingUser.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingUser.DeletedAt},
-		Password 		: reqUser.Password,
-		Gender  		: reqUser.Gender,  
-		DateOfBirth 	: reqUser.DateOfBirth,    
-		Job				: reqUser.Job,            
-		City        	: reqUser.City,  
-		ZipCode     	: reqUser.ZipCode,   
-		ProfilePicture 	: reqUser.ProfilePicture,
-		FirstName       : reqUser.FirstName,      
-		LastName        : reqUser.LastName,    
-		Phone           : reqUser.Phone, 
-		Street       	: reqUser.Street, 
-		State           : reqUser.State,
-		Country         : reqUser.Country,
-		Latitude      	: reqUser.Latitude,
-		Longitude     	: reqUser.Longitude,
-	}
-	user.Email = existingUser.Email
-	if reqUser.Password != "" {
-		user.Password = utils.HashPassword(reqUser.Password)
-	}else if reqUser.Password == "" {
-		user.Password = existingUser.Password
-	}
-	if user.FirstName == "" {
-		user.FirstName = existingUser.FirstName
-	}
-	if user.LastName == "" {
-		user.LastName = existingUser.LastName
-	}
-	if user.City == "" {
-		user.City = existingUser.City
-	}
-	if user.Country == "" {
-		user.Country = existingUser.Country
-	}
-	if user.DateOfBirth == nil {
-		user.DateOfBirth = existingUser.DateOfBirth
-	}
-	if user.Gender == "" {
-		user.Gender = existingUser.Gender
-	}
-	if user.Job == "" {
-		user.Job = existingUser.Job
-	}
-	if user.Latitude == 0 {
-		user.Latitude = existingUser.Latitude
-	}
-	if user.Longitude == 0 {
-		user.Longitude = existingUser.Longitude
-	}
-	if user.Phone == "" {
-		user.Phone = existingUser.Phone
-	}
-	if user.ProfilePicture == "" {
-		user.ProfilePicture = existingUser.ProfilePicture
-	}
-	if user.State == "" {
-		user.State = existingUser.State
-	}
-	if user.Street == "" {
-		user.Street = existingUser.Street
-	}
-	if user.ZipCode == "" {
-		user.ZipCode = existingUser.ZipCode
-	}
-	
-	if err := ctr.svc.UpdateUser(user); err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
-	}
-	return c.JSON(http.StatusOK, "User updated successfully")
-}
+//func (ctr *userController) GetUser(c echo.Context) error {
+//	tempUserId := c.Param("userID")
+//	userId, err := strconv.Atoi(tempUserId)
+//	if err != nil {
+//		return c.JSON(http.StatusBadRequest, "Invalid user id")
+//	}
+//	user, err := ctr.svc.GetUser(uint(userId))
+//	if err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	return c.JSON(http.StatusOK, user)
+//}
+//
+//// GetUsers implements domain.UserController.
+//func (ctr *userController) GetUsers(c echo.Context) error {
+//	page := &utils.Page{}
+//	pageInfo, err := page.GetPageInformation(c)
+//	if err != nil {
+//		return c.JSON(http.StatusBadRequest, err.Error())
+//	}
+//	fmt.Println(
+//		"Offset: ", *pageInfo.Offset,
+//		"Limit: ", *pageInfo.Limit,
+//	)
+//	users, err := ctr.svc.GetUsers(pageInfo)
+//	if err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	return c.JSON(http.StatusOK, users)
+//}
+//
+//// UpdateUser implements domain.UserController.
+//func (ctr *userController) UpdateUser(c echo.Context) error {
+//	reqUser := &types.UserUpdateRequest{}
+//	if err := c.Bind(reqUser); err != nil {
+//		return c.JSON(http.StatusBadRequest, "Invalid data request")
+//	}
+//	if err := reqUser.Validate(); err != nil {
+//		return c.JSON(http.StatusBadRequest, err.Error())
+//	}
+//	tempUserId := c.Param("userID")
+//	userId, err := strconv.Atoi(tempUserId)
+//	if err != nil {
+//		return c.JSON(http.StatusBadRequest, "Invalid user id")
+//	}
+//	existingUser, err := ctr.svc.GetUser(uint(userId))
+//	if err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	user := &models.User{
+//		ID:             existingUser.ID,
+//		CreatedAt:      existingUser.CreatedAt,
+//		UpdatedAt:      existingUser.UpdatedAt,
+//		DeletedAt:      existingUser.DeletedAt,
+//		Email:          existingUser.Email,
+//		Gender:         reqUser.Gender,
+//		DateOfBirth:    reqUser.DateOfBirth,
+//		Job:            reqUser.Job,
+//		City:           reqUser.City,
+//		ZipCode:        reqUser.ZipCode,
+//		ProfilePicture: reqUser.ProfilePicture,
+//		FirstName:      reqUser.FirstName,
+//		LastName:       reqUser.LastName,
+//		Phone:          reqUser.Phone,
+//		Street:         reqUser.Street,
+//		State:          reqUser.State,
+//		Country:        reqUser.Country,
+//		Latitude:       reqUser.Latitude,
+//		Longitude:      reqUser.Longitude,
+//	}
+//	user.Email = existingUser.Email
+//	if user.FirstName == "" {
+//		user.FirstName = existingUser.FirstName
+//	}
+//	if user.LastName == "" {
+//		user.LastName = existingUser.LastName
+//	}
+//	if user.City == "" {
+//		user.City = existingUser.City
+//	}
+//	if user.Country == "" {
+//		user.Country = existingUser.Country
+//	}
+//	if user.DateOfBirth == nil {
+//		user.DateOfBirth = existingUser.DateOfBirth
+//	}
+//	if user.Gender == "" {
+//		user.Gender = existingUser.Gender
+//	}
+//	if user.Job == "" {
+//		user.Job = existingUser.Job
+//	}
+//	if user.Latitude == 0 {
+//		user.Latitude = existingUser.Latitude
+//	}
+//	if user.Longitude == 0 {
+//		user.Longitude = existingUser.Longitude
+//	}
+//	if user.Phone == "" {
+//		user.Phone = existingUser.Phone
+//	}
+//	if user.ProfilePicture == "" {
+//		user.ProfilePicture = existingUser.ProfilePicture
+//	}
+//	if user.State == "" {
+//		user.State = existingUser.State
+//	}
+//	if user.Street == "" {
+//		user.Street = existingUser.Street
+//	}
+//	if user.ZipCode == "" {
+//		user.ZipCode = existingUser.ZipCode
+//	}
+//
+//	if err := ctr.svc.UpdateUser(user); err != nil {
+//		return c.JSON(http.StatusInternalServerError, err.Error())
+//	}
+//	return c.JSON(http.StatusOK, "User updated successfully")
+//}
