@@ -7,6 +7,37 @@ definitions:
       password:
         type: string
     type: object
+  types.SignUpRequest:
+    properties:
+      country:
+        default: Bangladesh
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      password:
+        type: string
+      phone:
+        type: string
+    type: object
+  types.UserResp:
+    properties:
+      country:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      gender:
+        type: string
+      id:
+        type: string
+      phone:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -21,6 +52,36 @@ info:
   title: Blog API
   version: "1.0"
 paths:
+  /user/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: User Request
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/types.SignUpRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User created successfully
+          schema:
+            $ref: '#/definitions/types.UserResp'
+        "400":
+          description: Invalid data request
+          schema:
+            type: string
+        "500":
+          description: Error creating user
+          schema:
+            type: string
+      summary: Create a new user
+      tags:
+      - user
   /user/login:
     post:
       consumes:
