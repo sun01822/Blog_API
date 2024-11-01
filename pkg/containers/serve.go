@@ -14,34 +14,30 @@ import (
 )
 
 // Serve is a function that returns a new instance of echo.Echo
-func Serve(e *echo.Echo)  {
+func Serve(e *echo.Echo) {
 
-	// Config initalization
+	// Config initialization
 	config.SetConfig()
 
+	// Database initialization
+	db := connection.GetDB()
 
-	// Database initalization
-	db:= connection.GetDB()
-
-	// Repository initalization
+	// Repository initialization
 	userRepo := repositories.NewUserRepo(db)
 	blogRepo := repositories.NewBlogRepo(db)
 
-	// Service initalization
+	// Service initialization
 	userService := services.NewUserService(userRepo)
 	blogService := services.NewBlogService(blogRepo)
 
-	// Controller initalization
+	// Controller initialization
 	userController := controllers.NewUserController(userService)
-	blogController := controllers.NewBlogController(blogService,userService)
-
+	blogController := controllers.NewBlogController(blogService, userService)
 
 	user := routes.NewUserRoutes(e, userController)
 	user.InitUserRoutes()
 	blog := routes.NewBlogRoutes(e, blogController)
 	blog.InitBlogRoutes()
-
-
 
 	// Starting Server
 	log.Fatal(e.Start(fmt.Sprintf(":%s", config.LocalConfig.Port)))
