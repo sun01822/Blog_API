@@ -81,6 +81,16 @@ func (ctr *userController) Login(ctx echo.Context) error {
 }
 
 // CreateUser implements domain.UserController.
+// @Summary Create a new user
+// @Description Create a new user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user body types.SignUpRequest true "User Request"
+// @Success 200 {object} types.UserResp "User created successfully"
+// @Failure 400 {string} string "Invalid data request"
+// @Failure 500 {string} string "Error creating user"
+// @Router /user/create [post]
 func (ctr *userController) CreateUser(ctx echo.Context) error {
 	reqUser := types.SignUpRequest{}
 
