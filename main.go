@@ -3,11 +3,11 @@ package main
 import (
 	_ "Blog_API/docs"
 	"Blog_API/pkg/containers"
+	"Blog_API/pkg/utils/response"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 	m "github.com/labstack/echo/v4/middleware"
 	echoSwagger "github.com/swaggo/echo-swagger"
-	"net/http"
 )
 
 // swagger docs
@@ -34,8 +34,8 @@ func main() {
 	e.Use(m.Recover())
 
 	e.GET("/swagger/*", echoSwagger.WrapHandler)
-	e.GET("/health", func(c echo.Context) error {
-		return c.String(http.StatusOK, "I am alive!!!")
+	e.GET("/h3a1t5", func(c echo.Context) error {
+		return response.SuccessResponse(c, "Health Check", "Server is running")
 	})
 	containers.Serve(e)
 }

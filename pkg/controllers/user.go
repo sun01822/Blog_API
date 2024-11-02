@@ -6,6 +6,7 @@ import (
 	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
+	"github.com/google/uuid"
 	"net/http"
 	"time"
 
@@ -38,6 +39,7 @@ func SetUserController(svc domain.UserService) domain.UserController {
 // @Router /user/login [post]
 // Login implements domain.UserController.
 func (ctr *userController) Login(ctx echo.Context) error {
+
 	conf := config.LocalConfig
 
 	reqUser := types.LoginRequest{}
@@ -92,6 +94,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 // @Failure 500 {string} string "Error creating user"
 // @Router /user/create [post]
 func (ctr *userController) CreateUser(ctx echo.Context) error {
+
 	reqUser := types.SignUpRequest{}
 
 	if err := ctx.Bind(&reqUser); err != nil {
@@ -131,18 +134,21 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 //	return c.JSON(http.StatusOK, "User deleted successfully")
 //}
 
-//func (ctr *userController) GetUser(c echo.Context) error {
-//	tempUserId := c.Param("userID")
-//	userId, err := strconv.Atoi(tempUserId)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid user id")
-//	}
-//	user, err := ctr.svc.GetUser(uint(userId))
-//	if err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, user)
-//}
+func (ctr *userController) GetUser(c echo.Context) error {
+
+	reqUserID, parseErr := uuid.Parse(c.QueryParam(userconsts.UserID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+	}
+
+	user, err := ctr.svc.GetUser(reqUserID.String())
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.ErrorGettingUser)
+	}
+
+	return response.SuccessResponse(c, userconsts.UserFoundSuccessfully, user)
+}
+
 //
 //// GetUsers implements domain.UserController.
 //func (ctr *userController) GetUsers(c echo.Context) error {

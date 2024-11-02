@@ -10,4 +10,13 @@ const (
 	ErrorCreatingUser       = "error creating user"
 	UserEmailAlreadyExists  = "user email already exists"
 	UserCreatedSuccessfully = "user created successfully"
+	ErrorGettingUser        = "error getting user"
+)
+
+const (
+	UserFoundSuccessfully = "user found successfully"
+)
+
+const (
+	UserID = "user_id"
 )

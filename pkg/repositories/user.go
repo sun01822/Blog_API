@@ -23,24 +23,26 @@ func NewUserRepo(db *gorm.DB) domain.UserRepository {
 
 // Login implements domain.UserRepository.
 func (repo *userRepo) Login(email string, password string) (string, error) {
-	// Find the user by user_name
+
 	var existingUser models.User
+
 	if err := repo.d.Where("email = ?", email).First(&existingUser).Error; err != nil {
 		return "", err
 	}
-	// Compare the stored hashed password, with the hashed version of the password that was received
+
 	if err := utils.ComparePassword(existingUser.Password, password); err != nil {
 		return "", err
 	}
-	// Otherwise, we are good to go, so return a nil error.
+
 	return existingUser.ID, nil
 }
 
 // CreateUser implements domain.UserRepository.
 func (repo *userRepo) CreateUser(user models.User) error {
-	userEmail := user.Email
 
 	var existingUser models.User
+	userEmail := user.Email
+
 	err := repo.d.Where("email = ?", userEmail).First(&existingUser).Error
 	if err == nil {
 		return errors.New(userconsts.UserEmailAlreadyExists)
@@ -53,6 +55,7 @@ func (repo *userRepo) CreateUser(user models.User) error {
 	if createErr != nil {
 		return createErr
 	}
+
 	return nil
 }
 
@@ -66,16 +69,20 @@ func (repo *userRepo) CreateUser(user models.User) error {
 //	return nil
 //}
 //
-//// GetUser implements domain.UserRepository.
-//func (repo *userRepo) GetUserRepo(id uint) (models.User, error) {
-//	var user models.User
-//	err := repo.d.Where("id = ?", id).First(&user).Error
-//	if err != nil {
-//		return user, err
-//	}
-//	return user, nil
-//}
-//
+
+// GetUser implements domain.UserRepository.
+func (repo *userRepo) GetUserRepo(userID string) (models.User, error) {
+
+	var user models.User
+
+	err := repo.d.Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		return user, err
+	}
+
+	return user, nil
+}
+
 //// GetUsers implements domain.UserRepository.
 //func (repo *userRepo) GetUsersRepo(pagination *utils.Page) ([]models.User, error) {
 //	var users []models.User
