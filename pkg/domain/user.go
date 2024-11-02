@@ -10,7 +10,7 @@ import (
 type UserRepository interface {
 	Login(email string, password string) (string, error)
 	CreateUser(user models.User) error
-	//GetUserRepo(id uint) (models.User, error)
+	GetUserRepo(userID string) (models.User, error)
 	//GetUsersRepo(pagination *utils.Page) ([]models.User, error)
 	//UpdateUserRepo(user *models.User) error
 	//DeleteUserRepo(id uint) error
@@ -20,7 +20,7 @@ type UserRepository interface {
 type UserService interface {
 	Login(email string, password string) (string, error)
 	CreateUser(user types.SignUpRequest) (types.UserResp, error)
-	//GetUser(id uint) (models.User, error)
+	GetUser(userID string) (types.UserResp, error)
 	//GetUsers(pagination *utils.Page) ([]models.User, error)
 	//UpdateUser(user *models.User) error
 	//DeleteUser(id uint) error
@@ -30,7 +30,7 @@ type UserService interface {
 type UserController interface {
 	Login(c echo.Context) error
 	CreateUser(c echo.Context) error
-	//GetUser(c echo.Context) error
+	GetUser(c echo.Context) error
 	//GetUsers(c echo.Context) error
 	//UpdateUser(c echo.Context) error
 	//DeleteUser(c echo.Context) error

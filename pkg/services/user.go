@@ -23,15 +23,18 @@ func SetUserService(repo domain.UserRepository) domain.UserService {
 
 // Login implements domain.UserService.
 func (svc *userService) Login(email string, password string) (string, error) {
+
 	userID, err := svc.repo.Login(email, password)
 	if err != nil {
 		return "", errors.New(userconsts.LoginFailed)
 	}
+
 	return userID, nil
 }
 
 // CreateUser implements domain.UserService.
 func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp, error) {
+
 	user := models.User{
 		ID:          uuid.NewString(),
 		Email:       reqUser.Email,
@@ -55,15 +58,18 @@ func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp,
 //	}
 //	return nil
 //}
-//
-//// GetUser implements domain.UserService.
-//func (svc *userService) GetUser(id uint) (models.User, error) {
-//	user, err := svc.repo.GetUserRepo(id)
-//	if err != nil {
-//		return user, err
-//	}
-//	return user, nil
-//}
+
+// GetUser implements domain.UserService.
+func (svc *userService) GetUser(userID string) (types.UserResp, error) {
+
+	user, err := svc.repo.GetUserRepo(userID)
+	if err != nil {
+		return types.UserResp{}, err
+	}
+
+	return convertUserToUserResp(user), nil
+}
+
 //
 //// GetUsers implements domain.UserService.
 //func (svc *userService) GetUsers(pagination *utils.Page) ([]models.User, error) {
