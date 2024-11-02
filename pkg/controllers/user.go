@@ -134,6 +134,17 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 //	return c.JSON(http.StatusOK, "User deleted successfully")
 //}
 
+// GetUser implements domain.UserController.
+// @Summary Get a user by ID
+// @Description Get a user by ID
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param user_id query string true "User ID"
+// @Success 200 {object} types.UserResp "user found successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting user"
+// @Router /user/get [get]
 func (ctr *userController) GetUser(c echo.Context) error {
 
 	reqUserID, parseErr := uuid.Parse(c.QueryParam(userconsts.UserID))

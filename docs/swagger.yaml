@@ -82,6 +82,35 @@ paths:
       summary: Create a new user
       tags:
       - user
+  /user/get:
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user found successfully
+          schema:
+            $ref: '#/definitions/types.UserResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting user
+          schema:
+            type: string
+      summary: Get a user by ID
+      tags:
+      - user
   /user/login:
     post:
       consumes:
