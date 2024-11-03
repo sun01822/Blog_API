@@ -188,6 +188,18 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 }
 
 // UpdateUser implements domain.UserController.
+// @Summary Update a user
+// @Description Update a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param user body types.UserUpdateRequest true "User Request"
+// @Success 200 {object} types.UserResp "User updated successfully"
+// @Failure 400 {string} string "Invalid data request"
+// @Failure 500 {string} string "Error updating user"
+// @Router /user/update [put]
 func (ctr *userController) UpdateUser(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
