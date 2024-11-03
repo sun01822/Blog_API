@@ -52,13 +52,20 @@ func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp,
 	return convertUserToUserResp(user), nil
 }
 
-//// DeleteUser implements domain.UserService.
-//func (svc *userService) DeleteUser(id uint) error {
-//	if err := svc.repo.DeleteUserRepo(id); err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// DeleteUser implements domain.UserService.
+func (svc *userService) DeleteUser(userID string) (string, error) {
+
+	existingUser, err := svc.repo.GetUser(userID)
+	if err != nil {
+		return "", err
+	}
+
+	if deleteErr := svc.repo.DeleteUser(existingUser.ID); deleteErr != nil {
+		return "", deleteErr
+	}
+
+	return existingUser.Email, nil
+}
 
 // GetUser implements domain.UserService.
 func (svc *userService) GetUser(userID string) (types.UserResp, error) {

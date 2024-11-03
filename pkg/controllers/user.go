@@ -8,7 +8,6 @@ import (
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
 	"github.com/google/uuid"
-	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -35,8 +34,8 @@ func SetUserController(svc domain.UserService) domain.UserController {
 // @Produce json
 // @Param login body types.LoginRequest true "Login Request"
 // @Success 200 {string} string "JWT Token"
-// @Failure 400 {string} string "Invalid data request"
-// @Failure 401 {string} string "Invalid email or password"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 401 {string} string "invalid email or password"
 // @Router /user/login [post]
 // Login implements domain.UserController.
 func (ctr *userController) Login(ctx echo.Context) error {
@@ -87,9 +86,9 @@ func (ctr *userController) Login(ctx echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param user body types.SignUpRequest true "User Request"
-// @Success 200 {object} types.UserResp "User created successfully"
-// @Failure 400 {string} string "Invalid data request"
-// @Failure 500 {string} string "Error creating user"
+// @Success 200 {object} types.UserResp "user created successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error creating user"
 // @Router /user/create [post]
 func (ctr *userController) CreateUser(ctx echo.Context) error {
 
@@ -100,7 +99,7 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
-		return ctx.JSON(http.StatusBadRequest, validationErr.Error())
+		return response.ErrorResponse(ctx, validationErr, userconsts.ValidationError)
 	}
 
 	createdUser, createErr := ctr.svc.CreateUser(reqUser)
@@ -110,27 +109,6 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 
 	return response.SuccessResponse(ctx, userconsts.UserCreatedSuccessfully, createdUser)
 }
-
-//// DeleteUser implements domain.UserController.
-//func (ctr *userController) DeleteUser(c echo.Context) error {
-//	tempUserId := c.Param("userID")
-//	userId, err := strconv.Atoi(tempUserId)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid user id")
-//	}
-//
-//	existingUser, err := ctr.svc.GetUser(uint(userId))
-//	if err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	if existingUser.ID == "" {
-//		return c.JSON(http.StatusNotFound, "User not found")
-//	}
-//	if err := ctr.svc.DeleteUser(uint(userId)); err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "User deleted successfully")
-//}
 
 // GetUser implements domain.UserController.
 // @Summary Get a user by ID
@@ -196,9 +174,9 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 // @Security BearerAuth
 // @Param Authorization header string true "Bearer <token>"
 // @Param user body types.UserUpdateRequest true "User Request"
-// @Success 200 {object} types.UserResp "User updated successfully"
-// @Failure 400 {string} string "Invalid data request"
-// @Failure 500 {string} string "Error updating user"
+// @Success 200 {object} types.UserResp "user updated successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error updating user"
 // @Router /user/update [put]
 func (ctr *userController) UpdateUser(c echo.Context) error {
 
@@ -222,4 +200,31 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	}
 
 	return response.SuccessResponse(c, userconsts.UserUpdatedSuccessfully, user)
+}
+
+// DeleteUser implements domain.UserController.
+// @Summary Delete a user
+// @Description Delete a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Success 200 {string} string "user deleted successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error deleting user"
+// @Router /user/delete [delete]
+func (ctr *userController) DeleteUser(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+	}
+
+	user, err := ctr.svc.DeleteUser(userID.String())
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.ErrorDeletingUser)
+	}
+
+	return response.SuccessResponse(c, userconsts.UserDeletedSuccessfully, user)
 }

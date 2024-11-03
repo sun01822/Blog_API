@@ -13,12 +13,14 @@ const (
 	ErrorGettingUser        = "error getting user"
 	ErrorGettingUsers       = "error getting users"
 	ErrorUpdatingUser       = "error updating user"
+	ErrorDeletingUser       = "error deleting user"
 )
 
 const (
 	UserFetchSuccessfully   = "user fetched successfully"
 	UsersFetchSuccessfully  = "users fetched successfully"
 	UserUpdatedSuccessfully = "user updated successfully"
+	UserDeletedSuccessfully = "user deleted successfully"
 )
 
 const (

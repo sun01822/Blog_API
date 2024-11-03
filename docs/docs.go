@@ -50,19 +50,68 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User created successfully",
+                        "description": "user created successfully",
                         "schema": {
                             "$ref": "#/definitions/types.UserResp"
                         }
                     },
                     "400": {
-                        "description": "Invalid data request",
+                        "description": "invalid data request",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Error creating user",
+                        "description": "error creating user",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/user/delete": {
+            "delete": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Delete a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "user"
+                ],
+                "summary": "Delete a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "user deleted successfully",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid data request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error deleting user",
                         "schema": {
                             "type": "string"
                         }
@@ -198,13 +247,13 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Invalid data request",
+                        "description": "invalid data request",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "401": {
-                        "description": "Invalid email or password",
+                        "description": "invalid email or password",
                         "schema": {
                             "type": "string"
                         }
@@ -250,19 +299,19 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "User updated successfully",
+                        "description": "user updated successfully",
                         "schema": {
                             "$ref": "#/definitions/types.UserResp"
                         }
                     },
                     "400": {
-                        "description": "Invalid data request",
+                        "description": "invalid data request",
                         "schema": {
                             "type": "string"
                         }
                     },
                     "500": {
-                        "description": "Error updating user",
+                        "description": "error updating user",
                         "schema": {
                             "type": "string"
                         }
