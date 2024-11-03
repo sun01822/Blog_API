@@ -71,7 +71,7 @@ func (repo *userRepo) CreateUser(user models.User) error {
 //
 
 // GetUser implements domain.UserRepository.
-func (repo *userRepo) GetUserRepo(userID string) (models.User, error) {
+func (repo *userRepo) GetUser(userID string) (models.User, error) {
 
 	var user models.User
 
@@ -83,16 +83,29 @@ func (repo *userRepo) GetUserRepo(userID string) (models.User, error) {
 	return user, nil
 }
 
-//// GetUsers implements domain.UserRepository.
-//func (repo *userRepo) GetUsersRepo(pagination *utils.Page) ([]models.User, error) {
-//	var users []models.User
-//	err := repo.d.Offset(*pagination.Offset).Limit(*pagination.Limit).Find(&users).Error
-//	if err != nil {
-//		return users, err
-//	}
-//	return users, nil
-//}
-//
+// GetUsers implements domain.UserRepository.
+func (repo *userRepo) GetUsers(pagination utils.Page) ([]models.User, error) {
+
+	var users []models.User
+
+	query := repo.d.Model(&models.User{})
+
+	if pagination.Offset > 0 {
+		query = query.Offset(pagination.Offset)
+	}
+
+	if pagination.Limit > 0 {
+		query = query.Limit(pagination.Limit)
+	}
+
+	err := query.Find(&users).Error
+	if err != nil {
+		return users, err
+	}
+
+	return users, nil
+}
+
 //// UpdateUser implements domain.UserRepository.
 //func (repo *userRepo) UpdateUserRepo(user *models.User) error {
 //	err := repo.d.Save(&user).Error

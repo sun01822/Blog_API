@@ -4,6 +4,7 @@ import (
 	"Blog_API/pkg/config"
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/types"
+	"Blog_API/pkg/utils"
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
 	"github.com/google/uuid"
@@ -157,27 +158,38 @@ func (ctr *userController) GetUser(c echo.Context) error {
 		return response.ErrorResponse(c, err, userconsts.ErrorGettingUser)
 	}
 
-	return response.SuccessResponse(c, userconsts.UserFoundSuccessfully, user)
+	return response.SuccessResponse(c, userconsts.UserFetchSuccessfully, user)
 }
 
-//
-//// GetUsers implements domain.UserController.
-//func (ctr *userController) GetUsers(c echo.Context) error {
-//	page := &utils.Page{}
-//	pageInfo, err := page.GetPageInformation(c)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	fmt.Println(
-//		"Offset: ", *pageInfo.Offset,
-//		"Limit: ", *pageInfo.Limit,
-//	)
-//	users, err := ctr.svc.GetUsers(pageInfo)
-//	if err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, users)
-//}
+// GetUsers implements domain.UserController.
+// @Summary Get all users
+// @Description Get all users
+// @Tags user
+// @Accept json
+// @Produce json
+// @Param offset query string false "Offset"
+// @Param limit query string false "Limit"
+// @Success 200 {object} []types.UserResp "users found successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting user"
+// @Router /user/getAll [get]
+func (ctr *userController) GetUsers(c echo.Context) error {
+
+	page := utils.Page{}
+
+	pageInfo, err := page.GetPageInformation(c)
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.InvalidDataRequest)
+	}
+
+	users, err := ctr.svc.GetUsers(pageInfo)
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.ErrorGettingUser)
+	}
+
+	return response.SuccessResponse(c, userconsts.UsersFetchSuccessfully, users)
+}
+
 //
 //// UpdateUser implements domain.UserController.
 //func (ctr *userController) UpdateUser(c echo.Context) error {

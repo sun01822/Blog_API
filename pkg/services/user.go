@@ -4,6 +4,7 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
+	"Blog_API/pkg/utils"
 	userconsts "Blog_API/pkg/utils/consts/user"
 	"errors"
 	"github.com/google/uuid"
@@ -62,7 +63,7 @@ func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp,
 // GetUser implements domain.UserService.
 func (svc *userService) GetUser(userID string) (types.UserResp, error) {
 
-	user, err := svc.repo.GetUserRepo(userID)
+	user, err := svc.repo.GetUser(userID)
 	if err != nil {
 		return types.UserResp{}, err
 	}
@@ -70,16 +71,23 @@ func (svc *userService) GetUser(userID string) (types.UserResp, error) {
 	return convertUserToUserResp(user), nil
 }
 
-//
-//// GetUsers implements domain.UserService.
-//func (svc *userService) GetUsers(pagination *utils.Page) ([]models.User, error) {
-//	users, err := svc.repo.GetUsersRepo(pagination)
-//	if err != nil {
-//		return users, err
-//	}
-//	return users, nil
-//}
-//
+// GetUsers implements domain.UserService.
+func (svc *userService) GetUsers(pagination utils.Page) ([]types.UserResp, error) {
+
+	var usersResp []types.UserResp
+
+	users, err := svc.repo.GetUsers(pagination)
+	if err != nil {
+		return usersResp, err
+	}
+
+	for _, user := range users {
+		usersResp = append(usersResp, convertUserToUserResp(user))
+	}
+
+	return usersResp, nil
+}
+
 //// UpdateUser implements domain.UserService.
 //func (svc *userService) UpdateUser(user *models.User) error {
 //	if err := svc.repo.UpdateUserRepo(user); err != nil {

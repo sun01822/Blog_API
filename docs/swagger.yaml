@@ -111,6 +111,40 @@ paths:
       summary: Get a user by ID
       tags:
       - user
+  /user/getAll:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      parameters:
+      - description: Offset
+        in: query
+        name: offset
+        type: string
+      - description: Limit
+        in: query
+        name: limit
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: users found successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.UserResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting user
+          schema:
+            type: string
+      summary: Get all users
+      tags:
+      - user
   /user/login:
     post:
       consumes:
