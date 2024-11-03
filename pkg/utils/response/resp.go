@@ -36,3 +36,12 @@ func ErrorResponse(c echo.Context, err error, message string) error {
 		Status:  statusCode,
 	})
 }
+
+// ErrorResponseWithStatus creates an error response with a message, status code, and details.
+func ErrorResponseWithStatus(c echo.Context, statusCode int, message string) error {
+	return c.JSON(statusCode, ErrorRes{
+		Error:   http.StatusText(statusCode),
+		Message: message,
+		Status:  statusCode,
+	})
+}

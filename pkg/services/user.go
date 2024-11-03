@@ -88,21 +88,57 @@ func (svc *userService) GetUsers(pagination utils.Page) ([]types.UserResp, error
 	return usersResp, nil
 }
 
-//// UpdateUser implements domain.UserService.
-//func (svc *userService) UpdateUser(user *models.User) error {
-//	if err := svc.repo.UpdateUserRepo(user); err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// UpdateUser implements domain.UserService.
+func (svc *userService) UpdateUser(userID string, userReq types.UserUpdateRequest) (types.UserResp, error) {
+
+	user, userErr := svc.repo.GetUser(userID)
+	if userErr != nil {
+		return types.UserResp{}, userErr
+	}
+
+	updateUser := models.User{
+		ID:             user.ID,
+		Email:          user.Email,
+		Password:       utils.HashPassword(userReq.Password),
+		FirstName:      userReq.FirstName,
+		LastName:       userReq.LastName,
+		Gender:         userReq.Gender,
+		DateOfBirth:    userReq.DateOfBirth,
+		Job:            userReq.Job,
+		Phone:          userReq.Phone,
+		Street:         userReq.Street,
+		City:           userReq.City,
+		ZipCode:        userReq.ZipCode,
+		State:          userReq.State,
+		Country:        userReq.Country,
+		Latitude:       userReq.Latitude,
+		Longitude:      userReq.Longitude,
+		ProfilePicture: userReq.ProfilePicture,
+	}
+
+	if err := svc.repo.UpdateUser(updateUser); err != nil {
+		return types.UserResp{}, err
+	}
+
+	return convertUserToUserResp(updateUser), nil
+}
 
 func convertUserToUserResp(user models.User) types.UserResp {
 	return types.UserResp{
-		ID:          user.ID,
-		Email:       user.Email,
-		Gender:      user.Gender,
-		DateOfBirth: user.DateOfBirth,
-		Phone:       user.Phone,
-		Country:     user.Country,
+		Email:          user.Email,
+		FirstName:      user.FirstName,
+		LastName:       user.LastName,
+		Gender:         user.Gender,
+		DateOfBirth:    user.DateOfBirth,
+		Job:            user.Job,
+		Phone:          user.Phone,
+		Street:         user.Street,
+		City:           user.City,
+		ZipCode:        user.ZipCode,
+		State:          user.State,
+		Country:        user.Country,
+		Latitude:       user.Latitude,
+		Longitude:      user.Longitude,
+		ProfilePicture: user.ProfilePicture,
 	}
 }

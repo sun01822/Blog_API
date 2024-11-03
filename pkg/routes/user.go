@@ -2,6 +2,7 @@ package routes
 
 import (
 	"Blog_API/pkg/domain"
+	"Blog_API/pkg/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
@@ -36,7 +37,7 @@ func (u *UserRoutes) initUserRoutes(e *echo.Echo) {
 	user.POST("/create", u.userController.CreateUser)
 	user.GET("/get", u.userController.GetUser)
 	user.GET("/getAll", u.userController.GetUsers)
-	//user.PUT("/update/:userID", u.userController.UpdateUser, middlewares.Auth)
+	user.PUT("/update", u.userController.UpdateUser, middlewares.Auth)
 	//user.DELETE("/delete/:userID", u.userController.DeleteUser, middlewares.Auth)
 
 }
