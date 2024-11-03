@@ -121,18 +121,49 @@ paths:
       - application/json
       responses:
         "200":
-          description: User created successfully
+          description: user created successfully
           schema:
             $ref: '#/definitions/types.UserResp'
         "400":
-          description: Invalid data request
+          description: invalid data request
           schema:
             type: string
         "500":
-          description: Error creating user
+          description: error creating user
           schema:
             type: string
       summary: Create a new user
+      tags:
+      - user
+  /user/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user deleted successfully
+          schema:
+            type: string
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error deleting user
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a user
       tags:
       - user
   /user/get:
@@ -218,11 +249,11 @@ paths:
           schema:
             type: string
         "400":
-          description: Invalid data request
+          description: invalid data request
           schema:
             type: string
         "401":
-          description: Invalid email or password
+          description: invalid email or password
           schema:
             type: string
       summary: User login
@@ -249,15 +280,15 @@ paths:
       - application/json
       responses:
         "200":
-          description: User updated successfully
+          description: user updated successfully
           schema:
             $ref: '#/definitions/types.UserResp'
         "400":
-          description: Invalid data request
+          description: invalid data request
           schema:
             type: string
         "500":
-          description: Error updating user
+          description: error updating user
           schema:
             type: string
       security:
