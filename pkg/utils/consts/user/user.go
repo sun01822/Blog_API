@@ -11,6 +11,7 @@ const (
 	UserEmailAlreadyExists  = "user email already exists"
 	UserCreatedSuccessfully = "user created successfully"
 	ErrorGettingUser        = "error getting user"
+	ErrorGettingUsers       = "error getting users"
 )
 
 const (

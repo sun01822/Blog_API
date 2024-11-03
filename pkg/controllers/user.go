@@ -184,7 +184,7 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 
 	users, err := ctr.svc.GetUsers(pageInfo)
 	if err != nil {
-		return response.ErrorResponse(c, err, userconsts.ErrorGettingUser)
+		return response.ErrorResponse(c, err, userconsts.ErrorGettingUsers)
 	}
 
 	return response.SuccessResponse(c, userconsts.UsersFetchSuccessfully, users)
