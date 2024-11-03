@@ -14,7 +14,8 @@ const (
 )
 
 const (
-	UserFoundSuccessfully = "user found successfully"
+	UserFetchSuccessfully  = "user fetch successfully"
+	UsersFetchSuccessfully = "users fetch successfully"
 )
 
 const (
