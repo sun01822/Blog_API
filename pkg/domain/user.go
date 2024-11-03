@@ -10,8 +10,8 @@ import (
 type UserRepository interface {
 	Login(email string, password string) (string, error)
 	CreateUser(user models.User) error
-	GetUserRepo(userID string) (models.User, error)
-	//GetUsersRepo(pagination *utils.Page) ([]models.User, error)
+	GetUser(userID string) (models.User, error)
+	//GetUsers(pagination *utils.Page) ([]models.User, error)
 	//UpdateUserRepo(user *models.User) error
 	//DeleteUserRepo(id uint) error
 }

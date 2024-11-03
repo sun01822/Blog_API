@@ -62,7 +62,7 @@ func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp,
 // GetUser implements domain.UserService.
 func (svc *userService) GetUser(userID string) (types.UserResp, error) {
 
-	user, err := svc.repo.GetUserRepo(userID)
+	user, err := svc.repo.GetUser(userID)
 	if err != nil {
 		return types.UserResp{}, err
 	}

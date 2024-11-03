@@ -71,7 +71,7 @@ func (repo *userRepo) CreateUser(user models.User) error {
 //
 
 // GetUser implements domain.UserRepository.
-func (repo *userRepo) GetUserRepo(userID string) (models.User, error) {
+func (repo *userRepo) GetUser(userID string) (models.User, error) {
 
 	var user models.User
 
