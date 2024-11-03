@@ -8,7 +8,6 @@ import (
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
 	"github.com/google/uuid"
-	"net/http"
 	"time"
 
 	"github.com/golang-jwt/jwt"
@@ -100,7 +99,7 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
-		return ctx.JSON(http.StatusBadRequest, validationErr.Error())
+		return response.ErrorResponse(ctx, validationErr, userconsts.ValidationError)
 	}
 
 	createdUser, createErr := ctr.svc.CreateUser(reqUser)
