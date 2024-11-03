@@ -110,26 +110,21 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 	return response.SuccessResponse(ctx, userconsts.UserCreatedSuccessfully, createdUser)
 }
 
-//// DeleteUser implements domain.UserController.
-//func (ctr *userController) DeleteUser(c echo.Context) error {
-//	tempUserId := c.Param("userID")
-//	userId, err := strconv.Atoi(tempUserId)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid user id")
-//	}
-//
-//	existingUser, err := ctr.svc.GetUser(uint(userId))
-//	if err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	if existingUser.ID == "" {
-//		return c.JSON(http.StatusNotFound, "User not found")
-//	}
-//	if err := ctr.svc.DeleteUser(uint(userId)); err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "User deleted successfully")
-//}
+// DeleteUser implements domain.UserController.
+func (ctr *userController) DeleteUser(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+	}
+
+	user, err := ctr.svc.DeleteUser(userID.String())
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.ErrorDeletingUser)
+	}
+
+	return response.SuccessResponse(c, userconsts.UserDeletedSuccessfully, user)
+}
 
 // GetUser implements domain.UserController.
 // @Summary Get a user by ID

@@ -14,7 +14,7 @@ type UserRepository interface {
 	GetUser(userID string) (models.User, error)
 	GetUsers(pagination utils.Page) ([]models.User, error)
 	UpdateUser(user models.User) error
-	//DeleteUserRepo(id uint) error
+	DeleteUser(userID string) error
 }
 
 // For service operation (call from controller)
@@ -24,7 +24,7 @@ type UserService interface {
 	GetUser(userID string) (types.UserResp, error)
 	GetUsers(pagination utils.Page) ([]types.UserResp, error)
 	UpdateUser(userID string, user types.UserUpdateRequest) (types.UserResp, error)
-	//DeleteUser(id uint) error
+	DeleteUser(userID string) (string, error)
 }
 
 // For controller operation (call from main)
@@ -34,5 +34,5 @@ type UserController interface {
 	GetUser(c echo.Context) error
 	GetUsers(c echo.Context) error
 	UpdateUser(c echo.Context) error
-	//DeleteUser(c echo.Context) error
+	DeleteUser(c echo.Context) error
 }

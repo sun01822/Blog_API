@@ -38,6 +38,5 @@ func (u *UserRoutes) initUserRoutes(e *echo.Echo) {
 	user.GET("/get", u.userController.GetUser)
 	user.GET("/getAll", u.userController.GetUsers)
 	user.PUT("/update", u.userController.UpdateUser, middlewares.Auth)
-	//user.DELETE("/delete/:userID", u.userController.DeleteUser, middlewares.Auth)
-
+	user.DELETE("/delete", u.userController.DeleteUser, middlewares.Auth)
 }
