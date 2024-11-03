@@ -106,11 +106,13 @@ func (repo *userRepo) GetUsers(pagination utils.Page) ([]models.User, error) {
 	return users, nil
 }
 
-//// UpdateUser implements domain.UserRepository.
-//func (repo *userRepo) UpdateUserRepo(user *models.User) error {
-//	err := repo.d.Save(&user).Error
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// UpdateUser implements domain.UserRepository.
+func (repo *userRepo) UpdateUser(user models.User) error {
+
+	err := repo.d.Updates(&user).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

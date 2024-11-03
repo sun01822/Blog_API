@@ -60,11 +60,8 @@ func (ctr *userController) Login(ctx echo.Context) error {
 
 	now := time.Now().UTC()
 	ttl := time.Minute * 15
-	claims := struct {
-		jwt.StandardClaims
-		UserID    string `json:"user_id"`
-		UserEmail string `json:"user_email"`
-	}{
+
+	jwtClaims := types.JWTClaims{
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: now.Add(ttl).Unix(),
 			IssuedAt:  now.Unix(),
@@ -74,7 +71,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 		UserEmail: reqUser.Email,
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
 	tokenString, tokenErr := token.SignedString([]byte(conf.JWTSecret))
 	if tokenErr != nil {
 		return response.ErrorResponse(ctx, tokenErr, userconsts.ErrorGeneratingToken)
@@ -190,92 +187,39 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 	return response.SuccessResponse(c, userconsts.UsersFetchSuccessfully, users)
 }
 
-//
-//// UpdateUser implements domain.UserController.
-//func (ctr *userController) UpdateUser(c echo.Context) error {
-//	reqUser := &types.UserUpdateRequest{}
-//	if err := c.Bind(reqUser); err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	if err := reqUser.Validate(); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	tempUserId := c.Param("userID")
-//	userId, err := strconv.Atoi(tempUserId)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid user id")
-//	}
-//	existingUser, err := ctr.svc.GetUser(uint(userId))
-//	if err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	user := &models.User{
-//		ID:             existingUser.ID,
-//		CreatedAt:      existingUser.CreatedAt,
-//		UpdatedAt:      existingUser.UpdatedAt,
-//		DeletedAt:      existingUser.DeletedAt,
-//		Email:          existingUser.Email,
-//		Gender:         reqUser.Gender,
-//		DateOfBirth:    reqUser.DateOfBirth,
-//		Job:            reqUser.Job,
-//		City:           reqUser.City,
-//		ZipCode:        reqUser.ZipCode,
-//		ProfilePicture: reqUser.ProfilePicture,
-//		FirstName:      reqUser.FirstName,
-//		LastName:       reqUser.LastName,
-//		Phone:          reqUser.Phone,
-//		Street:         reqUser.Street,
-//		State:          reqUser.State,
-//		Country:        reqUser.Country,
-//		Latitude:       reqUser.Latitude,
-//		Longitude:      reqUser.Longitude,
-//	}
-//	user.Email = existingUser.Email
-//	if user.FirstName == "" {
-//		user.FirstName = existingUser.FirstName
-//	}
-//	if user.LastName == "" {
-//		user.LastName = existingUser.LastName
-//	}
-//	if user.City == "" {
-//		user.City = existingUser.City
-//	}
-//	if user.Country == "" {
-//		user.Country = existingUser.Country
-//	}
-//	if user.DateOfBirth == nil {
-//		user.DateOfBirth = existingUser.DateOfBirth
-//	}
-//	if user.Gender == "" {
-//		user.Gender = existingUser.Gender
-//	}
-//	if user.Job == "" {
-//		user.Job = existingUser.Job
-//	}
-//	if user.Latitude == 0 {
-//		user.Latitude = existingUser.Latitude
-//	}
-//	if user.Longitude == 0 {
-//		user.Longitude = existingUser.Longitude
-//	}
-//	if user.Phone == "" {
-//		user.Phone = existingUser.Phone
-//	}
-//	if user.ProfilePicture == "" {
-//		user.ProfilePicture = existingUser.ProfilePicture
-//	}
-//	if user.State == "" {
-//		user.State = existingUser.State
-//	}
-//	if user.Street == "" {
-//		user.Street = existingUser.Street
-//	}
-//	if user.ZipCode == "" {
-//		user.ZipCode = existingUser.ZipCode
-//	}
-//
-//	if err := ctr.svc.UpdateUser(user); err != nil {
-//		return c.JSON(http.StatusInternalServerError, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "User updated successfully")
-//}
+// UpdateUser implements domain.UserController.
+// @Summary Update a user
+// @Description Update a user
+// @Tags user
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param user body types.UserUpdateRequest true "User Request"
+// @Success 200 {object} types.UserResp "User updated successfully"
+// @Failure 400 {string} string "Invalid data request"
+// @Failure 500 {string} string "Error updating user"
+// @Router /user/update [put]
+func (ctr *userController) UpdateUser(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+	}
+
+	reqUser := types.UserUpdateRequest{}
+	if err := c.Bind(&reqUser); err != nil {
+		return response.ErrorResponse(c, err, userconsts.InvalidDataRequest)
+	}
+
+	if validationErr := reqUser.Validate(); validationErr != nil {
+		return response.ErrorResponse(c, validationErr, userconsts.ValidationError)
+	}
+
+	user, err := ctr.svc.UpdateUser(userID.String(), reqUser)
+	if err != nil {
+		return response.ErrorResponse(c, err, userconsts.ErrorUpdatingUser)
+	}
+
+	return response.SuccessResponse(c, userconsts.UserUpdatedSuccessfully, user)
+}

@@ -14,7 +14,7 @@ type User struct {
 	UpdatedAt      time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt      gorm.DeletedAt `json:"deleted_at" gorm:"index"`
 	Gender         string         `json:"gender"`
-	DateOfBirth    *time.Time     `json:"date_of_birth"`
+	DateOfBirth    time.Time      `json:"date_of_birth"`
 	Job            string         `json:"job"`
 	City           string         `json:"city"`
 	ZipCode        string         `json:"zipcode"`

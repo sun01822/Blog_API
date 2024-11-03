@@ -13,7 +13,7 @@ type UserRepository interface {
 	CreateUser(user models.User) error
 	GetUser(userID string) (models.User, error)
 	GetUsers(pagination utils.Page) ([]models.User, error)
-	//UpdateUserRepo(user *models.User) error
+	UpdateUser(user models.User) error
 	//DeleteUserRepo(id uint) error
 }
 
@@ -23,7 +23,7 @@ type UserService interface {
 	CreateUser(user types.SignUpRequest) (types.UserResp, error)
 	GetUser(userID string) (types.UserResp, error)
 	GetUsers(pagination utils.Page) ([]types.UserResp, error)
-	//UpdateUser(user *models.User) error
+	UpdateUser(userID string, user types.UserUpdateRequest) (types.UserResp, error)
 	//DeleteUser(id uint) error
 }
 
@@ -33,6 +33,6 @@ type UserController interface {
 	CreateUser(c echo.Context) error
 	GetUser(c echo.Context) error
 	GetUsers(c echo.Context) error
-	//UpdateUser(c echo.Context) error
+	UpdateUser(c echo.Context) error
 	//DeleteUser(c echo.Context) error
 }
