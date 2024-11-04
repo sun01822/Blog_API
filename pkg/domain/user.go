@@ -7,8 +7,8 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// For database Repository opearation (call from service)
-type UserRepository interface {
+// For database UserRepository opearation (call from service)
+type Repository interface {
 	Login(email string, password string) (string, error)
 	CreateUser(user models.User) error
 	GetUser(userID string) (models.User, error)
@@ -18,7 +18,7 @@ type UserRepository interface {
 }
 
 // For service operation (call from controller)
-type UserService interface {
+type Service interface {
 	Login(email string, password string) (string, error)
 	CreateUser(user types.SignUpRequest) (types.UserResp, error)
 	GetUser(userID string) (types.UserResp, error)
@@ -28,7 +28,7 @@ type UserService interface {
 }
 
 // For controller operation (call from main)
-type UserController interface {
+type Controller interface {
 	Login(c echo.Context) error
 	CreateUser(c echo.Context) error
 	GetUser(c echo.Context) error

@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// For database Repository opearation (call from service)
+// For database UserRepository opearation (call from service)
 type BlogRepository interface {
 	CreateBlogPostRepo(blogPost *models.BlogPost) error
 	GetBlogPostRepo(id uint) (models.BlogPost, error)

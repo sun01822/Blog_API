@@ -8,10 +8,10 @@ import (
 
 type UserRoutes struct {
 	echo           *echo.Echo
-	userController domain.UserController
+	userController domain.Controller
 }
 
-func NewUserRoutes(e *echo.Echo, controller domain.UserController) UserRoutes {
+func NewUserRoutes(e *echo.Echo, controller domain.Controller) UserRoutes {
 	return UserRoutes{
 		echo:           e,
 		userController: controller,
