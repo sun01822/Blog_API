@@ -5,6 +5,7 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/types"
 	"Blog_API/pkg/utils"
+	"Blog_API/pkg/utils/consts"
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
 	"github.com/google/uuid"
@@ -43,11 +44,11 @@ func (ctr *userController) Login(ctx echo.Context) error {
 	reqUser := types.LoginRequest{}
 
 	if err := ctx.Bind(&reqUser); err != nil {
-		return response.ErrorResponse(ctx, err, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(ctx, err, consts.InvalidDataRequest)
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
-		return response.ErrorResponse(ctx, validationErr, userconsts.ValidationError)
+		return response.ErrorResponse(ctx, validationErr, consts.ValidationError)
 	}
 
 	userID, loginErr := ctr.svc.Login(reqUser.Email, reqUser.Password)
@@ -93,11 +94,11 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 	reqUser := types.SignUpRequest{}
 
 	if err := ctx.Bind(&reqUser); err != nil {
-		return response.ErrorResponse(ctx, err, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(ctx, err, consts.InvalidDataRequest)
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
-		return response.ErrorResponse(ctx, validationErr, userconsts.ValidationError)
+		return response.ErrorResponse(ctx, validationErr, consts.ValidationError)
 	}
 
 	createdUser, createErr := ctr.svc.CreateUser(reqUser)
@@ -123,7 +124,7 @@ func (ctr *userController) GetUser(c echo.Context) error {
 
 	reqUserID, parseErr := uuid.Parse(c.QueryParam(userconsts.UserID))
 	if parseErr != nil {
-		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
 	}
 
 	user, err := ctr.svc.GetUser(reqUserID.String())
@@ -152,7 +153,7 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 
 	pageInfo, err := page.GetPageInformation(c)
 	if err != nil {
-		return response.ErrorResponse(c, err, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(c, err, consts.InvalidDataRequest)
 	}
 
 	users, err := ctr.svc.GetUsers(pageInfo)
@@ -180,16 +181,16 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
 	if parseErr != nil {
-		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
 	}
 
 	reqUser := types.UserUpdateRequest{}
 	if err := c.Bind(&reqUser); err != nil {
-		return response.ErrorResponse(c, err, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(c, err, consts.InvalidDataRequest)
 	}
 
 	if validationErr := reqUser.Validate(); validationErr != nil {
-		return response.ErrorResponse(c, validationErr, userconsts.ValidationError)
+		return response.ErrorResponse(c, validationErr, consts.ValidationError)
 	}
 
 	user, err := ctr.svc.UpdateUser(userID.String(), reqUser)
@@ -216,7 +217,7 @@ func (ctr *userController) DeleteUser(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
 	if parseErr != nil {
-		return response.ErrorResponse(c, parseErr, userconsts.InvalidDataRequest)
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
 	}
 
 	user, err := ctr.svc.DeleteUser(userID.String())

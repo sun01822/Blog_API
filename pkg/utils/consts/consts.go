@@ -9,4 +9,6 @@ const (
 
 const (
 	AuthorizationHeaderRequired = "authorization header is required"
+	InvalidDataRequest          = "invalid data request"
+	ValidationError             = "validation error"
 )

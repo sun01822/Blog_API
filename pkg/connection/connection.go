@@ -10,7 +10,6 @@ import (
 	"gorm.io/gorm/logger"
 )
 
-
 var db *gorm.DB
 
 // Connect to the database
@@ -33,7 +32,7 @@ func Migrate() {
 	db.Migrator().AutoMigrate(models.User{})
 	db.Migrator().AutoMigrate(models.BlogPost{})
 	db.Migrator().AutoMigrate(models.Comment{})
-	db.Migrator().AutoMigrate(models.Like{})	
+	db.Migrator().AutoMigrate(models.Reaction{})
 }
 
 // Calling to connect function to initalize connection

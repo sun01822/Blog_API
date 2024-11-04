@@ -1,8 +1,6 @@
 package userconsts
 
 const (
-	InvalidDataRequest      = "invalid data request"
-	ValidationError         = "validation error"
 	InvalidEmailOrPassword  = "user invalid email or password"
 	ErrorGeneratingToken    = "error generating token"
 	LoginSuccessful         = "user login successful"

@@ -32,19 +32,19 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo) {
 	blog := version.Group("/blog")
 
 	// blog routes
-	blog.POST("/create/:userID", b.blogController.CreateBlogPost, middlewares.Auth)
-	blog.GET("/get/:postID", b.blogController.GetBlogPost)
-	blog.GET("/get", b.blogController.GetBlogPosts)
-	blog.GET("/get/user/:userID", b.blogController.GetBlogPostsOfUser)
-	blog.PUT("/update/:userID/:postID", b.blogController.UpdateBlogPost, middlewares.Auth)
-	blog.DELETE("/delete/:userID/:postID", b.blogController.DeleteBlogPost, middlewares.Auth)
-
-	// like and comment routes
-	blog.POST("/like/:userID/:postID", b.blogController.AddAndRemoveLike, middlewares.Auth)
-	blog.POST("/comment/:userID/:postID", b.blogController.AddComment, middlewares.Auth)
-	blog.GET("/comment/:postID", b.blogController.GetComments)
-	blog.GET("/comment/:postID/:commentID", b.blogController.GetCommentByUserID)
-	blog.DELETE("/comment/:userID/:postID/:commentID", b.blogController.DeleteComment, middlewares.Auth)
-	blog.PUT("/comment/:userID/:postID/:commentID", b.blogController.UpdateComment, middlewares.Auth)
+	blog.POST("/create", b.blogController.CreateBlogPost, middlewares.Auth)
+	//blog.GET("/get/:postID", b.blogController.GetBlogPost)
+	//blog.GET("/get", b.blogController.GetBlogPosts)
+	//blog.GET("/get/user/:userID", b.blogController.GetBlogPostsOfUser)
+	//blog.PUT("/update/:userID/:postID", b.blogController.UpdateBlogPost, middlewares.Auth)
+	//blog.DELETE("/delete/:userID/:postID", b.blogController.DeleteBlogPost, middlewares.Auth)
+	//
+	//// like and comment routes
+	//blog.POST("/like/:userID/:postID", b.blogController.AddAndRemoveLike, middlewares.Auth)
+	//blog.POST("/comment/:userID/:postID", b.blogController.AddComment, middlewares.Auth)
+	//blog.GET("/comment/:postID", b.blogController.GetComments)
+	//blog.GET("/comment/:postID/:commentID", b.blogController.GetCommentByUserID)
+	//blog.DELETE("/comment/:userID/:postID/:commentID", b.blogController.DeleteComment, middlewares.Auth)
+	//blog.PUT("/comment/:userID/:postID/:commentID", b.blogController.UpdateComment, middlewares.Auth)
 
 }
