@@ -14,11 +14,11 @@ import (
 // Parent struct to implement interface binding
 type blogController struct {
 	svc  domain.BlogService
-	svc2 domain.UserService
+	svc2 domain.Service
 }
 
 // Interface binding
-func NewBlogController(svc domain.BlogService, svc2 domain.UserService) domain.BlogController {
+func NewBlogController(svc domain.BlogService, svc2 domain.Service) domain.BlogController {
 	return &blogController{
 		svc:  svc,
 		svc2: svc2,

@@ -12,17 +12,17 @@ import (
 
 // Parent struct to implement interface binding
 type userService struct {
-	repo domain.UserRepository
+	repo domain.Repository
 }
 
 // Interface binding
-func SetUserService(repo domain.UserRepository) domain.UserService {
+func SetUserService(repo domain.Repository) domain.Service {
 	return &userService{
 		repo: repo,
 	}
 }
 
-// Login implements domain.UserService.
+// Login implements domain.Service.
 func (svc *userService) Login(email string, password string) (string, error) {
 
 	userID, err := svc.repo.Login(email, password)
@@ -33,7 +33,7 @@ func (svc *userService) Login(email string, password string) (string, error) {
 	return userID, nil
 }
 
-// CreateUser implements domain.UserService.
+// CreateUser implements domain.Service.
 func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp, error) {
 
 	user := models.User{
@@ -52,7 +52,7 @@ func (svc *userService) CreateUser(reqUser types.SignUpRequest) (types.UserResp,
 	return convertUserToUserResp(user), nil
 }
 
-// DeleteUser implements domain.UserService.
+// DeleteUser implements domain.Service.
 func (svc *userService) DeleteUser(userID string) (string, error) {
 
 	existingUser, err := svc.repo.GetUser(userID)
@@ -67,7 +67,7 @@ func (svc *userService) DeleteUser(userID string) (string, error) {
 	return existingUser.Email, nil
 }
 
-// GetUser implements domain.UserService.
+// GetUser implements domain.Service.
 func (svc *userService) GetUser(userID string) (types.UserResp, error) {
 
 	user, err := svc.repo.GetUser(userID)
@@ -78,7 +78,7 @@ func (svc *userService) GetUser(userID string) (types.UserResp, error) {
 	return convertUserToUserResp(user), nil
 }
 
-// GetUsers implements domain.UserService.
+// GetUsers implements domain.Service.
 func (svc *userService) GetUsers(pagination utils.Page) ([]types.UserResp, error) {
 
 	var usersResp []types.UserResp
@@ -95,7 +95,7 @@ func (svc *userService) GetUsers(pagination utils.Page) ([]types.UserResp, error
 	return usersResp, nil
 }
 
-// UpdateUser implements domain.UserService.
+// UpdateUser implements domain.Service.
 func (svc *userService) UpdateUser(userID string, userReq types.UserUpdateRequest) (types.UserResp, error) {
 
 	user, userErr := svc.repo.GetUser(userID)

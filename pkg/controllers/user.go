@@ -14,13 +14,11 @@ import (
 	"github.com/labstack/echo/v4"
 )
 
-// Parent struct to implement interface binding
 type userController struct {
-	svc domain.UserService
+	svc domain.Service
 }
 
-// Interface binding
-func SetUserController(svc domain.UserService) domain.UserController {
+func SetUserController(svc domain.Service) domain.Controller {
 	return &userController{
 		svc: svc,
 	}
@@ -37,7 +35,7 @@ func SetUserController(svc domain.UserService) domain.UserController {
 // @Failure 400 {string} string "invalid data request"
 // @Failure 401 {string} string "invalid email or password"
 // @Router /user/login [post]
-// Login implements domain.UserController.
+// Login implements domain.Controller.
 func (ctr *userController) Login(ctx echo.Context) error {
 
 	conf := config.LocalConfig
@@ -79,7 +77,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 	return response.SuccessResponse(ctx, userconsts.LoginSuccessful, tokenString)
 }
 
-// CreateUser implements domain.UserController.
+// CreateUser implements domain.Controller.
 // @Summary Create a new user
 // @Description Create a new user
 // @Tags user
@@ -110,7 +108,7 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 	return response.SuccessResponse(ctx, userconsts.UserCreatedSuccessfully, createdUser)
 }
 
-// GetUser implements domain.UserController.
+// GetUser implements domain.Controller.
 // @Summary Get a user by ID
 // @Description Get a user by ID
 // @Tags user
@@ -136,7 +134,7 @@ func (ctr *userController) GetUser(c echo.Context) error {
 	return response.SuccessResponse(c, userconsts.UserFetchSuccessfully, user)
 }
 
-// GetUsers implements domain.UserController.
+// GetUsers implements domain.Controller.
 // @Summary Get all users
 // @Description Get all users
 // @Tags user
@@ -165,7 +163,7 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 	return response.SuccessResponse(c, userconsts.UsersFetchSuccessfully, users)
 }
 
-// UpdateUser implements domain.UserController.
+// UpdateUser implements domain.Controller.
 // @Summary Update a user
 // @Description Update a user
 // @Tags user
@@ -202,7 +200,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 	return response.SuccessResponse(c, userconsts.UserUpdatedSuccessfully, user)
 }
 
-// DeleteUser implements domain.UserController.
+// DeleteUser implements domain.Controller.
 // @Summary Delete a user
 // @Description Delete a user
 // @Tags user

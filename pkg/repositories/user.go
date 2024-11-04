@@ -15,7 +15,7 @@ type userRepo struct {
 }
 
 // Interface binding
-func NewUserRepo(db *gorm.DB) domain.UserRepository {
+func NewUserRepo(db *gorm.DB) domain.Repository {
 	return &userRepo{
 		d: db,
 	}
