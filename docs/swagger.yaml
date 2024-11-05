@@ -155,7 +155,7 @@ info:
   title: Blog API
   version: "1.0"
 paths:
-  /blog:
+  /blog/create:
     post:
       consumes:
       - application/json
@@ -190,32 +190,36 @@ paths:
       summary: Create a blog post
       tags:
       - Blog
-  /blogs:
+  /blog/get:
     get:
       consumes:
       - application/json
-      description: Get all blog posts
+      description: Get a blog post
+      parameters:
+      - description: Blog ID
+        in: query
+        name: blogID
+        required: true
+        type: string
       produces:
       - application/json
       responses:
         "200":
-          description: Blogs Fetched Successfully
+          description: Blog Fetched Successfully
           schema:
-            items:
-              $ref: '#/definitions/types.BlogResp'
-            type: array
+            $ref: '#/definitions/types.BlogResp'
         "400":
           description: invalid data request
           schema:
             type: string
         "500":
-          description: error getting blogs
+          description: error getting blog
           schema:
             type: string
-      summary: Get all blog posts
+      summary: Get a blog post
       tags:
       - Blog
-  /blogs/user:
+  /blog/get/user:
     get:
       consumes:
       - application/json
@@ -244,6 +248,31 @@ paths:
           schema:
             type: string
       summary: Get all blog posts of a user
+      tags:
+      - Blog
+  /blog/getAll:
+    get:
+      consumes:
+      - application/json
+      description: Get all blog posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Blogs Fetched Successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      summary: Get all blog posts
       tags:
       - Blog
   /user/create:

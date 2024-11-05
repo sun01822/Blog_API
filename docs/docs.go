@@ -24,7 +24,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/blog": {
+        "/blog/create": {
             "post": {
                 "description": "Create a blog post",
                 "consumes": [
@@ -77,9 +77,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/blogs": {
+        "/blog/get": {
             "get": {
-                "description": "Get all blog posts",
+                "description": "Get a blog post",
                 "consumes": [
                     "application/json"
                 ],
@@ -89,7 +89,60 @@ const docTemplate = `{
                 "tags": [
                     "Blog"
                 ],
-                "summary": "Get all blog posts",
+                "summary": "Get a blog post",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Blog ID",
+                        "name": "blogID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Blog Fetched Successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.BlogResp"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid data request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error getting blog",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/blog/get/user": {
+            "get": {
+                "description": "Get all blog posts of a user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Get all blog posts of a user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "userID",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Blogs Fetched Successfully",
@@ -115,9 +168,9 @@ const docTemplate = `{
                 }
             }
         },
-        "/blogs/user": {
+        "/blog/getAll": {
             "get": {
-                "description": "Get all blog posts of a user",
+                "description": "Get all blog posts",
                 "consumes": [
                     "application/json"
                 ],
@@ -127,16 +180,7 @@ const docTemplate = `{
                 "tags": [
                     "Blog"
                 ],
-                "summary": "Get all blog posts of a user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "userID",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
+                "summary": "Get all blog posts",
                 "responses": {
                     "200": {
                         "description": "Blogs Fetched Successfully",
