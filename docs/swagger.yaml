@@ -141,7 +141,7 @@ definitions:
       zipcode:
         type: string
     type: object
-host: 192.168.10.135:8080
+host: localhost:8080
 info:
   contact:
     email: support@swagger.io
