@@ -198,7 +198,7 @@ paths:
       parameters:
       - description: Blog ID
         in: query
-        name: blogID
+        name: blog_id
         required: true
         type: string
       produces:
@@ -227,7 +227,7 @@ paths:
       parameters:
       - description: User ID
         in: query
-        name: userID
+        name: user_id
         required: true
         type: string
       produces:

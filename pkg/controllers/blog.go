@@ -68,7 +68,7 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 // @Tags Blog
 // @Accept json
 // @Produce json
-// @Param blogID query string true "Blog ID"
+// @Param blog_id query string true "Blog ID"
 // @Success 200 {object} types.BlogResp "Blog Fetched Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blog"
@@ -115,7 +115,7 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 // @Tags Blog
 // @Accept json
 // @Produce json
-// @Param userID query string true "User ID"
+// @Param user_id query string true "User ID"
 // @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"

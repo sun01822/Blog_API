@@ -94,7 +94,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "Blog ID",
-                        "name": "blogID",
+                        "name": "blog_id",
                         "in": "query",
                         "required": true
                     }
@@ -138,7 +138,7 @@ const docTemplate = `{
                     {
                         "type": "string",
                         "description": "User ID",
-                        "name": "userID",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }

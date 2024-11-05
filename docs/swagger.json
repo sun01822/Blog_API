@@ -88,7 +88,7 @@
                     {
                         "type": "string",
                         "description": "Blog ID",
-                        "name": "blogID",
+                        "name": "blog_id",
                         "in": "query",
                         "required": true
                     }
@@ -132,7 +132,7 @@
                     {
                         "type": "string",
                         "description": "User ID",
-                        "name": "userID",
+                        "name": "user_id",
                         "in": "query",
                         "required": true
                     }
