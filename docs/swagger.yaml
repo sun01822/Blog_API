@@ -29,6 +29,8 @@ definitions:
         type: string
       description:
         type: string
+      id:
+        type: string
       is_published:
         type: boolean
       photo_url:
@@ -83,6 +85,8 @@ definitions:
       first_name:
         type: string
       gender:
+        type: string
+      id:
         type: string
       job:
         type: string
@@ -184,6 +188,31 @@ paths:
           schema:
             type: string
       summary: Create a blog post
+      tags:
+      - Blog
+  /blogs:
+    get:
+      consumes:
+      - application/json
+      description: Get all blog posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Blogs Fetched Successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      summary: Get all blog posts
       tags:
       - Blog
   /user/create:

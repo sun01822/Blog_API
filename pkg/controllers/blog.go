@@ -7,6 +7,7 @@ import (
 	blogconsts "Blog_API/pkg/utils/consts/blog"
 	userconsts "Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
+	"errors"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 )
@@ -61,28 +62,43 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogCreatedSuccessfully, blog)
 }
 
-//// GetBlogPost implements domain.BlogController.
-//func (ctr *blogController) GetBlogPost(c echo.Context) error {
-//	id, err := strconv.ParseUint(c.Param("postID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	blogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, blogPost)
-//}
-//
-//// GetBlogPosts implements domain.BlogController.
-//func (ctr *blogController) GetBlogPosts(c echo.Context) error {
-//	blogPosts, err := ctr.svc.GetBlogPosts()
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, blogPosts)
-//}
-//
+// GetBlogPost implements domain.BlogController.
+func (ctr *blogController) GetBlogPost(c echo.Context) error {
+
+	reqBlogID := c.QueryParam(blogconsts.BlogID)
+
+	if reqBlogID == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	blogPost, err := ctr.svc.GetBlogPost(reqBlogID)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlog)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogFetchSuccessfully, blogPost)
+}
+
+// GetBlogPosts implements domain.BlogController.
+// @Summary Get all blog posts
+// @Description Get all blog posts
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting blogs"
+// @Router /blogs [get]
+func (ctr *blogController) GetBlogPosts(c echo.Context) error {
+
+	blogPosts, err := ctr.svc.GetBlogPosts()
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlogs)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfully, blogPosts)
+}
+
 //// GetBlogPosts implements domain.BlogController.
 //func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 //	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)

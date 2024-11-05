@@ -9,11 +9,15 @@ const (
 )
 
 const (
+	BlogIDRequired = "required blog id"
+)
+
+const (
 	BlogCreatedSuccessfully = "blog created successfully"
-	UserFetchSuccessfully   = "blog fetched successfully"
-	UsersFetchSuccessfully  = "blogs fetched successfully"
-	UserUpdatedSuccessfully = "blog updated successfully"
-	UserDeletedSuccessfully = "blog deleted successfully"
+	BlogFetchSuccessfully   = "blog fetched successfully"
+	BlogsFetchSuccessfully  = "blogs fetched successfully"
+	BlogUpdatedSuccessfully = "blog updated successfully"
+	BlogDeletedSuccessfully = "blog deleted successfully"
 )
 
 const (

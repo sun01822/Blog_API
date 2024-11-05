@@ -132,6 +132,7 @@ func (svc *userService) UpdateUser(userID string, userReq types.UserUpdateReques
 
 func convertUserToUserResp(user models.User) types.UserResp {
 	return types.UserResp{
+		ID:             user.ID,
 		Email:          user.Email,
 		FirstName:      user.FirstName,
 		LastName:       user.LastName,

@@ -9,8 +9,8 @@ import (
 // For database UserRepository opearation (call from service)
 type BlogRepository interface {
 	CreateBlogPost(blogPost models.BlogPost) error
-	//GetBlogPostRepo(id uint) (models.BlogPost, error)
-	//GetBlogPostsRepo() ([]models.BlogPost, error)
+	GetBlogPost(blogID string) (models.BlogPost, error)
+	GetBlogPosts() ([]models.BlogPost, error)
 	//GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error)
 	//UpdateBlogPostRepo(blogPost *models.BlogPost) error
 	//DeleteBlogPostRepo(id uint) error
@@ -25,8 +25,8 @@ type BlogRepository interface {
 // For service operation (call from controller)
 type BlogService interface {
 	CreateBlogPost(reqBlogPost types.BlogPostRequest, userID string) (types.BlogResp, error)
-	//GetBlogPost(id uint) (models.BlogPost, error)
-	//GetBlogPosts() ([]models.BlogPost, error)
+	GetBlogPost(blogID string) (types.BlogResp, error)
+	GetBlogPosts() ([]types.BlogResp, error)
 	//GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
 	//UpdateBlogPost(blogPost *models.BlogPost) error
 	//DeleteBlogPost(id uint) error
@@ -41,8 +41,8 @@ type BlogService interface {
 // For controller operation (call from main)
 type BlogController interface {
 	CreateBlogPost(c echo.Context) error
-	//GetBlogPost(c echo.Context) error
-	//GetBlogPosts(c echo.Context) error
+	GetBlogPost(c echo.Context) error
+	GetBlogPosts(c echo.Context) error
 	//GetBlogPostsOfUser(c echo.Context) error
 	//UpdateBlogPost(c echo.Context) error
 	//DeleteBlogPost(c echo.Context) error

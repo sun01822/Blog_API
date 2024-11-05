@@ -55,24 +55,36 @@ func (svc *blogService) CreateBlogPost(reqBlogPost types.BlogPostRequest, userID
 	return convertBlogPostToBlogResp(reqBlog), nil
 }
 
-//// GetBlogPost implements domain.BlogService.
-//func (svc *blogService) GetBlogPost(id uint) (models.BlogPost, error) {
-//	blogPost, err := svc.repo.GetBlogPostRepo(id)
-//	if err != nil {
-//		return blogPost, err
-//	}
-//	return blogPost, nil
-//}
-//
-//// GetBlogPosts implements domain.BlogService.
-//func (svc *blogService) GetBlogPosts() ([]models.BlogPost, error) {
-//	blogPosts, err := svc.repo.GetBlogPostsRepo()
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
+// GetBlogPost implements domain.BlogService.
+func (svc *blogService) GetBlogPost(blogID string) (types.BlogResp, error) {
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if blogPost.ID == "" {
+		return types.BlogResp{}, errors.New(userconsts.ErrorGettingUser)
+	}
+
+	return convertBlogPostToBlogResp(blogPost), nil
+}
+
+// GetBlogPosts implements domain.BlogService.
+func (svc *blogService) GetBlogPosts() ([]types.BlogResp, error) {
+
+	var blogResp []types.BlogResp
+	blogPosts, err := svc.repo.GetBlogPosts()
+	if err != nil {
+		return blogResp, err
+	}
+
+	for _, blogPost := range blogPosts {
+		blogResp = append(blogResp, convertBlogPostToBlogResp(blogPost))
+	}
+
+	return blogResp, nil
+}
+
 //// GetBlogPosts implements domain.BlogService.
 //func (svc *blogService) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error) {
 //	blogPosts, err := svc.repo.GetBlogPostsOfUserRepo(userID)
@@ -151,6 +163,7 @@ func (svc *blogService) CreateBlogPost(reqBlogPost types.BlogPostRequest, userID
 
 func convertBlogPostToBlogResp(blogPost models.BlogPost) types.BlogResp {
 	return types.BlogResp{
+		ID:             blogPost.ID,
 		UserID:         blogPost.UserID,
 		Title:          blogPost.Title,
 		ContentText:    blogPost.ContentText,

@@ -39,6 +39,7 @@ func (comment Comment) Validate() error {
 }
 
 type BlogResp struct {
+	ID             string `json:"id,omitempty"`
 	UserID         string `json:"user_id"`
 	Title          string `json:"title"`
 	ContentText    string `json:"content_text,omitempty"`

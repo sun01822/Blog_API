@@ -27,26 +27,30 @@ func (repo *blogRepo) CreateBlogPost(blogPost models.BlogPost) error {
 	return nil
 }
 
-//// GetBlogPost implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostRepo(id uint) (models.BlogPost, error) {
-//	var blogPost models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).First(&blogPost).Error
-//	if err != nil {
-//		return blogPost, err
-//	}
-//	return blogPost, nil
-//}
-//
-//// GetBlogPosts implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostsRepo() ([]models.BlogPost, error) {
-//	var blogPosts []models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Find(&blogPosts).Error
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
+// GetBlogPost implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPost(blogID string) (models.BlogPost, error) {
+
+	var blogPost models.BlogPost
+	err := repo.d.Preload("Reactions").Preload("Comments").Where("id = ?", blogID).First(&blogPost).Error
+	if err != nil {
+		return blogPost, err
+	}
+
+	return blogPost, nil
+}
+
+// GetBlogPosts implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
+
+	var blogPosts []models.BlogPost
+	err := repo.d.Preload("Reactions").Preload("Comments").Find(&blogPosts).Error
+	if err != nil {
+		return blogPosts, err
+	}
+
+	return blogPosts, nil
+}
+
 //// GetBlogPosts implements domain.BlogRepository.
 //func (repo *blogRepo) GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error) {
 //	var blogPosts []models.BlogPost
