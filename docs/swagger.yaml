@@ -1,5 +1,51 @@
 basePath: /blog_api/v1
 definitions:
+  types.BlogPostRequest:
+    properties:
+      category:
+        type: string
+      content_text:
+        type: string
+      description:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      title:
+        type: string
+    type: object
+  types.BlogResp:
+    properties:
+      category:
+        type: string
+      comments_count:
+        type: integer
+      content_text:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      published_at:
+        type: string
+      reactions_count:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      views:
+        type: integer
+    type: object
   types.LoginRequest:
     properties:
       email:
@@ -105,6 +151,41 @@ info:
   title: Blog API
   version: "1.0"
 paths:
+  /blog:
+    post:
+      consumes:
+      - application/json
+      description: Create a blog post
+      parameters:
+      - description: JWT Token
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog Post Request
+        in: body
+        name: blogPost
+        required: true
+        schema:
+          $ref: '#/definitions/types.BlogPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Blog Post Created Successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error creating blog
+          schema:
+            type: string
+      summary: Create a blog post
+      tags:
+      - Blog
   /user/create:
     post:
       consumes:
@@ -134,7 +215,7 @@ paths:
             type: string
       summary: Create a new user
       tags:
-      - user
+      - User
   /user/delete:
     delete:
       consumes:
@@ -165,7 +246,7 @@ paths:
       - BearerAuth: []
       summary: Delete a user
       tags:
-      - user
+      - User
   /user/get:
     get:
       consumes:
@@ -194,7 +275,7 @@ paths:
             type: string
       summary: Get a user by ID
       tags:
-      - user
+      - User
   /user/getAll:
     get:
       consumes:
@@ -228,7 +309,7 @@ paths:
             type: string
       summary: Get all users
       tags:
-      - user
+      - User
   /user/login:
     post:
       consumes:
@@ -258,7 +339,7 @@ paths:
             type: string
       summary: User login
       tags:
-      - user
+      - User
   /user/update:
     put:
       consumes:
@@ -295,5 +376,5 @@ paths:
       - BearerAuth: []
       summary: Update a user
       tags:
-      - user
+      - User
 swagger: "2.0"

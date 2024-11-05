@@ -26,6 +26,17 @@ func NewBlogController(svc domain.BlogService, svc2 domain.Service) domain.BlogC
 }
 
 // CreateBlogPost implements domain.BlogController.
+// @Summary Create a blog post
+// @Description Create a blog post
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Param Authorization header string true "JWT Token"
+// @Param blogPost body types.BlogPostRequest true "Blog Post Request"
+// @Success 200 {object} types.BlogResp "Blog Post Created Successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error creating blog"
+// @Router /blog [post]
 func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
