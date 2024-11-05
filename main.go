@@ -20,7 +20,7 @@ import (
 // @contact.email support@swagger.io
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host localhost:8080
+// @host http://192.168.10.135:8080
 // @BasePath /blog_api/v1
 func main() {
 	e := echo.New()

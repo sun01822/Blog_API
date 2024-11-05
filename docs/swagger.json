@@ -15,7 +15,7 @@
         },
         "version": "1.0"
     },
-    "host": "localhost:8080",
+    "host": "http://192.168.10.135:8080",
     "basePath": "/blog_api/v1",
     "paths": {
         "/user/create": {
