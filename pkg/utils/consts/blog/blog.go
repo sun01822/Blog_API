@@ -13,11 +13,12 @@ const (
 )
 
 const (
-	BlogCreatedSuccessfully = "blog created successfully"
-	BlogFetchSuccessfully   = "blog fetched successfully"
-	BlogsFetchSuccessfully  = "blogs fetched successfully"
-	BlogUpdatedSuccessfully = "blog updated successfully"
-	BlogDeletedSuccessfully = "blog deleted successfully"
+	BlogCreatedSuccessfully      = "blog created successfully"
+	BlogFetchSuccessfully        = "blog fetched successfully"
+	BlogsFetchSuccessfully       = "blogs fetched successfully"
+	BlogsFetchSuccessfullyOfUser = "blogs fetched successfully of user"
+	BlogUpdatedSuccessfully      = "blog updated successfully"
+	BlogDeletedSuccessfully      = "blog deleted successfully"
 )
 
 const (

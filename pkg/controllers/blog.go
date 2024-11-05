@@ -99,19 +99,32 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfully, blogPosts)
 }
 
-//// GetBlogPosts implements domain.BlogController.
-//func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
-//	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	blogPosts, err := ctr.svc.GetBlogPostsOfUser(uint(userID))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, blogPosts)
-//}
-//
+// GetBlogPostsOfUser implements domain.BlogController.
+// @Summary Get all blog posts of a user
+// @Description Get all blog posts of a user
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Param userID query string true "User ID"
+// @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting blogs"
+// @Router /blogs/user [get]
+func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
+
+	userID := c.QueryParam(userconsts.UserID)
+	if userID == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	blogPosts, err := ctr.svc.GetBlogPostsOfUser(userID)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlogs)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfullyOfUser, blogPosts)
+}
+
 //// UpdateBlogPost implements domain.BlogController.
 //func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 //	blogPost := &types.UpdateBlogPostRequest{}

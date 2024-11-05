@@ -85,15 +85,22 @@ func (svc *blogService) GetBlogPosts() ([]types.BlogResp, error) {
 	return blogResp, nil
 }
 
-//// GetBlogPosts implements domain.BlogService.
-//func (svc *blogService) GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error) {
-//	blogPosts, err := svc.repo.GetBlogPostsOfUserRepo(userID)
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
+// GetBlogPosts implements domain.BlogService.
+func (svc *blogService) GetBlogPostsOfUser(userID string) ([]types.BlogResp, error) {
+
+	var blogResp []types.BlogResp
+	blogPosts, err := svc.repo.GetBlogPostsOfUser(userID)
+	if err != nil {
+		return []types.BlogResp{}, err
+	}
+
+	for _, blogPost := range blogPosts {
+		blogResp = append(blogResp, convertBlogPostToBlogResp(blogPost))
+	}
+
+	return blogResp, nil
+}
+
 //// UpdateBlogPost implements domain.BlogService.
 //func (svc *blogService) UpdateBlogPost(blogPost *models.BlogPost) error {
 //	if err := svc.repo.UpdateBlogPostRepo(blogPost); err != nil {

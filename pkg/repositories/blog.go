@@ -51,16 +51,18 @@ func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
 	return blogPosts, nil
 }
 
-//// GetBlogPosts implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error) {
-//	var blogPosts []models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Where("user_id = ?", userID).Find(&blogPosts).Error
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
+// GetBlogPosts implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPostsOfUser(userID string) ([]models.BlogPost, error) {
+
+	var blogPosts []models.BlogPost
+	err := repo.d.Preload("Reactions").Preload("Comments").Where("user_id = ?", userID).Find(&blogPosts).Error
+	if err != nil {
+		return blogPosts, err
+	}
+
+	return blogPosts, nil
+}
+
 //// UpdateBlogPost implements domain.BlogRepository.
 //func (repo *blogRepo) UpdateBlogPostRepo(blogPost *models.BlogPost) error {
 //	err := repo.d.Preload("Likes").Preload("Comments").Save(blogPost).Error

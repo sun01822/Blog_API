@@ -215,6 +215,37 @@ paths:
       summary: Get all blog posts
       tags:
       - Blog
+  /blogs/user:
+    get:
+      consumes:
+      - application/json
+      description: Get all blog posts of a user
+      parameters:
+      - description: User ID
+        in: query
+        name: userID
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Blogs Fetched Successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      summary: Get all blog posts of a user
+      tags:
+      - Blog
   /user/create:
     post:
       consumes:

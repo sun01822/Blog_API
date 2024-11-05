@@ -15,6 +15,10 @@ const (
 )
 
 const (
+	UserIDRequired = "required user id"
+)
+
+const (
 	UserFetchSuccessfully   = "user fetched successfully"
 	UsersFetchSuccessfully  = "users fetched successfully"
 	UserUpdatedSuccessfully = "user updated successfully"

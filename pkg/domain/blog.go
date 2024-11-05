@@ -11,7 +11,7 @@ type BlogRepository interface {
 	CreateBlogPost(blogPost models.BlogPost) error
 	GetBlogPost(blogID string) (models.BlogPost, error)
 	GetBlogPosts() ([]models.BlogPost, error)
-	//GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error)
+	GetBlogPostsOfUser(userID string) ([]models.BlogPost, error)
 	//UpdateBlogPostRepo(blogPost *models.BlogPost) error
 	//DeleteBlogPostRepo(id uint) error
 	//AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error)
@@ -27,7 +27,7 @@ type BlogService interface {
 	CreateBlogPost(reqBlogPost types.BlogPostRequest, userID string) (types.BlogResp, error)
 	GetBlogPost(blogID string) (types.BlogResp, error)
 	GetBlogPosts() ([]types.BlogResp, error)
-	//GetBlogPostsOfUser(userID uint) ([]models.BlogPost, error)
+	GetBlogPostsOfUser(userID string) ([]types.BlogResp, error)
 	//UpdateBlogPost(blogPost *models.BlogPost) error
 	//DeleteBlogPost(id uint) error
 	//AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error)
@@ -43,7 +43,7 @@ type BlogController interface {
 	CreateBlogPost(c echo.Context) error
 	GetBlogPost(c echo.Context) error
 	GetBlogPosts(c echo.Context) error
-	//GetBlogPostsOfUser(c echo.Context) error
+	GetBlogPostsOfUser(c echo.Context) error
 	//UpdateBlogPost(c echo.Context) error
 	//DeleteBlogPost(c echo.Context) error
 	//AddAndRemoveLike(c echo.Context) error
