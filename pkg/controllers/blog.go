@@ -37,7 +37,7 @@ func NewBlogController(svc domain.BlogService, svc2 domain.Service) domain.BlogC
 // @Success 200 {object} types.BlogResp "Blog Post Created Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error creating blog"
-// @Router /blog [post]
+// @Router /blog/create [post]
 func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
@@ -63,6 +63,16 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 }
 
 // GetBlogPost implements domain.BlogController.
+// @Summary Get a blog post
+// @Description Get a blog post
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Param blogID query string true "Blog ID"
+// @Success 200 {object} types.BlogResp "Blog Fetched Successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting blog"
+// @Router /blog/get [get]
 func (ctr *blogController) GetBlogPost(c echo.Context) error {
 
 	reqBlogID := c.QueryParam(blogconsts.BlogID)
@@ -88,7 +98,7 @@ func (ctr *blogController) GetBlogPost(c echo.Context) error {
 // @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"
-// @Router /blogs [get]
+// @Router /blog/getAll [get]
 func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 
 	blogPosts, err := ctr.svc.GetBlogPosts()
@@ -109,7 +119,7 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 // @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"
-// @Router /blogs/user [get]
+// @Router /blog/get/user [get]
 func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 
 	userID := c.QueryParam(userconsts.UserID)
