@@ -22,5 +22,6 @@ const (
 )
 
 const (
-	BlogID = "blog_id"
+	BlogID  = "blog_id"
+	BlogIDs = "blog_ids"
 )

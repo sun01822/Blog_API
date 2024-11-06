@@ -36,7 +36,7 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo) {
 	blog.GET("/get", b.blogController.GetBlogPost)
 	blog.GET("/getAll", b.blogController.GetBlogPosts)
 	blog.GET("/get/user", b.blogController.GetBlogPostsOfUser)
-	//blog.PUT("/update/:userID/:postID", b.blogController.UpdateBlogPost, middlewares.Auth)
+	blog.PUT("/update", b.blogController.UpdateBlogPost, middlewares.Auth)
 	//blog.DELETE("/delete/:userID/:postID", b.blogController.DeleteBlogPost, middlewares.Auth)
 	//
 	//// like and comment routes

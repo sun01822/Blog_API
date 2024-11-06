@@ -57,7 +57,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 	}
 
 	now := time.Now().UTC()
-	ttl := time.Minute * 15
+	ttl := time.Minute * consts.ExpiredTokenLimit
 
 	jwtClaims := types.JWTClaims{
 		StandardClaims: jwt.StandardClaims{

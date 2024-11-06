@@ -26,6 +26,7 @@ type UpdateBlogPostRequest struct {
 	PhotoURL    string `json:"photo_url"`
 	Description string `json:"description"`
 	Category    string `json:"category"`
+	IsPublished bool   `json:"is_published"`
 }
 
 type Comment struct {
@@ -35,6 +36,13 @@ type Comment struct {
 func (comment Comment) Validate() error {
 	return validation.ValidateStruct(&comment,
 		validation.Field(&comment.Content, validation.Required, validation.Length(2, 500)),
+	)
+}
+
+func (blogPost UpdateBlogPostRequest) Validate() error {
+	return validation.ValidateStruct(&blogPost,
+		validation.Field(&blogPost.Title, validation.Required, validation.Length(10, 255)),
+		validation.Field(&blogPost.Category, validation.Required, validation.Length(3, 100)),
 	)
 }
 

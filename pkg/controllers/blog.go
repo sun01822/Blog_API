@@ -10,19 +10,18 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"strings"
 )
 
 // Parent struct to implement interface binding
 type blogController struct {
-	svc  domain.BlogService
-	svc2 domain.Service
+	svc domain.BlogService
 }
 
 // Interface binding
-func NewBlogController(svc domain.BlogService, svc2 domain.Service) domain.BlogController {
+func NewBlogController(svc domain.BlogService) domain.BlogController {
 	return &blogController{
-		svc:  svc,
-		svc2: svc2,
+		svc: svc,
 	}
 }
 
@@ -116,18 +115,19 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param user_id query string true "User ID"
+// @Param blog_ids query string false "Blog IDs"
 // @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"
 // @Router /blog/get/user [get]
 func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 
-	userID := c.QueryParam(userconsts.UserID)
-	if userID == "" {
-		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	userID, blogIDs, err := extractUserIDAndBlogIDs(c)
+	if err != nil {
+		return response.ErrorResponse(c, err, consts.InvalidDataRequest)
 	}
 
-	blogPosts, err := ctr.svc.GetBlogPostsOfUser(userID)
+	blogPosts, err := ctr.svc.GetBlogPostsOfUser(userID, blogIDs)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlogs)
 	}
@@ -135,65 +135,40 @@ func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfullyOfUser, blogPosts)
 }
 
-//// UpdateBlogPost implements domain.BlogController.
-//func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
-//	blogPost := &types.UpdateBlogPostRequest{}
-//	if err := c.Bind(blogPost); err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	tempUserID := c.Param("userID")
-//	userID, err := strconv.ParseUint(tempUserID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Blog post not found")
-//	}
-//	if existingBlogPost.UserID != uint(userID) {
-//		return c.JSON(http.StatusUnauthorized, "You are not authorized to update this blog post")
-//	}
-//	blog := &models.BlogPost{
-//		Model:         gorm.Model{ID: uint(existingBlogPost.ID), CreatedAt: existingBlogPost.CreatedAt, UpdatedAt: time.Now(), DeletedAt: existingBlogPost.DeletedAt},
-//		Title:         blogPost.Title,
-//		ContentText:   blogPost.ContentText,
-//		PhotoURL:      blogPost.PhotoURL,
-//		Description:   blogPost.Description,
-//		Category:      blogPost.Category,
-//		IsPublished:   existingBlogPost.IsPublished,
-//		PublishedAt:   existingBlogPost.PublishedAt,
-//		Likes:         existingBlogPost.Likes,
-//		UserID:        uint(userID),
-//		LikesCount:    existingBlogPost.LikesCount,
-//		Comments:      existingBlogPost.Comments,
-//		CommentsCount: existingBlogPost.CommentsCount,
-//	}
-//	if blog.Title == "" {
-//		blog.Title = existingBlogPost.Title
-//	}
-//	if blog.ContentText == "" {
-//		blog.ContentText = existingBlogPost.ContentText
-//	}
-//	if blog.PhotoURL == "" {
-//		blog.PhotoURL = existingBlogPost.PhotoURL
-//	}
-//	if blog.Description == "" {
-//		blog.Description = existingBlogPost.Description
-//	}
-//	if blog.Category == "" {
-//		blog.Category = existingBlogPost.Category
-//	}
-//	if err := ctr.svc.UpdateBlogPost(blog); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "Blog post updated successfully")
-//}
-//
+// UpdateBlogPost implements domain.BlogController.
+func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	blogID := c.QueryParam(blogconsts.BlogID)
+	if blogID == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	updateBlogReq := types.UpdateBlogPostRequest{}
+	if err := c.Bind(&updateBlogReq); err != nil {
+		return response.ErrorResponse(c, err, consts.InvalidDataRequest)
+	}
+
+	if err := updateBlogReq.Validate(); err != nil {
+		return response.ErrorResponse(c, err, consts.ValidationError)
+	}
+
+	blog, err := ctr.svc.UpdateBlogPost(userID.String(), blogID, updateBlogReq)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorUpdatingBlog)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogUpdatedSuccessfully, blog)
+}
+
 //// DeleteBlogPost implements domain.BlogController.
 //func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 //	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
@@ -399,3 +374,17 @@ func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 //	}
 //	return c.JSON(http.StatusOK, "Comment updated successfully")
 //}
+
+func extractUserIDAndBlogIDs(ctx echo.Context) (string, []string, error) {
+
+	userID := ctx.Get(userconsts.UserID).(string)
+	_, err := uuid.Parse(userID)
+	if err != nil {
+		return "", nil, errors.New(consts.InvalidDataRequest)
+	}
+
+	blogIDsParam := ctx.QueryParam(blogconsts.BlogIDs)
+	blogIDs := strings.Fields(strings.ReplaceAll(blogIDsParam, ",", " "))
+
+	return userID, blogIDs, nil
+}

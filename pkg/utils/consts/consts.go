@@ -12,3 +12,5 @@ const (
 	InvalidDataRequest          = "invalid data request"
 	ValidationError             = "validation error"
 )
+
+const ExpiredTokenLimit = 60

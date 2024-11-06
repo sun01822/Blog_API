@@ -4,6 +4,7 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/types"
+	blogconsts "Blog_API/pkg/utils/consts/blog"
 	userconsts "Blog_API/pkg/utils/consts/user"
 	"errors"
 	"github.com/google/uuid"
@@ -12,22 +13,22 @@ import (
 
 // Parent struct to implement interface binding
 type blogService struct {
-	repo  domain.BlogRepository
-	uRepo domain.Repository
+	repo domain.BlogRepository
+	uSvc domain.Service
 }
 
 // Interface binding
-func NewBlogService(repo domain.BlogRepository, uRepo domain.Repository) domain.BlogService {
+func NewBlogService(repo domain.BlogRepository, usvc domain.Service) domain.BlogService {
 	return &blogService{
-		repo:  repo,
-		uRepo: uRepo,
+		repo: repo,
+		uSvc: usvc,
 	}
 }
 
 // CreateBlogPost implements domain.BlogService.
 func (svc *blogService) CreateBlogPost(reqBlogPost types.BlogPostRequest, userID string) (types.BlogResp, error) {
 
-	user, err := svc.uRepo.GetUser(userID)
+	user, err := svc.uSvc.GetUser(userID)
 	if err != nil {
 		return types.BlogResp{}, err
 	}
@@ -86,10 +87,10 @@ func (svc *blogService) GetBlogPosts() ([]types.BlogResp, error) {
 }
 
 // GetBlogPosts implements domain.BlogService.
-func (svc *blogService) GetBlogPostsOfUser(userID string) ([]types.BlogResp, error) {
+func (svc *blogService) GetBlogPostsOfUser(userID string, blogIDs []string) ([]types.BlogResp, error) {
 
 	var blogResp []types.BlogResp
-	blogPosts, err := svc.repo.GetBlogPostsOfUser(userID)
+	blogPosts, err := svc.repo.GetBlogPostsOfUser(userID, blogIDs)
 	if err != nil {
 		return []types.BlogResp{}, err
 	}
@@ -101,14 +102,42 @@ func (svc *blogService) GetBlogPostsOfUser(userID string) ([]types.BlogResp, err
 	return blogResp, nil
 }
 
-//// UpdateBlogPost implements domain.BlogService.
-//func (svc *blogService) UpdateBlogPost(blogPost *models.BlogPost) error {
-//	if err := svc.repo.UpdateBlogPostRepo(blogPost); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
+// UpdateBlogPost implements domain.BlogService.
+func (svc *blogService) UpdateBlogPost(userID string, blogID string, blogPostReq types.UpdateBlogPostRequest) (types.BlogResp, error) {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	blogPost, err := svc.repo.GetBlogPostsOfUser(userID, []string{blogID})
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if len(blogPost) == 0 {
+		return types.BlogResp{}, errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	blog := models.BlogPost{
+		ID:          blogPost[0].ID,
+		UserID:      user.ID,
+		Title:       blogPostReq.Title,
+		ContentText: blogPostReq.ContentText,
+		PhotoURL:    blogPostReq.PhotoURL,
+		Description: blogPostReq.Description,
+		Category:    blogPostReq.Category,
+		IsPublished: blogPostReq.IsPublished,
+		PublishedAt: time.Now(),
+	}
+
+	if updateErr := svc.repo.UpdateBlogPost(blog); updateErr != nil {
+		return types.BlogResp{}, updateErr
+	}
+
+	return convertBlogPostToBlogResp(blog), nil
+}
+
 //// DeleteBlogPost implements domain.BlogService.
 //func (svc *blogService) DeleteBlogPost(id uint) error {
 //	if err := svc.repo.DeleteBlogPostRepo(id); err != nil {
