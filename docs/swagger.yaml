@@ -71,6 +71,21 @@ definitions:
       phone:
         type: string
     type: object
+  types.UpdateBlogPostRequest:
+    properties:
+      category:
+        type: string
+      content_text:
+        type: string
+      description:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      title:
+        type: string
+    type: object
   types.UserResp:
     properties:
       city:
@@ -230,6 +245,10 @@ paths:
         name: user_id
         required: true
         type: string
+      - description: Blog IDs
+        in: query
+        name: blog_ids
+        type: string
       produces:
       - application/json
       responses:
@@ -273,6 +292,48 @@ paths:
           schema:
             type: string
       summary: Get all blog posts
+      tags:
+      - Blog
+  /blog/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a blog post
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      - description: update blog post request
+        in: body
+        name: blogPost
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateBlogPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog Updated Successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error updating blog
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a blog post
       tags:
       - Blog
   /user/create:

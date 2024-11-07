@@ -136,6 +136,19 @@ func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 }
 
 // UpdateBlogPost implements domain.BlogController.
+// @Summary Update a blog post
+// @Description Update a blog post
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param blogPost body types.UpdateBlogPostRequest true "update blog post request"
+// @Success 200 {object} types.BlogResp "blog Updated Successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error updating blog"
+// @Router /blog/update [put]
 func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
