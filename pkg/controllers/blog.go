@@ -193,6 +193,9 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 // @Param Authorization header string true "Bearer <token>"
 // @Param blog_id query string true "Blog ID"
 // @Success 200 {string} string "blog deleted successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error deleting blog"
+// @Router /blog/delete [delete]
 func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))

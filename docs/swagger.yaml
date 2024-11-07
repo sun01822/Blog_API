@@ -207,6 +207,42 @@ paths:
       summary: Create a blog post
       tags:
       - Blog
+  /blog/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a blog post
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog deleted successfully
+          schema:
+            type: string
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error deleting blog
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a blog post
+      tags:
+      - Blog
   /blog/get:
     get:
       consumes:
