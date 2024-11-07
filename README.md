@@ -8,12 +8,12 @@ Welcome to the **Blog API**! Built with the Golang Echo framework, this API faci
 
 ## 📚 Table of Contents
 
-- [Getting Started](#getting-started)
-- [API Endpoints](#api-endpoints)
-  - [User Endpoints](#user-endpoints)
-  - [Blog Endpoints](#blog-endpoints)
-- [Schema Definitions](#schema-definitions)
-- [License](#license)
+- [Getting Started](#-getting-started)
+- [API Endpoints](#-api-endpoints)
+  - [User Endpoints](#-user-endpoints)
+  - [Blog Endpoints](#-blog-endpoints)
+- [Schema Definitions](#-schema-definitions)
+- [License](#-license)
 
 ---
 
