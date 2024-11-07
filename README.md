@@ -35,7 +35,7 @@ Welcome to the **Blog API**! Built with the Golang Echo framework, this API faci
    ```
 2. Move to the project directory:
    ```bash
-   cd blog-api
+   cd Blog_API
    ```
 3. Start the API server:
    ```bash
