@@ -28,7 +28,7 @@ func SetUserController(svc domain.Service) domain.Controller {
 // Login godoc
 // @Summary User login
 // @Description Logs in a user and returns a JWT token
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param login body types.LoginRequest true "Login Request"
@@ -57,7 +57,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 	}
 
 	now := time.Now().UTC()
-	ttl := time.Minute * 15
+	ttl := time.Minute * consts.ExpiredTokenLimit
 
 	jwtClaims := types.JWTClaims{
 		StandardClaims: jwt.StandardClaims{
@@ -81,7 +81,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 // CreateUser implements domain.Controller.
 // @Summary Create a new user
 // @Description Create a new user
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param user body types.SignUpRequest true "User Request"
@@ -112,7 +112,7 @@ func (ctr *userController) CreateUser(ctx echo.Context) error {
 // GetUser implements domain.Controller.
 // @Summary Get a user by ID
 // @Description Get a user by ID
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param user_id query string true "User ID"
@@ -138,7 +138,7 @@ func (ctr *userController) GetUser(c echo.Context) error {
 // GetUsers implements domain.Controller.
 // @Summary Get all users
 // @Description Get all users
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Param offset query string false "Offset"
@@ -167,7 +167,7 @@ func (ctr *userController) GetUsers(c echo.Context) error {
 // UpdateUser implements domain.Controller.
 // @Summary Update a user
 // @Description Update a user
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Security BearerAuth
@@ -204,7 +204,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 // DeleteUser implements domain.Controller.
 // @Summary Delete a user
 // @Description Delete a user
-// @Tags user
+// @Tags User
 // @Accept json
 // @Produce json
 // @Security BearerAuth

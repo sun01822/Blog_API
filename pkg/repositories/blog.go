@@ -3,6 +3,7 @@ package repositories
 import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
+	"Blog_API/pkg/utils/consts"
 	"gorm.io/gorm"
 )
 
@@ -20,61 +21,77 @@ func NewBlogRepo(db *gorm.DB) domain.BlogRepository {
 
 // CreateBlogPost implements domain.BlogRepository.
 func (repo *blogRepo) CreateBlogPost(blogPost models.BlogPost) error {
-	err := repo.d.Preload("Reactions").Preload("Comments").Create(&blogPost).Error
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Create(&blogPost).Error
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-//// GetBlogPost implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostRepo(id uint) (models.BlogPost, error) {
-//	var blogPost models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).First(&blogPost).Error
-//	if err != nil {
-//		return blogPost, err
-//	}
-//	return blogPost, nil
-//}
-//
-//// GetBlogPosts implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostsRepo() ([]models.BlogPost, error) {
-//	var blogPosts []models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Find(&blogPosts).Error
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
-//// GetBlogPosts implements domain.BlogRepository.
-//func (repo *blogRepo) GetBlogPostsOfUserRepo(userID uint) ([]models.BlogPost, error) {
-//	var blogPosts []models.BlogPost
-//	err := repo.d.Preload("Likes").Preload("Comments").Where("user_id = ?", userID).Find(&blogPosts).Error
-//	if err != nil {
-//		return blogPosts, err
-//	}
-//	return blogPosts, nil
-//}
-//
-//// UpdateBlogPost implements domain.BlogRepository.
-//func (repo *blogRepo) UpdateBlogPostRepo(blogPost *models.BlogPost) error {
-//	err := repo.d.Preload("Likes").Preload("Comments").Save(blogPost).Error
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
-//// DeleteBlogPost implements domain.BlogRepository.
-//func (repo *blogRepo) DeleteBlogPostRepo(id uint) error {
-//	err := repo.d.Preload("Likes").Preload("Comments").Where("id = ?", id).Delete(&models.BlogPost{}).Error
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
+// GetBlogPost implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPost(blogID string) (models.BlogPost, error) {
+
+	var blogPost models.BlogPost
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Where("id = ?", blogID).First(&blogPost).Error
+	if err != nil {
+		return blogPost, err
+	}
+
+	return blogPost, nil
+}
+
+// GetBlogPosts implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
+
+	var blogPosts []models.BlogPost
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Find(&blogPosts).Error
+	if err != nil {
+		return blogPosts, err
+	}
+
+	return blogPosts, nil
+}
+
+// GetBlogPosts implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPostsOfUser(userID string, blogIDs []string) ([]models.BlogPost, error) {
+
+	var blogPosts []models.BlogPost
+	query := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Where("user_id = ?", userID)
+
+	if len(blogIDs) > 0 {
+		query = query.Where("id IN ?", blogIDs)
+	}
+
+	err := query.Find(&blogPosts).Error
+	if err != nil {
+		return blogPosts, err
+	}
+
+	return blogPosts, nil
+}
+
+// UpdateBlogPost implements domain.BlogRepository.
+func (repo *blogRepo) UpdateBlogPost(blogPost models.BlogPost) error {
+
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Updates(&blogPost).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// DeleteBlogPost implements domain.BlogRepository.
+func (repo *blogRepo) DeleteBlogPost(blogID string) error {
+
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Where("id = ?", blogID).Delete(&models.BlogPost{}).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 //func (repo *blogRepo) AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error) {
 //	// check if the user has already liked the post
 //	// if yes, remove the like

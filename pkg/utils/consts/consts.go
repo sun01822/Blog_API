@@ -12,3 +12,10 @@ const (
 	InvalidDataRequest          = "invalid data request"
 	ValidationError             = "validation error"
 )
+
+const (
+	REACTIONS = "Reactions"
+	COMMENTS  = "Comments"
+)
+
+const ExpiredTokenLimit = 60

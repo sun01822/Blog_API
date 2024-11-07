@@ -28,11 +28,11 @@ func Serve(e *echo.Echo) {
 
 	// Service initialization
 	userService := services.SetUserService(userRepo)
-	blogService := services.NewBlogService(blogRepo, userRepo)
+	blogService := services.NewBlogService(blogRepo, userService)
 
 	// Controller initialization
 	userController := controllers.SetUserController(userService)
-	blogController := controllers.NewBlogController(blogService, userService)
+	blogController := controllers.NewBlogController(blogService)
 
 	user := routes.NewUserRoutes(e, userController)
 	user.InitUserRoutes()

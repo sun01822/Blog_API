@@ -14,8 +14,8 @@ type SuccessRes struct {
 }
 
 type ErrorRes struct {
-	Error   string `json:"error"`
 	Message string `json:"message"`
+	Error   string `json:"error"`
 	Status  int    `json:"status"`
 }
 
@@ -31,8 +31,8 @@ func SuccessResponse(c echo.Context, message string, details interface{}) error 
 func ErrorResponse(c echo.Context, err error, message string) error {
 	statusCode := utils.StatusCode(err)
 	return c.JSON(statusCode, ErrorRes{
-		Error:   err.Error(),
 		Message: message,
+		Error:   err.Error(),
 		Status:  statusCode,
 	})
 }

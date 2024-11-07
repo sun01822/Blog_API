@@ -74,6 +74,7 @@ func (user LoginRequest) Validate() error {
 
 // UserResponse
 type UserResp struct {
+	ID             string    `json:"id,omitempty"`
 	Email          string    `json:"email,omitempty"`
 	Gender         string    `json:"gender,omitempty"`
 	DateOfBirth    time.Time `json:"date_of_birth,omitempty"`

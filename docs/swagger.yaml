@@ -1,5 +1,53 @@
 basePath: /blog_api/v1
 definitions:
+  types.BlogPostRequest:
+    properties:
+      category:
+        type: string
+      content_text:
+        type: string
+      description:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      title:
+        type: string
+    type: object
+  types.BlogResp:
+    properties:
+      category:
+        type: string
+      comments_count:
+        type: integer
+      content_text:
+        type: string
+      created_at:
+        type: string
+      deleted_at:
+        type: string
+      description:
+        type: string
+      id:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      published_at:
+        type: string
+      reactions_count:
+        type: integer
+      title:
+        type: string
+      updated_at:
+        type: string
+      user_id:
+        type: string
+      views:
+        type: integer
+    type: object
   types.LoginRequest:
     properties:
       email:
@@ -23,6 +71,21 @@ definitions:
       phone:
         type: string
     type: object
+  types.UpdateBlogPostRequest:
+    properties:
+      category:
+        type: string
+      content_text:
+        type: string
+      description:
+        type: string
+      is_published:
+        type: boolean
+      photo_url:
+        type: string
+      title:
+        type: string
+    type: object
   types.UserResp:
     properties:
       city:
@@ -37,6 +100,8 @@ definitions:
       first_name:
         type: string
       gender:
+        type: string
+      id:
         type: string
       job:
         type: string
@@ -105,6 +170,210 @@ info:
   title: Blog API
   version: "1.0"
 paths:
+  /blog/create:
+    post:
+      consumes:
+      - application/json
+      description: Create a blog post
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog Post Request
+        in: body
+        name: blogPost
+        required: true
+        schema:
+          $ref: '#/definitions/types.BlogPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog post created successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error creating blog
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a blog post
+      tags:
+      - Blog
+  /blog/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a blog post
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog deleted successfully
+          schema:
+            type: string
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error deleting blog
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a blog post
+      tags:
+      - Blog
+  /blog/get:
+    get:
+      consumes:
+      - application/json
+      description: Get a blog post
+      parameters:
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog fetched successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blog
+          schema:
+            type: string
+      summary: Get a blog post
+      tags:
+      - Blog
+  /blog/get/user:
+    get:
+      consumes:
+      - application/json
+      description: Get all blog posts of a user
+      parameters:
+      - description: User ID
+        in: query
+        name: user_id
+        required: true
+        type: string
+      - description: Blog IDs
+        in: query
+        name: blog_ids
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blogs fetched successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      summary: Get all blog posts of a user
+      tags:
+      - Blog
+  /blog/getAll:
+    get:
+      consumes:
+      - application/json
+      description: Get all blog posts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blogs fetched successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      summary: Get all blog posts
+      tags:
+      - Blog
+  /blog/update:
+    put:
+      consumes:
+      - application/json
+      description: Update a blog post
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      - description: update blog post request
+        in: body
+        name: blogPost
+        required: true
+        schema:
+          $ref: '#/definitions/types.UpdateBlogPostRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blog updated successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error updating blog
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Update a blog post
+      tags:
+      - Blog
   /user/create:
     post:
       consumes:
@@ -134,7 +403,7 @@ paths:
             type: string
       summary: Create a new user
       tags:
-      - user
+      - User
   /user/delete:
     delete:
       consumes:
@@ -165,7 +434,7 @@ paths:
       - BearerAuth: []
       summary: Delete a user
       tags:
-      - user
+      - User
   /user/get:
     get:
       consumes:
@@ -194,7 +463,7 @@ paths:
             type: string
       summary: Get a user by ID
       tags:
-      - user
+      - User
   /user/getAll:
     get:
       consumes:
@@ -228,7 +497,7 @@ paths:
             type: string
       summary: Get all users
       tags:
-      - user
+      - User
   /user/login:
     post:
       consumes:
@@ -258,7 +527,7 @@ paths:
             type: string
       summary: User login
       tags:
-      - user
+      - User
   /user/update:
     put:
       consumes:
@@ -295,5 +564,5 @@ paths:
       - BearerAuth: []
       summary: Update a user
       tags:
-      - user
+      - User
 swagger: "2.0"
