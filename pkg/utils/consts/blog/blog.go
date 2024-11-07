@@ -25,3 +25,7 @@ const (
 	BlogID  = "blog_id"
 	BlogIDs = "blog_ids"
 )
+
+const (
+	YouAreNotAuthorizedToDeleteThisBlog = "you are not authorized to delete this blog"
+)

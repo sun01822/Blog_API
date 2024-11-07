@@ -31,9 +31,10 @@ func NewBlogController(svc domain.BlogService) domain.BlogController {
 // @Tags Blog
 // @Accept json
 // @Produce json
-// @Param Authorization header string true "JWT Token"
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
 // @Param blogPost body types.BlogPostRequest true "Blog Post Request"
-// @Success 200 {object} types.BlogResp "Blog Post Created Successfully"
+// @Success 200 {object} types.BlogResp "blog post created successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error creating blog"
 // @Router /blog/create [post]
@@ -68,7 +69,7 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 // @Accept json
 // @Produce json
 // @Param blog_id query string true "Blog ID"
-// @Success 200 {object} types.BlogResp "Blog Fetched Successfully"
+// @Success 200 {object} types.BlogResp "blog fetched successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blog"
 // @Router /blog/get [get]
@@ -94,7 +95,7 @@ func (ctr *blogController) GetBlogPost(c echo.Context) error {
 // @Tags Blog
 // @Accept json
 // @Produce json
-// @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
+// @Success 200 {array} types.BlogResp "blogs fetched successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"
 // @Router /blog/getAll [get]
@@ -116,7 +117,7 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 // @Produce json
 // @Param user_id query string true "User ID"
 // @Param blog_ids query string false "Blog IDs"
-// @Success 200 {array} types.BlogResp "Blogs Fetched Successfully"
+// @Success 200 {array} types.BlogResp "blogs fetched successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting blogs"
 // @Router /blog/get/user [get]
@@ -145,7 +146,7 @@ func (ctr *blogController) GetBlogPostsOfUser(c echo.Context) error {
 // @Param Authorization header string true "Bearer <token>"
 // @Param blog_id query string true "Blog ID"
 // @Param blogPost body types.UpdateBlogPostRequest true "update blog post request"
-// @Success 200 {object} types.BlogResp "blog Updated Successfully"
+// @Success 200 {object} types.BlogResp "blog updated successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error updating blog"
 // @Router /blog/update [put]
@@ -160,8 +161,8 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
 	}
 
-	blogID := c.QueryParam(blogconsts.BlogID)
-	if blogID == "" {
+	reqBlogID := c.QueryParam(blogconsts.BlogID)
+	if reqBlogID == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
@@ -174,7 +175,7 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		return response.ErrorResponse(c, err, consts.ValidationError)
 	}
 
-	blog, err := ctr.svc.UpdateBlogPost(userID.String(), blogID, updateBlogReq)
+	blog, err := ctr.svc.UpdateBlogPost(userID.String(), reqBlogID, updateBlogReq)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorUpdatingBlog)
 	}
@@ -182,29 +183,39 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogUpdatedSuccessfully, blog)
 }
 
-//// DeleteBlogPost implements domain.BlogController.
-//func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
-//	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	id, err := strconv.ParseUint(c.Param("postID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Blog post not found")
-//	}
-//	if existingBlogPost.UserID != uint(userID) {
-//		return c.JSON(http.StatusUnauthorized, "You are not authorized to delete this blog post")
-//	}
-//	if err := ctr.svc.DeleteBlogPost(uint(id)); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "Blog post deleted successfully")
-//}
-//
+// DeleteBlogPost implements domain.BlogController.
+// @Summary Delete a blog post
+// @Description Delete a blog post
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Success 200 {string} string "blog deleted successfully"
+func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID := c.QueryParam(blogconsts.BlogID)
+	if reqBlogID == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	if err := ctr.svc.DeleteBlogPost(userID.String(), reqBlogID); err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorDeletingBlog)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogDeletedSuccessfully, nil)
+}
+
 //// AddAndRemoveLike implements domain.BlogController.
 //func (ctr *blogController) AddAndRemoveLike(c echo.Context) error {
 //	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)

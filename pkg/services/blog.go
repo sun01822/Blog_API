@@ -138,14 +138,30 @@ func (svc *blogService) UpdateBlogPost(userID string, blogID string, blogPostReq
 	return convertBlogPostToBlogResp(blog), nil
 }
 
-//// DeleteBlogPost implements domain.BlogService.
-//func (svc *blogService) DeleteBlogPost(id uint) error {
-//	if err := svc.repo.DeleteBlogPostRepo(id); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
+// DeleteBlogPost implements domain.BlogService.
+func (svc *blogService) DeleteBlogPost(userID string, blogID string) error {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return err
+	}
+
+	blogPost, err := svc.repo.GetBlogPostsOfUser(user.ID, []string{blogID})
+	if err != nil {
+		return err
+	}
+
+	if len(blogPost) == 0 {
+		return errors.New(blogconsts.YouAreNotAuthorizedToDeleteThisBlog)
+	}
+
+	if deleteErr := svc.repo.DeleteBlogPost(blogID); deleteErr != nil {
+		return deleteErr
+	}
+
+	return nil
+}
+
 //// AddAndRemoveLike implements domain.BlogService.
 //func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
 //	s, err := svc.repo.AddAndRemoveLikeRepo(blogPost, userID)

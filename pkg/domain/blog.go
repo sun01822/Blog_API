@@ -13,7 +13,7 @@ type BlogRepository interface {
 	GetBlogPosts() ([]models.BlogPost, error)
 	GetBlogPostsOfUser(userID string, blogIDs []string) ([]models.BlogPost, error)
 	UpdateBlogPost(blogPost models.BlogPost) error
-	//DeleteBlogPostRepo(id uint) error
+	DeleteBlogPost(blogID string) error
 	//AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error)
 	//AddCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error
 	//GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
@@ -29,7 +29,7 @@ type BlogService interface {
 	GetBlogPosts() ([]types.BlogResp, error)
 	GetBlogPostsOfUser(userID string, blogIDs []string) ([]types.BlogResp, error)
 	UpdateBlogPost(userID string, blogID string, blogPost types.UpdateBlogPostRequest) (types.BlogResp, error)
-	//DeleteBlogPost(id uint) error
+	DeleteBlogPost(userID string, blogID string) error
 	//AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error)
 	//AddComment(blogPost *models.BlogPost, comment *models.Comment) error
 	//GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
@@ -45,7 +45,7 @@ type BlogController interface {
 	GetBlogPosts(c echo.Context) error
 	GetBlogPostsOfUser(c echo.Context) error
 	UpdateBlogPost(c echo.Context) error
-	//DeleteBlogPost(c echo.Context) error
+	DeleteBlogPost(c echo.Context) error
 	//AddAndRemoveLike(c echo.Context) error
 	//AddComment(c echo.Context) error
 	//GetCommentByUserID(c echo.Context) error

@@ -176,7 +176,7 @@ paths:
       - application/json
       description: Create a blog post
       parameters:
-      - description: JWT Token
+      - description: Bearer <token>
         in: header
         name: Authorization
         required: true
@@ -191,7 +191,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Blog Post Created Successfully
+          description: blog post created successfully
           schema:
             $ref: '#/definitions/types.BlogResp'
         "400":
@@ -202,6 +202,8 @@ paths:
           description: error creating blog
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a blog post
       tags:
       - Blog
@@ -220,7 +222,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Blog Fetched Successfully
+          description: blog fetched successfully
           schema:
             $ref: '#/definitions/types.BlogResp'
         "400":
@@ -253,7 +255,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Blogs Fetched Successfully
+          description: blogs fetched successfully
           schema:
             items:
               $ref: '#/definitions/types.BlogResp'
@@ -278,7 +280,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: Blogs Fetched Successfully
+          description: blogs fetched successfully
           schema:
             items:
               $ref: '#/definitions/types.BlogResp'
@@ -320,7 +322,7 @@ paths:
       - application/json
       responses:
         "200":
-          description: blog Updated Successfully
+          description: blog updated successfully
           schema:
             $ref: '#/definitions/types.BlogResp'
         "400":

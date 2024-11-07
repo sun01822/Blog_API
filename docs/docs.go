@@ -26,6 +26,11 @@ const docTemplate = `{
     "paths": {
         "/blog/create": {
             "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
                 "description": "Create a blog post",
                 "consumes": [
                     "application/json"
@@ -40,7 +45,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "JWT Token",
+                        "description": "Bearer \u003ctoken\u003e",
                         "name": "Authorization",
                         "in": "header",
                         "required": true
@@ -57,7 +62,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Blog Post Created Successfully",
+                        "description": "blog post created successfully",
                         "schema": {
                             "$ref": "#/definitions/types.BlogResp"
                         }
@@ -101,7 +106,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Blog Fetched Successfully",
+                        "description": "blog fetched successfully",
                         "schema": {
                             "$ref": "#/definitions/types.BlogResp"
                         }
@@ -151,7 +156,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Blogs Fetched Successfully",
+                        "description": "blogs fetched successfully",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -189,7 +194,7 @@ const docTemplate = `{
                 "summary": "Get all blog posts",
                 "responses": {
                     "200": {
-                        "description": "Blogs Fetched Successfully",
+                        "description": "blogs fetched successfully",
                         "schema": {
                             "type": "array",
                             "items": {
@@ -257,7 +262,7 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "blog Updated Successfully",
+                        "description": "blog updated successfully",
                         "schema": {
                             "$ref": "#/definitions/types.BlogResp"
                         }
