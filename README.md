@@ -76,7 +76,7 @@ The Blog API server will run at `http://localhost:8080`.
   - **Query parameter:** `user_id` (string) - ID of the user.
   - **Response:** Returns all users with pagination.
 
-
+<br/>
 
 ### 🔹 Blog Endpoints
 
