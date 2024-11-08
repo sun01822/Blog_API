@@ -1,7 +1,6 @@
 package types
 
 import (
-	"Blog_API/pkg/models"
 	"github.com/go-ozzo/ozzo-validation"
 )
 
@@ -48,21 +47,35 @@ func (blogPost UpdateBlogPostRequest) Validate() error {
 }
 
 type BlogResp struct {
-	ID             string            `json:"id,omitempty"`
-	UserID         string            `json:"user_id"`
-	Title          string            `json:"title"`
-	ContentText    string            `json:"content_text,omitempty"`
-	PhotoURL       string            `json:"photo_url,omitempty"`
-	Description    string            `json:"description,omitempty"`
-	Category       string            `json:"category"`
-	Comments       []models.Comment  `json:"comments"`
-	CommentsCount  uint              `json:"comments_count"`
-	ReactionsCount uint              `json:"reactions_count"`
-	Reactions      []models.Reaction `json:"reactions"`
-	Views          uint              `json:"views"`
-	IsPublished    bool              `json:"is_published"`
-	PublishedAt    string            `json:"published_at"`
-	CreatedAt      string            `json:"created_at,omitempty"`
-	UpdatedAt      string            `json:"updated_at,omitempty"`
-	DeletedAt      string            `json:"deleted_at,omitempty"`
+	ID             string         `json:"id,omitempty"`
+	UserID         string         `json:"user_id"`
+	Title          string         `json:"title"`
+	ContentText    string         `json:"content_text,omitempty"`
+	PhotoURL       string         `json:"photo_url,omitempty"`
+	Description    string         `json:"description,omitempty"`
+	Category       string         `json:"category"`
+	Comments       []CommentResp  `json:"comments"`
+	CommentsCount  uint           `json:"comments_count"`
+	ReactionsCount uint           `json:"reactions_count"`
+	Reactions      []ReactionResp `json:"reactions"`
+	Views          uint           `json:"views"`
+	IsPublished    bool           `json:"is_published"`
+	PublishedAt    string         `json:"published_at"`
+	CreatedAt      string         `json:"created_at,omitempty"`
+	UpdatedAt      string         `json:"updated_at,omitempty"`
+	DeletedAt      string         `json:"deleted_at,omitempty"`
+}
+
+type ReactionResp struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_id"`
+	BlogPostID string `json:"blog_post_id"`
+	Type       uint64 `json:"type"`
+}
+
+type CommentResp struct {
+	ID         string `json:"id"`
+	UserID     string `json:"user_id"`
+	BlogPostID string `json:"blog_post_id"`
+	Content    string `json:"content"`
 }

@@ -221,6 +221,19 @@ func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 }
 
 // AddAndRemoveReaction implements domain.BlogController.
+// @Summary Add or remove a reaction
+// @Description Add or remove a reaction
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param reaction_id query uint64 true "Reaction ID"
+// @Success 200 {object} types.BlogResp "reaction added successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error adding or removing reaction"
+// @Router /blog/reaction [post]
 func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
 
 	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))

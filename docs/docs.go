@@ -273,6 +273,69 @@ const docTemplate = `{
                 }
             }
         },
+        "/blog/reaction": {
+            "post": {
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "description": "Add or remove a reaction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Blog"
+                ],
+                "summary": "Add or remove a reaction",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer \u003ctoken\u003e",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Blog ID",
+                        "name": "blog_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "Reaction ID",
+                        "name": "reaction_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "reaction added successfully",
+                        "schema": {
+                            "$ref": "#/definitions/types.BlogResp"
+                        }
+                    },
+                    "400": {
+                        "description": "invalid data request",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    "500": {
+                        "description": "error adding or removing reaction",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
         "/blog/update": {
             "put": {
                 "security": [
@@ -664,6 +727,12 @@ const docTemplate = `{
                 "category": {
                     "type": "string"
                 },
+                "comments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.CommentResp"
+                    }
+                },
                 "comments_count": {
                     "type": "integer"
                 },
@@ -691,6 +760,12 @@ const docTemplate = `{
                 "published_at": {
                     "type": "string"
                 },
+                "reactions": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/types.ReactionResp"
+                    }
+                },
                 "reactions_count": {
                     "type": "integer"
                 },
@@ -708,6 +783,23 @@ const docTemplate = `{
                 }
             }
         },
+        "types.CommentResp": {
+            "type": "object",
+            "properties": {
+                "blog_post_id": {
+                    "type": "string"
+                },
+                "content": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "user_id": {
+                    "type": "string"
+                }
+            }
+        },
         "types.LoginRequest": {
             "type": "object",
             "properties": {
@@ -715,6 +807,23 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "password": {
+                    "type": "string"
+                }
+            }
+        },
+        "types.ReactionResp": {
+            "type": "object",
+            "properties": {
+                "blog_post_id": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "integer"
+                },
+                "user_id": {
                     "type": "string"
                 }
             }

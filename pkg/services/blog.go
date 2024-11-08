@@ -243,11 +243,37 @@ func convertBlogPostToBlogResp(blogPost models.BlogPost) types.BlogResp {
 		Description:    blogPost.Description,
 		Category:       blogPost.Category,
 		CommentsCount:  blogPost.CommentsCount,
-		Comments:       blogPost.Comments,
+		Comments:       convertCommentsToSummary(blogPost.Comments),
 		ReactionsCount: blogPost.ReactionsCount,
-		Reactions:      blogPost.Reactions,
+		Reactions:      convertReactionsToSummary(blogPost.Reactions),
 		Views:          blogPost.Views,
 		IsPublished:    blogPost.IsPublished,
 		PublishedAt:    blogPost.PublishedAt.Format(time.RFC3339),
 	}
+}
+
+func convertReactionsToSummary(reactions []models.Reaction) []types.ReactionResp {
+	var summary []types.ReactionResp
+	for _, reaction := range reactions {
+		summary = append(summary, types.ReactionResp{
+			ID:         reaction.ID,
+			UserID:     reaction.UserID,
+			BlogPostID: reaction.BlogPostID,
+			Type:       reaction.Type,
+		})
+	}
+	return summary
+}
+
+func convertCommentsToSummary(comments []models.Comment) []types.CommentResp {
+	var summary []types.CommentResp
+	for _, comment := range comments {
+		summary = append(summary, types.CommentResp{
+			ID:         comment.ID,
+			UserID:     comment.UserID,
+			BlogPostID: comment.BlogPostID,
+			Content:    comment.Content,
+		})
+	}
+	return summary
 }
