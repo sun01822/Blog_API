@@ -10,6 +10,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"strconv"
 	"strings"
 )
 
@@ -219,34 +220,49 @@ func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogDeletedSuccessfully, nil)
 }
 
-//// AddAndRemoveLike implements domain.BlogController.
-//func (ctr *blogController) AddAndRemoveLike(c echo.Context) error {
-//	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	s, err := ctr.svc.AddAndRemoveLike(&existingBlogPost, uint(userID))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if s == "like" {
-//		return c.JSON(http.StatusOK, "Like Adeed to the Post")
-//	}
-//	return c.JSON(http.StatusOK, "Like Removed from the Post")
-//}
-//
+// AddAndRemoveReaction implements domain.BlogController.
+// @Summary Add or remove a reaction
+// @Description Add or remove a reaction
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param reaction_id query uint64 true "Reaction ID"
+// @Success 200 {object} types.BlogResp "reaction added successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error adding or removing reaction"
+// @Router /blog/reaction [post]
+func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID := c.QueryParam(blogconsts.BlogID)
+	if reqBlogID == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqReactionID, parseErr := strconv.ParseUint(c.QueryParam(blogconsts.ReactionID), 10, 64)
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	resp, err := ctr.svc.AddAndRemoveReaction(userID.String(), reqBlogID, reqReactionID)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorAddingRemovingReaction)
+	}
+
+	return response.SuccessResponse(c, blogconsts.ReactionAddedSuccessfully, resp)
+}
+
 //// AddComment implements domain.BlogController.
 //func (ctr *blogController) AddComment(c echo.Context) error {
 //	reqComment := &types.Comment{}

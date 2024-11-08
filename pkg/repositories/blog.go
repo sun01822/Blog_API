@@ -4,6 +4,7 @@ import (
 	"Blog_API/pkg/domain"
 	"Blog_API/pkg/models"
 	"Blog_API/pkg/utils/consts"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -92,38 +93,108 @@ func (repo *blogRepo) DeleteBlogPost(blogID string) error {
 	return nil
 }
 
-//func (repo *blogRepo) AddAndRemoveLikeRepo(blogPost *models.BlogPost, userID uint) (string, error) {
-//	// check if the user has already liked the post
-//	// if yes, remove the like
-//	// if no, add the like
-//	// return the updated blogPost
-//	var like models.Reaction
-//	err := repo.d.Where("user_id = ? AND blog_post_id = ?", userID, blogPost.ID).First(&like).Error
-//	if err != nil {
-//		// user has not liked the post
-//		like = models.Reaction{
-//			UserID:     userID,
-//			BlogPostID: blogPost.ID,
-//		}
-//		err = repo.d.Create(&like).Error
-//		if err != nil {
-//			return "", err
-//		}
-//		repo.d.Model(blogPost).Association("Likes").Append(&like)
-//		repo.d.Model(blogPost).Update("likes_count", blogPost.LikesCount+1)
-//		return "like", nil
-//	} else {
-//		// user has liked the post
-//		err = repo.d.Delete(&like).Error
-//		if err != nil {
-//			return "", err
-//		}
-//		repo.d.Model(blogPost).Association("Likes").Delete(&like)
-//		repo.d.Model(blogPost).Update("likes_count", blogPost.LikesCount-1)
-//		return "remove", nil
-//	}
-//}
-//
+func (repo *blogRepo) findReaction(tx *gorm.DB, userID, blogPostID string) (models.Reaction, error) {
+
+	var reaction models.Reaction
+	err := tx.Where("blog_post_id = ? AND user_id = ?", blogPostID, userID).First(&reaction).Error
+	if err != nil {
+		return reaction, err
+	}
+
+	return reaction, err
+}
+
+func (repo *blogRepo) createReaction(tx *gorm.DB, userID string, reactionID uint64, blogPost *models.BlogPost) error {
+
+	reaction := models.Reaction{
+		ID:         uuid.NewString(),
+		UserID:     userID,
+		BlogPostID: blogPost.ID,
+		Type:       reactionID,
+	}
+
+	if err := tx.Create(&reaction).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Append(&reaction); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount+1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *blogRepo) removeReaction(tx *gorm.DB, reaction *models.Reaction, blogPost *models.BlogPost) error {
+
+	if err := tx.Delete(&reaction).Where("id = ?", reaction.ID).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Delete(&reaction); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount-1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *blogRepo) updateReaction(tx *gorm.DB, reaction models.Reaction, reactionID uint64, blogPost *models.BlogPost) error {
+
+	if err := tx.Model(&reaction).Update("type", reactionID).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Replace(&reaction); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// AddAndRemoveReaction implements domain.BlogRepository.
+func (repo *blogRepo) AddAndRemoveReaction(userID string, reactionID uint64, blogPost models.BlogPost) (models.BlogPost, error) {
+	tx := repo.d.Begin()
+	if tx.Error != nil {
+		return models.BlogPost{}, tx.Error
+	}
+
+	defer func() {
+		if r := recover(); r != nil || tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	reaction, err := repo.findReaction(tx, userID, blogPost.ID)
+	if err != nil {
+		if createErr := repo.createReaction(tx, userID, reactionID, &blogPost); createErr != nil {
+			return models.BlogPost{}, createErr
+		}
+	} else {
+		if reaction.Type == reactionID {
+			if removeErr := repo.removeReaction(tx, &reaction, &blogPost); removeErr != nil {
+				return models.BlogPost{}, removeErr
+			}
+		} else {
+			if updateErr := repo.updateReaction(tx, reaction, reactionID, &blogPost); updateErr != nil {
+				return models.BlogPost{}, updateErr
+			}
+		}
+	}
+
+	if commitErr := tx.Commit().Error; commitErr != nil {
+		return models.BlogPost{}, commitErr
+	}
+
+	return blogPost, nil
+}
+
 //// AddComment implements domain.BlogRepository.
 //func (repo *blogRepo) AddCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
 //	err := repo.d.Create(comment).Error

@@ -19,6 +19,10 @@ definitions:
     properties:
       category:
         type: string
+      comments:
+        items:
+          $ref: '#/definitions/types.CommentResp'
+        type: array
       comments_count:
         type: integer
       content_text:
@@ -37,6 +41,10 @@ definitions:
         type: string
       published_at:
         type: string
+      reactions:
+        items:
+          $ref: '#/definitions/types.ReactionResp'
+        type: array
       reactions_count:
         type: integer
       title:
@@ -48,11 +56,33 @@ definitions:
       views:
         type: integer
     type: object
+  types.CommentResp:
+    properties:
+      blog_post_id:
+        type: string
+      content:
+        type: string
+      id:
+        type: string
+      user_id:
+        type: string
+    type: object
   types.LoginRequest:
     properties:
       email:
         type: string
       password:
+        type: string
+    type: object
+  types.ReactionResp:
+    properties:
+      blog_post_id:
+        type: string
+      id:
+        type: string
+      type:
+        type: integer
+      user_id:
         type: string
     type: object
   types.SignUpRequest:
@@ -330,6 +360,47 @@ paths:
           schema:
             type: string
       summary: Get all blog posts
+      tags:
+      - Blog
+  /blog/reaction:
+    post:
+      consumes:
+      - application/json
+      description: Add or remove a reaction
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      - description: Reaction ID
+        in: query
+        name: reaction_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: reaction added successfully
+          schema:
+            $ref: '#/definitions/types.BlogResp'
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error adding or removing reaction
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Add or remove a reaction
       tags:
       - Blog
   /blog/update:
