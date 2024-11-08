@@ -39,7 +39,7 @@ type Reaction struct {
 	ID         string         `json:"id" gorm:"primaryKey"`
 	UserID     string         `json:"user_id" gorm:"size:255"`
 	BlogPostID string         `json:"blog_post_id" gorm:"size:255"`
-	Type       uint           `json:"type"` // 1: like, 2: love, 3: care, 4: haha, 5: wow, 6: sad, 7: angry
+	Type       uint64         `json:"type"` // 1: like, 2: love, 3: care, 4: haha, 5: wow, 6: sad, 7: angry
 	CreatedAt  time.Time      `json:"created_at" gorm:"autoCreateTime"`
 	UpdatedAt  time.Time      `json:"updated_at" gorm:"autoUpdateTime"`
 	DeletedAt  gorm.DeletedAt `json:"deleted_at" gorm:"index"`

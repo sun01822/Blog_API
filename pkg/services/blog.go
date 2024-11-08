@@ -162,15 +162,35 @@ func (svc *blogService) DeleteBlogPost(userID string, blogID string) error {
 	return nil
 }
 
-//// AddAndRemoveLike implements domain.BlogService.
-//func (svc *blogService) AddAndRemoveLike(blogPost *models.BlogPost, userID uint) (string, error) {
-//	s, err := svc.repo.AddAndRemoveLikeRepo(blogPost, userID)
-//	if err != nil {
-//		return s, err
-//	}
-//	return s, nil
-//}
-//
+// AddAndRemoveReaction implements domain.BlogService.
+func (svc *blogService) AddAndRemoveReaction(userID string, blogID string, reactionID uint64) (types.BlogResp, error) {
+
+	if blogconsts.ReactionTypes[reactionID] == "" {
+		return types.BlogResp{}, errors.New(blogconsts.InvalidReactionID)
+	}
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if blogPost.ID == "" {
+		return types.BlogResp{}, errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	blogPost, err = svc.repo.AddAndRemoveReaction(user.ID, reactionID, blogPost)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	return convertBlogPostToBlogResp(blogPost), nil
+}
+
 //// AddComment implements domain.BlogService.
 //func (svc *blogService) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {
 //	if err := svc.repo.AddCommentRepo(blogPost, comment); err != nil {
@@ -223,7 +243,9 @@ func convertBlogPostToBlogResp(blogPost models.BlogPost) types.BlogResp {
 		Description:    blogPost.Description,
 		Category:       blogPost.Category,
 		CommentsCount:  blogPost.CommentsCount,
+		Comments:       blogPost.Comments,
 		ReactionsCount: blogPost.ReactionsCount,
+		Reactions:      blogPost.Reactions,
 		Views:          blogPost.Views,
 		IsPublished:    blogPost.IsPublished,
 		PublishedAt:    blogPost.PublishedAt.Format(time.RFC3339),
