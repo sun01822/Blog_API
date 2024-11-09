@@ -191,14 +191,38 @@ func (svc *blogService) AddAndRemoveReaction(userID string, blogID string, react
 	return convertBlogPostToBlogResp(blogPost), nil
 }
 
-//// AddComment implements domain.BlogService.
-//func (svc *blogService) AddComment(blogPost *models.BlogPost, comment *models.Comment) error {
-//	if err := svc.repo.AddCommentRepo(blogPost, comment); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
+// AddComment implements domain.BlogService.
+func (svc *blogService) AddComment(userID, blogID string, commentReq types.Comment) (types.BlogResp, error) {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if blogPost.ID == "" {
+		return types.BlogResp{}, errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	comment := models.Comment{
+		ID:         uuid.NewString(),
+		UserID:     user.ID,
+		BlogPostID: blogPost.ID,
+		Content:    commentReq.Content,
+	}
+
+	blogResp, commentErr := svc.repo.AddComment(blogPost, comment)
+	if commentErr != nil {
+		return types.BlogResp{}, commentErr
+	}
+
+	return convertBlogPostToBlogResp(blogResp), nil
+}
+
 //// GetCommentByUserID implements domain.BlogService.
 //func (svc *blogService) GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
 //	comment, err := svc.repo.GetCommentByUserIDRepo(blogPost, commentID)

@@ -263,42 +263,53 @@ func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.ReactionAddedSuccessfully, resp)
 }
 
-//// AddComment implements domain.BlogController.
-//func (ctr *blogController) AddComment(c echo.Context) error {
-//	reqComment := &types.Comment{}
-//	if err := c.Bind(reqComment); err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	if err := reqComment.Validate(); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	comment := &models.Comment{
-//		Content:    reqComment.Content,
-//		UserID:     uint(userID),
-//		BlogPostID: existingBlogPost.ID,
-//	}
-//	if err := ctr.svc.AddComment(&existingBlogPost, comment); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusCreated, comment)
-//}
-//
+// AddComment implements domain.BlogController.
+// @Summary Add a comment
+// @Description Add a comment
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param comment body types.Comment true "Comment"
+// @Success 200 {object} types.BlogResp "comment added successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error adding comment"
+// @Router /blog/comment [post]
+func (ctr *blogController) AddComment(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID := c.QueryParam(blogconsts.BlogID)
+	if reqBlogID == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqComment := types.Comment{}
+	if bindErr := c.Bind(&reqComment); bindErr != nil {
+		return response.ErrorResponse(c, bindErr, consts.InvalidDataRequest)
+	}
+
+	if validationErr := reqComment.Validate(); validationErr != nil {
+		return response.ErrorResponse(c, validationErr, consts.ValidationError)
+	}
+
+	resp, err := ctr.svc.AddComment(userID.String(), reqBlogID, reqComment)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorAddingComment)
+	}
+
+	return response.SuccessResponse(c, blogconsts.CommentAddedSuccessfully, resp)
+}
+
 //// GetCommentByUserID implements domain.BlogController.
 //func (ctr *blogController) GetCommentByUserID(c echo.Context) error {
 //	tempID := c.Param("postID")
@@ -323,7 +334,6 @@ func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
 //	}
 //	return c.JSON(http.StatusOK, comment)
 //}
-//
 //// GetComments implements domain.BlogController.
 //func (ctr *blogController) GetComments(c echo.Context) error {
 //	tempID := c.Param("postID")

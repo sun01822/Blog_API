@@ -17,6 +17,7 @@ const (
 	REACTIONS      = "Reactions"
 	COMMENTS       = "Comments"
 	ReactionCounts = "reactions_count"
+	CommentCounts  = "comments_count"
 )
 
 const ExpiredTokenLimit = 60
