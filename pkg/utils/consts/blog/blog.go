@@ -7,6 +7,7 @@ const (
 	ErrorUpdatingBlog           = "error updating blog"
 	ErrorDeletingBlog           = "error deleting blog"
 	ErrorAddingRemovingReaction = "error adding or removing reaction"
+	ErrorAddingComment          = "error adding comment"
 )
 
 const (
@@ -23,6 +24,7 @@ const (
 	BlogUpdatedSuccessfully      = "blog updated successfully"
 	BlogDeletedSuccessfully      = "blog deleted successfully"
 	ReactionAddedSuccessfully    = "reaction added successfully"
+	CommentAddedSuccessfully     = "comment added successfully"
 )
 
 const (

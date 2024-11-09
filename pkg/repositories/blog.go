@@ -160,16 +160,11 @@ func (repo *blogRepo) updateReaction(tx *gorm.DB, reaction models.Reaction, reac
 
 // AddAndRemoveReaction implements domain.BlogRepository.
 func (repo *blogRepo) AddAndRemoveReaction(userID string, reactionID uint64, blogPost models.BlogPost) (models.BlogPost, error) {
-	tx := repo.d.Begin()
-	if tx.Error != nil {
-		return models.BlogPost{}, tx.Error
-	}
 
-	defer func() {
-		if r := recover(); r != nil || tx.Error != nil {
-			tx.Rollback()
-		}
-	}()
+	tx, err := beginTransaction(repo.d)
+	if err != nil {
+		return models.BlogPost{}, err
+	}
 
 	reaction, err := repo.findReaction(tx, userID, blogPost.ID)
 	if err != nil {
@@ -195,17 +190,37 @@ func (repo *blogRepo) AddAndRemoveReaction(userID string, reactionID uint64, blo
 	return blogPost, nil
 }
 
-//// AddComment implements domain.BlogRepository.
-//func (repo *blogRepo) AddCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
-//	err := repo.d.Create(comment).Error
-//	if err != nil {
-//		return err
-//	}
-//	repo.d.Model(blogPost).Association("Comments").Append(&comment)
-//	repo.d.Model(blogPost).Update("comments_count", blogPost.CommentsCount+1)
-//	return nil
-//}
-//
+// AddComment implements domain.BlogRepository.
+func (repo *blogRepo) AddComment(blogPost models.BlogPost, comment models.Comment) (models.BlogPost, error) {
+
+	tx, err := beginTransaction(repo.d)
+	if err != nil {
+		return models.BlogPost{}, err
+	}
+
+	commentErr := tx.Create(&comment).Error
+	if commentErr != nil {
+		tx.Rollback()
+		return models.BlogPost{}, commentErr
+	}
+
+	if appendErr := tx.Model(&blogPost).Association(consts.COMMENTS).Append(&comment); appendErr != nil {
+		tx.Rollback()
+		return models.BlogPost{}, appendErr
+	}
+
+	if updateCountErr := tx.Model(&blogPost).Update(consts.CommentCounts, blogPost.CommentsCount+1).Error; updateCountErr != nil {
+		tx.Rollback()
+		return models.BlogPost{}, updateCountErr
+	}
+
+	if commitErr := tx.Commit().Error; commitErr != nil {
+		return models.BlogPost{}, commitErr
+	}
+
+	return blogPost, nil
+}
+
 //// GetCommentByUserID implements domain.BlogRepository.
 //func (repo *blogRepo) GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
 //	var comment models.Comment
@@ -255,3 +270,18 @@ func (repo *blogRepo) AddAndRemoveReaction(userID string, reactionID uint64, blo
 //	}
 //	return nil
 //}
+
+func beginTransaction(db *gorm.DB) (*gorm.DB, error) {
+	tx := db.Begin()
+	if tx.Error != nil {
+		return nil, tx.Error
+	}
+
+	defer func() {
+		if r := recover(); r != nil || tx.Error != nil {
+			tx.Rollback()
+		}
+	}()
+
+	return tx, nil
+}
