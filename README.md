@@ -37,7 +37,15 @@ Welcome to the **Blog API**! Built with the Golang Echo framework, this API faci
    ```bash
    cd Blog_API
    ```
-3. Start the API server:
+3. Create app.env file, copy, paste and add values to it:
+   ```bash DBUSER=
+      DBPASS=
+      DBIP=
+      DBNAME=
+      PORT=
+      JWTSECRET=
+   ```
+4. Start the API server:
    ```bash
    go run main.go
    ```
