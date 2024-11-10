@@ -231,16 +231,25 @@ func (repo *blogRepo) AddComment(blogPost models.BlogPost, comment models.Commen
 //	return comment, nil
 //}
 //
-//// GetComments implements domain.BlogRepository.
-//func (repo *blogRepo) GetCommentsRepo(blogPost *models.BlogPost) ([]models.Comment, error) {
-//	var comments []models.Comment
-//	err := repo.d.Where("blog_post_id = ?", blogPost.ID).Find(&comments).Error
-//	if err != nil {
-//		return comments, err
-//	}
-//	return comments, nil
-//}
-//
+
+// GetComments implements domain.BlogRepository.
+func (repo *blogRepo) GetComments(blogID string, commentIDs []string) ([]models.Comment, error) {
+
+	var comments []models.Comment
+	query := repo.d.Where("blog_post_id = ?", blogID)
+
+	if len(commentIDs) != 0 {
+		query = query.Where("id in (?)", commentIDs)
+	}
+
+	err := query.Find(&comments).Error
+	if err != nil {
+		return comments, err
+	}
+
+	return comments, nil
+}
+
 //// DeleteComment implements domain.BlogRepository.
 //func (repo *blogRepo) DeleteCommentRepo(blogPost *models.BlogPost, commentID uint) error {
 //	var comment models.Comment
