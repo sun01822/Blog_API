@@ -35,6 +35,7 @@ const (
 	BlogIDs    = "blog_ids"
 	ReactionID = "reaction_id"
 	CommentID  = "comment_id"
+	CommentIDs = "comment_ids"
 )
 
 const (

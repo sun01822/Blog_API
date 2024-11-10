@@ -263,9 +263,9 @@ paths:
         name: blog_id
         required: true
         type: string
-      - description: Comment ID
+      - description: Comment IDs
         in: query
-        name: comment_id
+        name: comment_ids
         type: string
       produces:
       - application/json

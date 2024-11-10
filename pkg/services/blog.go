@@ -234,7 +234,7 @@ func (svc *blogService) AddComment(userID, blogID string, commentReq types.Comme
 //
 
 // GetComments implements domain.BlogService.
-func (svc *blogService) GetComments(userID string, blogID string, commentID string) ([]types.CommentResp, error) {
+func (svc *blogService) GetComments(userID string, blogID string, commentIDs []string) ([]types.CommentResp, error) {
 
 	user, err := svc.uSvc.GetUser(userID)
 	if err != nil {
@@ -254,7 +254,7 @@ func (svc *blogService) GetComments(userID string, blogID string, commentID stri
 		return []types.CommentResp{}, errors.New(blogconsts.YouAreNotAuthorizedToGetComments)
 	}
 
-	comments, err := svc.repo.GetComments(blogPost.ID, commentID)
+	comments, err := svc.repo.GetComments(blogPost.ID, commentIDs)
 	if err != nil {
 		return []types.CommentResp{}, err
 	}

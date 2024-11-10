@@ -124,8 +124,8 @@ const docTemplate = `{
                     },
                     {
                         "type": "string",
-                        "description": "Comment ID",
-                        "name": "comment_id",
+                        "description": "Comment IDs",
+                        "name": "comment_ids",
                         "in": "query"
                     }
                 ],

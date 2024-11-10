@@ -233,13 +233,13 @@ func (repo *blogRepo) AddComment(blogPost models.BlogPost, comment models.Commen
 //
 
 // GetComments implements domain.BlogRepository.
-func (repo *blogRepo) GetComments(blogID, commentID string) ([]models.Comment, error) {
+func (repo *blogRepo) GetComments(blogID string, commentIDs []string) ([]models.Comment, error) {
 
 	var comments []models.Comment
 	query := repo.d.Where("blog_post_id = ?", blogID)
 
-	if commentID != "" {
-		query = query.Where("id = ?", commentID)
+	if len(commentIDs) != 0 {
+		query = query.Where("id in (?)", commentIDs)
 	}
 
 	err := query.Find(&comments).Error

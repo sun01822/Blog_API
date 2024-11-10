@@ -17,7 +17,7 @@ type BlogRepository interface {
 	AddAndRemoveReaction(userID string, reactionID uint64, blogPost models.BlogPost) (models.BlogPost, error)
 	AddComment(blogPost models.BlogPost, comment models.Comment) (models.BlogPost, error)
 	//GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
-	GetComments(blogID, commentID string) ([]models.Comment, error)
+	GetComments(blogID string, commentIDs []string) ([]models.Comment, error)
 	//DeleteCommentRepo(blogPost *models.BlogPost, commentID uint) error
 	//UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error
 }
@@ -33,7 +33,7 @@ type BlogService interface {
 	AddAndRemoveReaction(userID string, blogID string, reactionID uint64) (types.BlogResp, error)
 	AddComment(userID string, blogID string, comment types.Comment) (types.BlogResp, error)
 	//GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error)
-	GetComments(userID string, blogID string, commentID string) ([]types.CommentResp, error)
+	GetComments(userID string, blogID string, commentIDs []string) ([]types.CommentResp, error)
 	//DeleteComment(blogPost *models.BlogPost, commentID uint) error
 	//UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error
 }

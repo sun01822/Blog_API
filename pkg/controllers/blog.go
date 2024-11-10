@@ -338,7 +338,7 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 // @Security BearerAuth
 // @Param Authorization header string true "Bearer <token>"
 // @Param blog_id query string true "Blog ID"
-// @Param comment_id query string false "Comment ID"
+// @Param comment_ids query string false "Comment IDs"
 // @Success 200 {array} types.CommentResp "comments fetched successfully"
 // @Failure 400 {string} string "invalid data request"
 // @Failure 500 {string} string "error getting comments"
@@ -363,9 +363,10 @@ func (ctr *blogController) GetComments(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
-	reqCommentID := c.QueryParam(blogconsts.CommentID)
+	reqCommentIDsParam := c.QueryParam(blogconsts.CommentIDs)
+	reqCommentIDs := strings.Fields(strings.ReplaceAll(reqCommentIDsParam, ",", " "))
 
-	comments, err := ctr.svc.GetComments(userID.String(), reqBlogID.String(), reqCommentID)
+	comments, err := ctr.svc.GetComments(userID.String(), reqBlogID.String(), reqCommentIDs)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorGettingComments)
 	}
