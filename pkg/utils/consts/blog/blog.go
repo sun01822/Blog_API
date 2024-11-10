@@ -8,12 +8,14 @@ const (
 	ErrorDeletingBlog           = "error deleting blog"
 	ErrorAddingRemovingReaction = "error adding or removing reaction"
 	ErrorAddingComment          = "error adding comment"
+	ErrorGettingComments        = "error getting comments"
 )
 
 const (
 	BlogIDRequired     = "required blog id"
 	ReactionIDRequired = "required reaction id"
 	InvalidReactionID  = "invalid reaction id"
+	InvalidCommentID   = "invalid comment id"
 )
 
 const (
@@ -25,16 +27,19 @@ const (
 	BlogDeletedSuccessfully      = "blog deleted successfully"
 	ReactionAddedSuccessfully    = "reaction added successfully"
 	CommentAddedSuccessfully     = "comment added successfully"
+	CommentsFetchSuccessfully    = "comments fetched successfully"
 )
 
 const (
 	BlogID     = "blog_id"
 	BlogIDs    = "blog_ids"
 	ReactionID = "reaction_id"
+	CommentID  = "comment_id"
 )
 
 const (
 	YouAreNotAuthorizedToDeleteThisBlog = "you are not authorized to delete this blog"
+	YouAreNotAuthorizedToGetComments    = "you are not authorized to get comments"
 )
 
 var ReactionTypes = map[uint64]string{

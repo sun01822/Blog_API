@@ -232,15 +232,36 @@ func (svc *blogService) AddComment(userID, blogID string, commentReq types.Comme
 //	return comment, nil
 //}
 //
-//// GetComments implements domain.BlogService.
-//func (svc *blogService) GetComments(blogPost *models.BlogPost) ([]models.Comment, error) {
-//	comments, err := svc.repo.GetCommentsRepo(blogPost)
-//	if err != nil {
-//		return comments, err
-//	}
-//	return comments, nil
-//}
-//
+
+// GetComments implements domain.BlogService.
+func (svc *blogService) GetComments(userID string, blogID string, commentID string) ([]types.CommentResp, error) {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return []types.CommentResp{}, err
+	}
+
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return []types.CommentResp{}, err
+	}
+
+	if blogPost.ID == "" {
+		return []types.CommentResp{}, errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	if blogPost.UserID != user.ID {
+		return []types.CommentResp{}, errors.New(blogconsts.YouAreNotAuthorizedToGetComments)
+	}
+
+	comments, err := svc.repo.GetComments(blogPost.ID, commentID)
+	if err != nil {
+		return []types.CommentResp{}, err
+	}
+
+	return convertCommentsToSummary(comments), nil
+}
+
 //// DeleteComment implements domain.BlogService.
 //func (svc *blogService) DeleteComment(blogPost *models.BlogPost, commentID uint) error {
 //	if err := svc.repo.DeleteCommentRepo(blogPost, commentID); err != nil {

@@ -76,13 +76,16 @@ func (ctr *blogController) CreateBlogPost(c echo.Context) error {
 // @Router /blog/get [get]
 func (ctr *blogController) GetBlogPost(c echo.Context) error {
 
-	reqBlogID := c.QueryParam(blogconsts.BlogID)
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
 
-	if reqBlogID == "" {
+	if reqBlogID.String() == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
-	blogPost, err := ctr.svc.GetBlogPost(reqBlogID)
+	blogPost, err := ctr.svc.GetBlogPost(reqBlogID.String())
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlog)
 	}
@@ -162,8 +165,12 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
 	}
 
-	reqBlogID := c.QueryParam(blogconsts.BlogID)
-	if reqBlogID == "" {
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
@@ -176,7 +183,7 @@ func (ctr *blogController) UpdateBlogPost(c echo.Context) error {
 		return response.ErrorResponse(c, err, consts.ValidationError)
 	}
 
-	blog, err := ctr.svc.UpdateBlogPost(userID.String(), reqBlogID, updateBlogReq)
+	blog, err := ctr.svc.UpdateBlogPost(userID.String(), reqBlogID.String(), updateBlogReq)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorUpdatingBlog)
 	}
@@ -208,12 +215,16 @@ func (ctr *blogController) DeleteBlogPost(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
 	}
 
-	reqBlogID := c.QueryParam(blogconsts.BlogID)
-	if reqBlogID == "" {
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
-	if err := ctr.svc.DeleteBlogPost(userID.String(), reqBlogID); err != nil {
+	if err := ctr.svc.DeleteBlogPost(userID.String(), reqBlogID.String()); err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorDeletingBlog)
 	}
 
@@ -245,8 +256,12 @@ func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
 	}
 
-	reqBlogID := c.QueryParam(blogconsts.BlogID)
-	if reqBlogID == "" {
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
@@ -255,7 +270,7 @@ func (ctr *blogController) AddAndRemoveReaction(c echo.Context) error {
 		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
 	}
 
-	resp, err := ctr.svc.AddAndRemoveReaction(userID.String(), reqBlogID, reqReactionID)
+	resp, err := ctr.svc.AddAndRemoveReaction(userID.String(), reqBlogID.String(), reqReactionID)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorAddingRemovingReaction)
 	}
@@ -288,8 +303,12 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
 	}
 
-	reqBlogID := c.QueryParam(blogconsts.BlogID)
-	if reqBlogID == "" {
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
 		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
 	}
 
@@ -302,12 +321,56 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 		return response.ErrorResponse(c, validationErr, consts.ValidationError)
 	}
 
-	resp, err := ctr.svc.AddComment(userID.String(), reqBlogID, reqComment)
+	resp, err := ctr.svc.AddComment(userID.String(), reqBlogID.String(), reqComment)
 	if err != nil {
 		return response.ErrorResponse(c, err, blogconsts.ErrorAddingComment)
 	}
 
 	return response.SuccessResponse(c, blogconsts.CommentAddedSuccessfully, resp)
+}
+
+// GetComments implements domain.BlogController.
+// @Summary Get comments of a blog post
+// @Description Get comments of a blog post
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param comment_id query string false "Comment ID"
+// @Success 200 {array} types.CommentResp "comments fetched successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting comments"
+// @Router /blog/comments [get]
+func (ctr *blogController) GetComments(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqCommentID := c.QueryParam(blogconsts.CommentID)
+
+	comments, err := ctr.svc.GetComments(userID.String(), reqBlogID.String(), reqCommentID)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorGettingComments)
+	}
+
+	return response.SuccessResponse(c, blogconsts.CommentsFetchSuccessfully, comments)
 }
 
 //// GetCommentByUserID implements domain.BlogController.
@@ -334,27 +397,7 @@ func (ctr *blogController) AddComment(c echo.Context) error {
 //	}
 //	return c.JSON(http.StatusOK, comment)
 //}
-//// GetComments implements domain.BlogController.
-//func (ctr *blogController) GetComments(c echo.Context) error {
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	comments, err := ctr.svc.GetComments(&existingBlogPost)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, comments)
-//}
-//
+
 //// DeleteComment implements domain.BlogController.
 //func (ctr *blogController) DeleteComment(c echo.Context) error {
 //	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
