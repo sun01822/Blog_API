@@ -221,17 +221,6 @@ func (repo *blogRepo) AddComment(blogPost models.BlogPost, comment models.Commen
 	return blogPost, nil
 }
 
-//// GetCommentByUserID implements domain.BlogRepository.
-//func (repo *blogRepo) GetCommentByUserIDRepo(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
-//	var comment models.Comment
-//	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
-//	if err != nil {
-//		return comment, err
-//	}
-//	return comment, nil
-//}
-//
-
 // GetComments implements domain.BlogRepository.
 func (repo *blogRepo) GetComments(blogID string, commentIDs []string) ([]models.Comment, error) {
 

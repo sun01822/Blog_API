@@ -374,31 +374,6 @@ func (ctr *blogController) GetComments(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.CommentsFetchSuccessfully, comments)
 }
 
-//// GetCommentByUserID implements domain.BlogController.
-//func (ctr *blogController) GetCommentByUserID(c echo.Context) error {
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	commentID, err := strconv.ParseUint(c.Param("commentID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	comment, err := ctr.svc.GetCommentByUserID(&existingBlogPost, uint(commentID))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, comment)
-//}
-
 //// DeleteComment implements domain.BlogController.
 //func (ctr *blogController) DeleteComment(c echo.Context) error {
 //	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)

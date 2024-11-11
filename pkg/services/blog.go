@@ -223,16 +223,6 @@ func (svc *blogService) AddComment(userID, blogID string, commentReq types.Comme
 	return convertBlogPostToBlogResp(blogResp), nil
 }
 
-//// GetCommentByUserID implements domain.BlogService.
-//func (svc *blogService) GetCommentByUserID(blogPost *models.BlogPost, commentID uint) (models.Comment, error) {
-//	comment, err := svc.repo.GetCommentByUserIDRepo(blogPost, commentID)
-//	if err != nil {
-//		return comment, err
-//	}
-//	return comment, nil
-//}
-//
-
 // GetComments implements domain.BlogService.
 func (svc *blogService) GetComments(userID string, blogID string, commentIDs []string) ([]types.CommentResp, error) {
 
