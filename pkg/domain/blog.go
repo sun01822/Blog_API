@@ -18,7 +18,7 @@ type BlogRepository interface {
 	AddComment(blogPost models.BlogPost, comment models.Comment) (models.BlogPost, error)
 	GetComments(blogID string, commentIDs []string) ([]models.Comment, error)
 	DeleteComment(blogPost models.BlogPost, commentID string) error
-	//UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error
+	UpdateComment(blogPost models.BlogPost, comment models.Comment) (models.BlogPost, error)
 }
 
 // For service operation (call from controller)
@@ -33,7 +33,7 @@ type BlogService interface {
 	AddComment(userID string, blogID string, comment types.Comment) (types.BlogResp, error)
 	GetComments(userID string, blogID string, commentIDs []string) ([]types.CommentResp, error)
 	DeleteComment(userID string, blogID string, commentID string) error
-	//UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error
+	UpdateComment(userID string, blogID string, commentID string, reqComment types.Comment) (types.BlogResp, error)
 }
 
 // For controller operation (call from main)
@@ -48,5 +48,5 @@ type BlogController interface {
 	AddComment(c echo.Context) error
 	GetComments(c echo.Context) error
 	DeleteComment(c echo.Context) error
-	//UpdateComment(c echo.Context) error
+	UpdateComment(c echo.Context) error
 }

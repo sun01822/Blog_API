@@ -10,6 +10,7 @@ import (
 	"errors"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"net/http"
 	"strconv"
 	"strings"
 )
@@ -424,47 +425,66 @@ func (ctr *blogController) DeleteComment(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.CommentDeletedSuccessfully, nil)
 }
 
-//// UpdateComment implements domain.BlogController.
-//func (ctr *blogController) UpdateComment(c echo.Context) error {
-//	reqComment := &types.Comment{}
-//	if err := c.Bind(reqComment); err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	if err := reqComment.Validate(); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	userID, err := strconv.ParseInt(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	commentID, err := strconv.ParseUint(c.Param("commentID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	if _, err := ctr.svc.GetCommentByUserID(&existingBlogPost, uint(userID)); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	comment := &models.Comment{
-//		Model:   gorm.Model{ID: uint(commentID)},
-//		Content: reqComment.Content,
-//	}
-//	if err := ctr.svc.UpdateComment(&existingBlogPost, comment); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "Comment updated successfully")
-//}
+// UpdateComment implements domain.BlogController.
+// @Summary Update a comment
+// @Description Update a comment
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param comment_id query string true "Comment ID"
+// @Param comment body types.Comment true "Comment"
+// @Success 200 {object} types.BlogResp "comment updated successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error updating comment"
+// @Router /blog/comment [put]
+func (ctr *blogController) UpdateComment(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqCommentID, parseErr := uuid.Parse(c.QueryParam(blogconsts.CommentID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqCommentID.String() == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.InvalidCommentID), consts.InvalidDataRequest)
+	}
+
+	reqComment := types.Comment{}
+	if err := c.Bind(&reqComment); err != nil {
+		return c.JSON(http.StatusBadRequest, "Invalid data request")
+	}
+
+	if err := reqComment.Validate(); err != nil {
+		return c.JSON(http.StatusBadRequest, err.Error())
+	}
+
+	resp, err := ctr.svc.UpdateComment(userID.String(), reqBlogID.String(), reqCommentID.String(), reqComment)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorUpdatingComment)
+	}
+
+	return response.SuccessResponse(c, blogconsts.CommentUpdatedSuccessfully, resp)
+}
 
 func extractUserIDAndBlogIDs(ctx echo.Context) (string, []string, error) {
 

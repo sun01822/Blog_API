@@ -288,13 +288,48 @@ func (svc *blogService) DeleteComment(userID string, blogID string, commentID st
 	return errors.New(blogconsts.YouAreNotAuthorizedToDeleteThisComment)
 }
 
-//// UpdateComment implements domain.BlogService.
-//func (svc *blogService) UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error {
-//	if err := svc.repo.UpdateCommentRepo(blogPost, comment); err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// UpdateComment implements domain.BlogService.
+func (svc *blogService) UpdateComment(userID string, blogID string, commentID string, reqCommentUpdate types.Comment) (types.BlogResp, error) {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if blogPost.ID == "" {
+		return types.BlogResp{}, errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	comment, err := svc.repo.GetComments(blogPost.ID, []string{commentID})
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	if len(comment) == 0 {
+		return types.BlogResp{}, errors.New(blogconsts.ErrorGettingComments)
+	}
+
+	if comment[0].UserID != user.ID {
+		return types.BlogResp{}, errors.New(blogconsts.YouAreNotAuthorizedToUpdateThisComment)
+	}
+
+	updateCommentReq := models.Comment{
+		ID:      comment[0].ID,
+		Content: reqCommentUpdate.Content,
+	}
+
+	resp, err := svc.repo.UpdateComment(blogPost, updateCommentReq)
+	if err != nil {
+		return types.BlogResp{}, err
+	}
+
+	return convertBlogPostToBlogResp(resp), nil
+}
 
 func convertBlogPostToBlogResp(blogPost models.BlogPost) types.BlogResp {
 	return types.BlogResp{
