@@ -10,6 +10,7 @@ const (
 	ErrorAddingComment          = "error adding comment"
 	ErrorGettingComments        = "error getting comments"
 	ErrorDeletingComment        = "error deleting comment"
+	ErrorUpdatingComment        = "error updating comment"
 )
 
 const (
@@ -30,6 +31,7 @@ const (
 	CommentAddedSuccessfully     = "comment added successfully"
 	CommentsFetchSuccessfully    = "comments fetched successfully"
 	CommentDeletedSuccessfully   = "comment deleted successfully"
+	CommentUpdatedSuccessfully   = "comment updated successfully"
 )
 
 const (
@@ -44,6 +46,7 @@ const (
 	YouAreNotAuthorizedToDeleteThisBlog    = "you are not authorized to delete this blog"
 	YouAreNotAuthorizedToGetComments       = "you are not authorized to get comments"
 	YouAreNotAuthorizedToDeleteThisComment = "you are not authorized to delete this comment"
+	YouAreNotAuthorizedToUpdateThisComment = "you are not authorized to update this comment"
 )
 
 var ReactionTypes = map[uint64]string{

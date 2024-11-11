@@ -272,19 +272,33 @@ func (repo *blogRepo) DeleteComment(blogPost models.BlogPost, commentID string) 
 	return nil
 }
 
-//// UpdateComment implements domain.BlogRepository.
-//func (repo *blogRepo) UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
-//	var existingComment models.Comment
-//	err := repo.d.Where("id = ? AND blog_post_id = ?", comment.ID, blogPost.ID).First(&existingComment).Error
-//	if err != nil {
-//		return err
-//	}
-//	err = repo.d.Model(&existingComment).Updates(comment).Error
-//	if err != nil {
-//		return err
-//	}
-//	return nil
-//}
+// UpdateComment implements domain.BlogRepository.
+func (repo *blogRepo) UpdateComment(blogPost models.BlogPost, comment models.Comment) (models.BlogPost, error) {
+
+	tx, err := beginTransaction(repo.d)
+	if err != nil {
+		return models.BlogPost{}, err
+	}
+
+	err = tx.Updates(&comment).Error
+	if err != nil {
+		return models.BlogPost{}, err
+	}
+
+	updatedComment, err := repo.GetComments(blogPost.ID, []string{comment.ID})
+
+	// Update the blog post with the updated comment
+	err = tx.Model(&blogPost).Association(consts.COMMENTS).Replace(&updatedComment)
+	if err != nil {
+		return models.BlogPost{}, err
+	}
+
+	if commitErr := tx.Commit().Error; commitErr != nil {
+		return models.BlogPost{}, commitErr
+	}
+
+	return blogPost, nil
+}
 
 func beginTransaction(db *gorm.DB) (*gorm.DB, error) {
 	tx := db.Begin()

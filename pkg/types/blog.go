@@ -48,8 +48,8 @@ func (blogPost UpdateBlogPostRequest) Validate() error {
 
 type BlogResp struct {
 	ID             string         `json:"id,omitempty"`
-	UserID         string         `json:"user_id"`
-	Title          string         `json:"title"`
+	UserID         string         `json:"user_id,omitempty"`
+	Title          string         `json:"title,omitempty"`
 	ContentText    string         `json:"content_text,omitempty"`
 	PhotoURL       string         `json:"photo_url,omitempty"`
 	Description    string         `json:"description,omitempty"`
