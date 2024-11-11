@@ -200,17 +200,14 @@ func (repo *blogRepo) AddComment(blogPost models.BlogPost, comment models.Commen
 
 	commentErr := tx.Create(&comment).Error
 	if commentErr != nil {
-		tx.Rollback()
 		return models.BlogPost{}, commentErr
 	}
 
 	if appendErr := tx.Model(&blogPost).Association(consts.COMMENTS).Append(&comment); appendErr != nil {
-		tx.Rollback()
 		return models.BlogPost{}, appendErr
 	}
 
 	if updateCountErr := tx.Model(&blogPost).Update(consts.CommentCounts, blogPost.CommentsCount+1).Error; updateCountErr != nil {
-		tx.Rollback()
 		return models.BlogPost{}, updateCountErr
 	}
 
@@ -239,22 +236,42 @@ func (repo *blogRepo) GetComments(blogID string, commentIDs []string) ([]models.
 	return comments, nil
 }
 
-//// DeleteComment implements domain.BlogRepository.
-//func (repo *blogRepo) DeleteCommentRepo(blogPost *models.BlogPost, commentID uint) error {
-//	var comment models.Comment
-//	err := repo.d.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
-//	if err != nil {
-//		return err
-//	}
-//	err = repo.d.Delete(&comment).Error
-//	if err != nil {
-//		return err
-//	}
-//	repo.d.Model(blogPost).Association("Comments").Delete(&comment)
-//	repo.d.Model(blogPost).Update("comments_count", blogPost.CommentsCount-1)
-//	return nil
-//}
-//
+// DeleteComment implements domain.BlogRepository.
+func (repo *blogRepo) DeleteComment(blogPost models.BlogPost, commentID string) error {
+
+	tx, err := beginTransaction(repo.d)
+	if err != nil {
+		return err
+	}
+
+	var comment models.Comment
+	err = tx.Where("id = ? AND blog_post_id = ?", commentID, blogPost.ID).First(&comment).Error
+	if err != nil {
+		return err
+	}
+
+	err = tx.Delete(&comment).Error
+	if err != nil {
+		return err
+	}
+
+	err = tx.Model(&blogPost).Association(consts.COMMENTS).Delete(&comment)
+	if err != nil {
+		return err
+	}
+
+	err = tx.Model(&blogPost).Update(consts.CommentCounts, blogPost.CommentsCount-1).Error
+	if err != nil {
+		return err
+	}
+
+	if commitErr := tx.Commit().Error; commitErr != nil {
+		return commitErr
+	}
+
+	return nil
+}
+
 //// UpdateComment implements domain.BlogRepository.
 //func (repo *blogRepo) UpdateCommentRepo(blogPost *models.BlogPost, comment *models.Comment) error {
 //	var existingComment models.Comment

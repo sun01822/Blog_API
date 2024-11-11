@@ -43,7 +43,7 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo) {
 	blog.POST("/reaction", b.blogController.AddAndRemoveReaction, middlewares.Auth)
 	blog.POST("/comment", b.blogController.AddComment, middlewares.Auth)
 	blog.GET("/comment", b.blogController.GetComments, middlewares.Auth)
-	//blog.DELETE("/comment/:userID/:postID/:commentID", b.blogController.DeleteComment, middlewares.Auth)
+	blog.DELETE("/comment", b.blogController.DeleteComment, middlewares.Auth)
 	//blog.PUT("/comment/:userID/:postID/:commentID", b.blogController.UpdateComment, middlewares.Auth)
 
 }

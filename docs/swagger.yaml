@@ -206,6 +206,46 @@ info:
   version: "1.0"
 paths:
   /blog/comment:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a comment
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Blog ID
+        in: query
+        name: blog_id
+        required: true
+        type: string
+      - description: Comment ID
+        in: query
+        name: comment_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: comment deleted successfully
+          schema:
+            type: string
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error deleting comment
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete a comment
+      tags:
+      - Blog
     post:
       consumes:
       - application/json

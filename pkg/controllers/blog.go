@@ -374,37 +374,56 @@ func (ctr *blogController) GetComments(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.CommentsFetchSuccessfully, comments)
 }
 
-//// DeleteComment implements domain.BlogController.
-//func (ctr *blogController) DeleteComment(c echo.Context) error {
-//	userID, err := strconv.ParseUint(c.Param("userID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	tempID := c.Param("postID")
-//	id, err := strconv.ParseUint(tempID, 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	commentID, err := strconv.ParseUint(c.Param("commentID"), 10, 64)
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, "Invalid data request")
-//	}
-//	existingBlogPost, err := ctr.svc.GetBlogPost(uint(id))
-//	if err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if existingBlogPost.ID == 0 {
-//		return c.JSON(http.StatusNotFound, "Blog post not found")
-//	}
-//	if _, err := ctr.svc.GetCommentByUserID(&existingBlogPost, uint(userID)); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	if err := ctr.svc.DeleteComment(&existingBlogPost, uint(commentID)); err != nil {
-//		return c.JSON(http.StatusBadRequest, err.Error())
-//	}
-//	return c.JSON(http.StatusOK, "Comment deleted successfully")
-//}
-//
+// DeleteComment implements domain.BlogController.
+// @Summary Delete a comment
+// @Description Delete a comment
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
+// @Param comment_id query string true "Comment ID"
+// @Success 200 {string} string "comment deleted successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error deleting comment"
+// @Router /blog/comment [delete]
+func (ctr *blogController) DeleteComment(c echo.Context) error {
+
+	userID, parseErr := uuid.Parse(c.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if userID.String() == "" {
+		return response.ErrorResponse(c, errors.New(userconsts.UserIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqBlogID, parseErr := uuid.Parse(c.QueryParam(blogconsts.BlogID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqBlogID.String() == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.BlogIDRequired), consts.InvalidDataRequest)
+	}
+
+	reqCommentID, parseErr := uuid.Parse(c.QueryParam(blogconsts.CommentID))
+	if parseErr != nil {
+		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
+	}
+
+	if reqCommentID.String() == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.InvalidCommentID), consts.InvalidDataRequest)
+	}
+
+	if err := ctr.svc.DeleteComment(userID.String(), reqBlogID.String(), reqCommentID.String()); err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorDeletingComment)
+	}
+
+	return response.SuccessResponse(c, blogconsts.CommentDeletedSuccessfully, nil)
+}
+
 //// UpdateComment implements domain.BlogController.
 //func (ctr *blogController) UpdateComment(c echo.Context) error {
 //	reqComment := &types.Comment{}

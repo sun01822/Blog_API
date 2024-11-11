@@ -252,14 +252,42 @@ func (svc *blogService) GetComments(userID string, blogID string, commentIDs []s
 	return convertCommentsToSummary(comments), nil
 }
 
-//// DeleteComment implements domain.BlogService.
-//func (svc *blogService) DeleteComment(blogPost *models.BlogPost, commentID uint) error {
-//	if err := svc.repo.DeleteCommentRepo(blogPost, commentID); err != nil {
-//		return err
-//	}
-//	return nil
-//}
-//
+// DeleteComment implements domain.BlogService.
+func (svc *blogService) DeleteComment(userID string, blogID string, commentID string) error {
+
+	user, err := svc.uSvc.GetUser(userID)
+	if err != nil {
+		return err
+	}
+
+	blogPost, err := svc.repo.GetBlogPost(blogID)
+	if err != nil {
+		return err
+	}
+
+	if blogPost.ID == "" {
+		return errors.New(blogconsts.ErrorGettingBlog)
+	}
+
+	comment, err := svc.repo.GetComments(blogPost.ID, []string{commentID})
+	if err != nil {
+		return err
+	}
+
+	if len(comment) == 0 {
+		return errors.New(blogconsts.ErrorGettingComments)
+	}
+
+	if (comment[0].UserID == user.ID) || (blogPost.UserID == user.ID) {
+		if deleteErr := svc.repo.DeleteComment(blogPost, commentID); deleteErr != nil {
+			return deleteErr
+		}
+		return nil
+	}
+
+	return errors.New(blogconsts.YouAreNotAuthorizedToDeleteThisComment)
+}
+
 //// UpdateComment implements domain.BlogService.
 //func (svc *blogService) UpdateComment(blogPost *models.BlogPost, comment *models.Comment) error {
 //	if err := svc.repo.UpdateCommentRepo(blogPost, comment); err != nil {
