@@ -120,6 +120,8 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 // @Tags Blog
 // @Accept json
 // @Produce json
+// @Param Authorization header string true "Bearer <token>"
+// @Param blog_id query string true "Blog ID"
 // @Param user_id query string true "User ID"
 // @Param blog_ids query string false "Blog IDs"
 // @Success 200 {array} types.BlogResp "blogs fetched successfully"
