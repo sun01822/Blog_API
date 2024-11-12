@@ -93,11 +93,6 @@ The Blog API server will run at `http://localhost:8080`.
   - **Request Body:** Must follow the `BlogPostRequest` schema.
   - **Response:** A message confirming creation or an error.
 
-- **Delete a Blog Post** - `DELETE /blog/delete`
-  - Requires Bearer token for authorization.
-  - **Query Parameter:** `blog_id` (string) - ID of the blog post to delete.
-  - **Response:** Deletion confirmation or an error.
-
 - **Get a Blog Post** - `GET /blog/get`
   - **Query Parameter:** `blog_id` (string) - ID of the blog post to fetch.
   - **Response:** Returns blog details or an error message.
@@ -112,6 +107,28 @@ The Blog API server will run at `http://localhost:8080`.
   - **Request Body:** Follows the `UpdateBlogPostRequest` schema.
   - **Response:** Update confirmation or error.
 
+- **Delete a Blog Post** - `DELETE /blog/delete`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post to delete.
+  - **Response:** Deletion confirmation or an error.
+
+- **Add, Remove, and Update Reaction on a Blog Post** - `POST /blog/reaction`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post to add reaction and
+                         `reaction_id` (uint) - ID of the reaction {1: like, 2: love, 3: care, 4: haha, 5: wow, 6: sad, 7: angry}
+  - **Response:** Reaction confirmation with BlogResp or an error.
+
+- **Add Comment on a Blog Post** - `POST /blog/comment`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post to add comment
+  - **Request Body:** Should follow the `Comment` schema.
+  - **Response:** Comment confirmation with BlogResp or an error.
+ 
+- **Get Comments on a Blog Post** - `POST /blog/comments`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post to add comment
+                         `comment_ids` (string) - ID's of comment
+  - **Response:** Comment confirmation with CommentResp or an error.
 
 ---
 
@@ -147,6 +164,26 @@ The Blog API server will run at `http://localhost:8080`.
   "password": "string"
 }
 ```
+
+### Comment
+```json
+{
+  "content": "string"
+}
+```
+
+### CommentResp
+```json
+[
+  {
+    "blog_post_id": "string",
+    "content": "string",
+    "id": "string",
+    "user_id": "string"
+  }
+]
+```
+
 
 
 ---
