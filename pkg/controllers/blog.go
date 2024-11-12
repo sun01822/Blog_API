@@ -488,14 +488,13 @@ func (ctr *blogController) UpdateComment(c echo.Context) error {
 
 func extractUserIDAndBlogIDs(ctx echo.Context) (string, []string, error) {
 
-	userID := ctx.Get(userconsts.UserID).(string)
-	_, err := uuid.Parse(userID)
-	if err != nil {
-		return "", nil, errors.New(consts.InvalidDataRequest)
+	userID, parseErr := uuid.Parse(ctx.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return "", nil, response.ErrorResponse(ctx, parseErr, consts.InvalidDataRequest)
 	}
 
 	blogIDsParam := ctx.QueryParam(blogconsts.BlogIDs)
 	blogIDs := strings.Fields(strings.ReplaceAll(blogIDsParam, ",", " "))
 
-	return userID, blogIDs, nil
+	return userID.String(), blogIDs, nil
 }
