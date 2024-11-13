@@ -126,9 +126,22 @@ The Blog API server will run at `http://localhost:8080`.
  
 - **Get Comments on a Blog Post** - `POST /blog/comments`
   - Requires Bearer token for authorization.
-  - **Query Parameter:** `blog_id` (string) - ID of the blog post to add comment
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post and 
                          `comment_ids` (string) - ID's of comment
   - **Response:** Comment confirmation with CommentResp or an error.
+
+- **Update Comment on a Blog Post** - `PUT /blog/comment`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post and 
+                         `comment_id` (string) - ID of the comment
+  - **Response:** Comment confirmation with BlogResp or an error.
+
+- **Delete Comment on a Blog Post** - `DELETE /blog/comment`
+  - Requires Bearer token for authorization.
+  - **Query Parameter:** `blog_id` (string) - ID of the blog post and 
+                         `comment_id` (string) - ID of the comment
+  - **Response:** Comment confirmation or an error.
+
 
 ---
 
@@ -183,6 +196,42 @@ The Blog API server will run at `http://localhost:8080`.
   }
 ]
 ```
+
+### BlogResp
+```json
+{
+  "category": "string",
+  "comments": [
+    {
+      "blog_post_id": "string",
+      "content": "string",
+      "id": "string",
+      "user_id": "string"
+    }
+  ],
+  "comments_count": 0,
+  "content_text": "string",
+  "created_at": "string",
+  "deleted_at": "string",
+  "description": "string",
+  "id": "string",
+  "is_published": true,
+  "photo_url": "string",
+  "published_at": "string",
+  "reactions": [
+    {
+      "blog_post_id": "string",
+      "id": "string",
+      "type": 0,
+      "user_id": "string"
+    }
+  ],
+  "reactions_count": 0,
+  "title": "string",
+  "updated_at": "string",
+  "user_id": "string",
+  "views": 0
+}```
 
 
 
