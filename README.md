@@ -231,9 +231,8 @@ The Blog API server will run at `http://localhost:8080`.
   "updated_at": "string",
   "user_id": "string",
   "views": 0
-}```
-
-
+}
+```
 
 ---
 
