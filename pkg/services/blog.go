@@ -86,6 +86,22 @@ func (svc *blogService) GetBlogPosts() ([]types.BlogResp, error) {
 	return blogResp, nil
 }
 
+// GetBlogPostsBasedOnCategory implements domain.BlogService.
+func (svc *blogService) GetBlogPostsBasedOnCategory(category string) ([]types.BlogResp, error) {
+
+	var blogResp []types.BlogResp
+	blogPosts, err := svc.repo.GetBlogPostsBasedOnCategory(category)
+	if err != nil {
+		return blogResp, err
+	}
+
+	for _, blogPost := range blogPosts {
+		blogResp = append(blogResp, convertBlogPostToBlogResp(blogPost))
+	}
+
+	return blogResp, nil
+}
+
 // GetBlogPosts implements domain.BlogService.
 func (svc *blogService) GetBlogPostsOfUser(userID string, blogIDs []string) ([]types.BlogResp, error) {
 

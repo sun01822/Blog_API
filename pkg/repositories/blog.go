@@ -53,6 +53,18 @@ func (repo *blogRepo) GetBlogPosts() ([]models.BlogPost, error) {
 	return blogPosts, nil
 }
 
+// GetBlogPostsBasedOnCategory implements domain.BlogRepository.
+func (repo *blogRepo) GetBlogPostsBasedOnCategory(category string) ([]models.BlogPost, error) {
+
+	var blogPosts []models.BlogPost
+	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Where("category = ?", category).Find(&blogPosts).Error
+	if err != nil {
+		return blogPosts, err
+	}
+
+	return blogPosts, nil
+}
+
 // GetBlogPosts implements domain.BlogRepository.
 func (repo *blogRepo) GetBlogPostsOfUser(userID string, blogIDs []string) ([]models.BlogPost, error) {
 
@@ -87,71 +99,6 @@ func (repo *blogRepo) DeleteBlogPost(blogID string) error {
 
 	err := repo.d.Preload(consts.REACTIONS).Preload(consts.COMMENTS).Where("id = ?", blogID).Delete(&models.BlogPost{}).Error
 	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (repo *blogRepo) findReaction(tx *gorm.DB, userID, blogPostID string) (models.Reaction, error) {
-
-	var reaction models.Reaction
-	err := tx.Where("blog_post_id = ? AND user_id = ?", blogPostID, userID).First(&reaction).Error
-	if err != nil {
-		return reaction, err
-	}
-
-	return reaction, err
-}
-
-func (repo *blogRepo) createReaction(tx *gorm.DB, userID string, reactionID uint64, blogPost *models.BlogPost) error {
-
-	reaction := models.Reaction{
-		ID:         uuid.NewString(),
-		UserID:     userID,
-		BlogPostID: blogPost.ID,
-		Type:       reactionID,
-	}
-
-	if err := tx.Create(&reaction).Error; err != nil {
-		return err
-	}
-
-	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Append(&reaction); err != nil {
-		return err
-	}
-
-	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount+1).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (repo *blogRepo) removeReaction(tx *gorm.DB, reaction *models.Reaction, blogPost *models.BlogPost) error {
-
-	if err := tx.Delete(&reaction).Where("id = ?", reaction.ID).Error; err != nil {
-		return err
-	}
-
-	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Delete(&reaction); err != nil {
-		return err
-	}
-
-	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount-1).Error; err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (repo *blogRepo) updateReaction(tx *gorm.DB, reaction models.Reaction, reactionID uint64, blogPost *models.BlogPost) error {
-
-	if err := tx.Model(&reaction).Update("type", reactionID).Error; err != nil {
-		return err
-	}
-
-	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Replace(&reaction); err != nil {
 		return err
 	}
 
@@ -313,4 +260,69 @@ func beginTransaction(db *gorm.DB) (*gorm.DB, error) {
 	}()
 
 	return tx, nil
+}
+
+func (repo *blogRepo) findReaction(tx *gorm.DB, userID, blogPostID string) (models.Reaction, error) {
+
+	var reaction models.Reaction
+	err := tx.Where("blog_post_id = ? AND user_id = ?", blogPostID, userID).First(&reaction).Error
+	if err != nil {
+		return reaction, err
+	}
+
+	return reaction, err
+}
+
+func (repo *blogRepo) createReaction(tx *gorm.DB, userID string, reactionID uint64, blogPost *models.BlogPost) error {
+
+	reaction := models.Reaction{
+		ID:         uuid.NewString(),
+		UserID:     userID,
+		BlogPostID: blogPost.ID,
+		Type:       reactionID,
+	}
+
+	if err := tx.Create(&reaction).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Append(&reaction); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount+1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *blogRepo) removeReaction(tx *gorm.DB, reaction *models.Reaction, blogPost *models.BlogPost) error {
+
+	if err := tx.Delete(&reaction).Where("id = ?", reaction.ID).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Delete(&reaction); err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Update(consts.ReactionCounts, blogPost.ReactionsCount-1).Error; err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (repo *blogRepo) updateReaction(tx *gorm.DB, reaction models.Reaction, reactionID uint64, blogPost *models.BlogPost) error {
+
+	if err := tx.Model(&reaction).Update("type", reactionID).Error; err != nil {
+		return err
+	}
+
+	if err := tx.Model(&blogPost).Association(consts.REACTIONS).Replace(&reaction); err != nil {
+		return err
+	}
+
+	return nil
 }

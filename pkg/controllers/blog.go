@@ -118,6 +118,34 @@ func (ctr *blogController) GetBlogPosts(c echo.Context) error {
 	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfully, blogPosts)
 }
 
+// GetBlogPostsBasedOnCategory implements domain.BlogController.
+// @Summary Get blog posts based on category
+// @Description Get blog posts based on category
+// @Tags Blog
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Param category query string true "Category"
+// @Success 200 {array} types.BlogResp "blogs fetched successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting blogs"
+// @Router /blog/get/category [get]
+func (ctr *blogController) GetBlogPostsBasedOnCategory(c echo.Context) error {
+
+	category := c.QueryParam(blogconsts.Category)
+	if category == "" {
+		return response.ErrorResponse(c, errors.New(blogconsts.CategoryRequired), consts.InvalidDataRequest)
+	}
+
+	blogPosts, err := ctr.svc.GetBlogPostsBasedOnCategory(category)
+	if err != nil {
+		return response.ErrorResponse(c, err, blogconsts.ErrorGettingBlogs)
+	}
+
+	return response.SuccessResponse(c, blogconsts.BlogsFetchSuccessfully, blogPosts)
+}
+
 // GetBlogPostsOfUser implements domain.BlogController.
 // @Summary Get all blog posts of a user
 // @Description Get all blog posts of a user

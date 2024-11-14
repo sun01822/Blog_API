@@ -35,6 +35,7 @@ func (b *blogRoutes) initBlogRoutes(e *echo.Echo) {
 	blog.POST("/create", b.blogController.CreateBlogPost, middlewares.Auth)
 	blog.GET("/get", b.blogController.GetBlogPost)
 	blog.GET("/getAll", b.blogController.GetBlogPosts)
+	blog.GET("/get/category", b.blogController.GetBlogPostsBasedOnCategory)
 	blog.GET("/get/user", b.blogController.GetBlogPostsOfUser, middlewares.Auth)
 	blog.PUT("/update", b.blogController.UpdateBlogPost, middlewares.Auth)
 	blog.DELETE("/delete", b.blogController.DeleteBlogPost, middlewares.Auth)
