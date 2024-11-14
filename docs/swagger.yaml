@@ -477,6 +477,44 @@ paths:
       summary: Get a blog post
       tags:
       - Blog
+  /blog/get/category:
+    get:
+      consumes:
+      - application/json
+      description: Get blog posts based on category
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: Category
+        in: query
+        name: category
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: blogs fetched successfully
+          schema:
+            items:
+              $ref: '#/definitions/types.BlogResp'
+            type: array
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting blogs
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get blog posts based on category
+      tags:
+      - Blog
   /blog/get/user:
     get:
       consumes:

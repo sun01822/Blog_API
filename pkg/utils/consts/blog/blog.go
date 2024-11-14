@@ -18,6 +18,7 @@ const (
 	ReactionIDRequired = "required reaction id"
 	InvalidReactionID  = "invalid reaction id"
 	InvalidCommentID   = "invalid comment id"
+	CategoryRequired   = "required category"
 )
 
 const (
@@ -40,6 +41,7 @@ const (
 	ReactionID = "reaction_id"
 	CommentID  = "comment_id"
 	CommentIDs = "comment_ids"
+	Category   = "category"
 )
 
 const (
