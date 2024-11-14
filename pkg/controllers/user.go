@@ -39,8 +39,6 @@ func SetUserController(svc domain.Service) domain.Controller {
 // Login implements domain.Controller.
 func (ctr *userController) Login(ctx echo.Context) error {
 
-	conf := config.LocalConfig
-
 	reqUser := types.LoginRequest{}
 
 	if err := ctx.Bind(&reqUser); err != nil {
@@ -56,21 +54,7 @@ func (ctr *userController) Login(ctx echo.Context) error {
 		return response.ErrorResponse(ctx, loginErr, userconsts.InvalidEmailOrPassword)
 	}
 
-	now := time.Now().UTC()
-	ttl := time.Minute * consts.ExpiredTokenLimit
-
-	jwtClaims := types.JWTClaims{
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: now.Add(ttl).Unix(),
-			IssuedAt:  now.Unix(),
-			NotBefore: now.Unix(),
-		},
-		UserID:    userID,
-		UserEmail: reqUser.Email,
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
-	tokenString, tokenErr := token.SignedString([]byte(conf.JWTSecret))
+	tokenString, tokenErr := generateToken(userID, reqUser.Email)
 	if tokenErr != nil {
 		return response.ErrorResponse(ctx, tokenErr, userconsts.ErrorGeneratingToken)
 	}
@@ -226,4 +210,31 @@ func (ctr *userController) DeleteUser(c echo.Context) error {
 	}
 
 	return response.SuccessResponse(c, userconsts.UserDeletedSuccessfully, user)
+}
+
+func generateToken(userID string, userEmail string) (string, error) {
+
+	conf := config.LocalConfig
+
+	now := time.Now().UTC()
+	ttl := time.Minute * consts.ExpiredTokenLimit
+
+	jwtClaims := types.JWTClaims{
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: now.Add(ttl).Unix(),
+			IssuedAt:  now.Unix(),
+			NotBefore: now.Unix(),
+		},
+		UserID:    userID,
+		UserEmail: userEmail,
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwtClaims)
+
+	tokenString, tokenErr := token.SignedString([]byte(conf.JWTSecret))
+	if tokenErr != nil {
+		return "", tokenErr
+	}
+
+	return tokenString, nil
 }
