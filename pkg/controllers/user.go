@@ -174,7 +174,7 @@ func (ctr *userController) UpdateUser(c echo.Context) error {
 		return response.ErrorResponse(c, parseErr, consts.InvalidDataRequest)
 	}
 
-	profilePic, err := c.FormFile("profile_picture")
+	profilePic, err := c.FormFile(userconsts.ProfilePicture)
 	if err != nil {
 		return response.ErrorResponse(c, err, consts.InvalidDataRequest)
 	}
@@ -259,13 +259,13 @@ func generateToken(userID string, userEmail string) (string, error) {
 
 func uploadProfilePicture(profilePic *multipart.FileHeader) (string, error) {
 	// Open and decode the image
-	img, format, err := openAndDecodeImage(profilePic)
+	profilePicture, format, err := openAndDecodeImage(profilePic)
 	if err != nil {
 		return "", err
 	}
 
 	// Resize the image to 600x600
-	tempFilePath, err := resizeAndSaveImage(img, format, 600, 600)
+	tempFilePath, err := resizeAndSaveImage(profilePicture, format, 600, 600)
 	if err != nil {
 		return "", err
 	}
@@ -290,12 +290,12 @@ func openAndDecodeImage(profilePic *multipart.FileHeader) (image.Image, string, 
 	defer src.Close()
 
 	// Decode the image
-	img, format, err := image.Decode(src)
+	profilePicture, format, err := image.Decode(src)
 	if err != nil {
 		return nil, "", fmt.Errorf("failed to decode image: %v", err)
 	}
 
-	return img, format, nil
+	return profilePicture, format, nil
 }
 
 // resizeAndSaveImage resizes an image to the specified dimensions and saves it to a temporary file

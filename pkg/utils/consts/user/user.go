@@ -26,6 +26,7 @@ const (
 )
 
 const (
-	UserID    = "user_id"
-	UserEmail = "user_email"
+	UserID         = "user_id"
+	UserEmail      = "user_email"
+	ProfilePicture = "profile_picture"
 )
