@@ -72,16 +72,6 @@ func (user LoginRequest) Validate() error {
 	)
 }
 
-type LogoutRequest struct {
-	AccessToken string `json:"access_token"`
-}
-
-func (user LogoutRequest) Validate() error {
-	return validate.ValidateStruct(&user,
-		validate.Field(&user.AccessToken, validate.Required),
-	)
-}
-
 // UserResponse
 type UserResp struct {
 	ID             string    `json:"id,omitempty"`
