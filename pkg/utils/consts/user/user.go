@@ -3,7 +3,6 @@ package userconsts
 const (
 	InvalidEmailOrPassword  = "user invalid email or password"
 	ErrorGeneratingToken    = "error generating token"
-	LoginSuccessful         = "user login successful"
 	LoginFailed             = "user log in Failed"
 	ErrorCreatingUser       = "error creating user"
 	UserEmailAlreadyExists  = "user email already exists"
@@ -12,6 +11,8 @@ const (
 	ErrorGettingUsers       = "error getting users"
 	ErrorUpdatingUser       = "error updating user"
 	ErrorDeletingUser       = "error deleting user"
+	UserNotFound            = "user not found"
+	LogoutFailed            = "user log out Failed"
 )
 
 const (
@@ -23,6 +24,8 @@ const (
 	UsersFetchSuccessfully  = "users fetched successfully"
 	UserUpdatedSuccessfully = "user updated successfully"
 	UserDeletedSuccessfully = "user deleted successfully"
+	LogoutSuccessful        = "user log out successful"
+	LoginSuccessful         = "user login successful"
 )
 
 const (

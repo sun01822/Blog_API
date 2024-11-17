@@ -822,6 +822,37 @@ paths:
       summary: User login
       tags:
       - User
+  /user/logout:
+    post:
+      consumes:
+      - application/json
+      description: Logs out a user
+      parameters:
+      - description: Bearer <token>
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: user logged out successfully
+          schema:
+            type: string
+        "400":
+          description: invalid data request
+          schema:
+            type: string
+        "500":
+          description: error getting user
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: User logout
+      tags:
+      - User
   /user/update:
     put:
       consumes:

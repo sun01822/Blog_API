@@ -30,6 +30,7 @@ type Service interface {
 // For controller operation (call from main)
 type Controller interface {
 	Login(c echo.Context) error
+	Logout(c echo.Context) error
 	CreateUser(c echo.Context) error
 	GetUser(c echo.Context) error
 	GetUsers(c echo.Context) error

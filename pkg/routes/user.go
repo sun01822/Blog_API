@@ -33,6 +33,7 @@ func (u *UserRoutes) initUserRoutes(e *echo.Echo) {
 
 	// Login route
 	user.POST("/login", u.userController.Login)
+	user.POST("/logout", u.userController.Logout, middlewares.Auth)
 
 	user.POST("/create", u.userController.CreateUser)
 	user.GET("/get", u.userController.GetUser)
