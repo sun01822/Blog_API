@@ -8,6 +8,7 @@ import (
 	"Blog_API/pkg/utils/consts"
 	"Blog_API/pkg/utils/consts/user"
 	"Blog_API/pkg/utils/response"
+	"errors"
 	"fmt"
 	"github.com/golang-jwt/jwt"
 	"github.com/google/uuid"
@@ -66,6 +67,38 @@ func (ctr *userController) Login(ctx echo.Context) error {
 	}
 
 	return response.SuccessResponse(ctx, userconsts.LoginSuccessful, tokenString)
+}
+
+// Logout godoc
+// @Summary User logout
+// @Description Logs out a user
+// @Tags User
+// @Accept json
+// @Produce json
+// @Security BearerAuth
+// @Param Authorization header string true "Bearer <token>"
+// @Success 200 {string} string "user logged out successfully"
+// @Failure 400 {string} string "invalid data request"
+// @Failure 500 {string} string "error getting user"
+// @Router /user/logout [post]
+// Logout implements domain.Controller.
+func (ctr *userController) Logout(ctx echo.Context) error {
+
+	userID, parseErr := uuid.Parse(ctx.Get(userconsts.UserID).(string))
+	if parseErr != nil {
+		return response.ErrorResponse(ctx, parseErr, consts.InvalidDataRequest)
+	}
+
+	user, err := ctr.svc.GetUser(userID.String())
+	if err != nil {
+		return response.ErrorResponse(ctx, err, userconsts.ErrorGettingUser)
+	}
+
+	if user.ID == "" {
+		return response.ErrorResponse(ctx, errors.New(userconsts.LogoutFailed), userconsts.UserNotFound)
+	}
+
+	return response.SuccessResponse(ctx, userconsts.LogoutSuccessful, user.Email)
 }
 
 // CreateUser implements domain.Controller.
