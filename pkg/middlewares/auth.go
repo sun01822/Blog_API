@@ -50,3 +50,21 @@ func Auth(next echo.HandlerFunc) echo.HandlerFunc {
 		return response.ErrorResponseWithStatus(c, http.StatusUnauthorized, consts.InvalidToken)
 	}
 }
+
+func AppKeyAuth(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(c echo.Context) error {
+
+		conf := config.LocalConfig
+
+		authHeader := c.Request().Header.Get(consts.AppKey)
+		if authHeader == "" {
+			return response.ErrorResponseWithStatus(c, http.StatusUnauthorized, consts.AppKeyRequired)
+		}
+
+		if authHeader != conf.AppKey {
+			return response.ErrorResponseWithStatus(c, http.StatusUnauthorized, consts.InvalidAppKey)
+		}
+
+		return next(c)
+	}
+}

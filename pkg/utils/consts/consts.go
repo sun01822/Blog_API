@@ -21,3 +21,6 @@ const (
 )
 
 const ExpiredTokenLimit = 60
+const AppKey = "blog-app-key"
+const AppKeyRequired = "app key is required"
+const InvalidAppKey = "invalid app key"

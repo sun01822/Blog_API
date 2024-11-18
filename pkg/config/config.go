@@ -16,6 +16,7 @@ type Config struct {
 	JWTSecret       string `mapstructure:"JWTSECRET"`
 	KrakenAPIKey    string `mapstructure:"KRAKENAPIKEY"`
 	KrakenAPISecret string `mapstructure:"KRAKENAPISECRET"`
+	AppKey          string `mapstructure:"APPKEY"`
 }
 
 // Global var to access from any package
