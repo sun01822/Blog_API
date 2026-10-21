@@ -5,7 +5,7 @@ go 1.21.5
 require (
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
 	github.com/golang-jwt/jwt v3.2.2+incompatible
-	github.com/google/uuid v1.4.0
+	github.com/google/uuid v1.6.0
 	github.com/kraken-io/kraken-go v0.0.0-20230525122519-ea2825963ba3
 	github.com/labstack/echo/v4 v4.12.0
 	github.com/nfnt/resize v0.0.0-20180221191011-83c6a9932646
